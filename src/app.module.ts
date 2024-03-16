@@ -7,7 +7,7 @@ import { validationSchema } from './config/env/validator';
   imports: [
     ConfigModule.forRoot({
       cache: true,
-      isGlobal: false,
+      isGlobal: true,
       load: [env],
       validationSchema,
       validationOptions: {
