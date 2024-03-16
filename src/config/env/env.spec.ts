@@ -9,7 +9,7 @@ describe('env', () => {
     expect(env).toBeInstanceOf(Function);
   });
 
-  it('should return object', () => {
+  it('should return an object', () => {
     expect(env()).toEqual(expect.any(Object));
   });
 });
