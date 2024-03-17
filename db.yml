@@ -1,0 +1,27 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${RDB_USERNAME}
+      POSTGRES_PASSWORD: ${RDB_PASSWORD}
+      POSTGRES_DB: ${RDB_DATABASE}
+    ports:
+      - '${RDB_PORT}:${RDB_PORT}'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    command: redis-server --requirepass ${CACHE_PASSWORD}
+    ports:
+      - '${CACHE_PORT}:${CACHE_PORT}'
+    volumes:
+      - redis_data:/data
+    environment:
+      REDIS_PASSWORD: ${CACHE_PASSWORD}
+
+volumes:
+  postgres_data:
+  redis_data:
