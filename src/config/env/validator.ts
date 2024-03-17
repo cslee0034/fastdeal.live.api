@@ -5,4 +5,6 @@ export const validationSchema = Joi.object({
   SERVER_NAME: Joi.string().required(),
   NAEYEOP_API_HOST: Joi.string().required(),
   NAEYEOP_API_PORT: Joi.number().required(),
+  HTTP_TIMEOUT: Joi.number().required(),
+  HTTP_MAX_REDIRECTS: Joi.number().required(),
 });

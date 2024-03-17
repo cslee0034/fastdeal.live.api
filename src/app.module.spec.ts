@@ -4,10 +4,15 @@ import { ConfigModule } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { WinstonModule } from 'nest-winston';
+import { HttpModule } from '@nestjs/axios';
 
 describe('AppModule', () => {
   let appModule: AppModule;
   let configModule: ConfigModule;
+  let httpModule: HttpModule;
+  let winstonModule = WinstonModule;
+
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
   beforeEach(async () => {
@@ -17,6 +22,8 @@ describe('AppModule', () => {
 
     appModule = module.get<AppModule>(AppModule);
     configModule = module.get<ConfigModule>(ConfigModule);
+    httpModule = module.get<HttpModule>(HttpModule);
+    winstonModule = module.get<any>(WinstonModule);
   });
 
   it('should import AppModule', async () => {
@@ -25,6 +32,14 @@ describe('AppModule', () => {
 
   it('should import config module', () => {
     expect(configModule).toBeDefined();
+  });
+
+  it('should import http module', () => {
+    expect(httpModule).toBeDefined();
+  });
+
+  it('should import winston module', () => {
+    expect(winstonModule).toBeDefined();
   });
 
   it('should configure the middleware', () => {
