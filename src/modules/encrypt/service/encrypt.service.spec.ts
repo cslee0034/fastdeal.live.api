@@ -115,5 +115,11 @@ describe('EncryptService', () => {
         service.compareAndThrow('key', 'not_hashed_key'),
       ).rejects.toThrow(UnauthorizedException);
     });
+
+    it('should return nothing if compare is success', async () => {
+      await expect(
+        service.compareAndThrow('key', 'hashed_key'),
+      ).resolves.toEqual(undefined);
+    });
   });
 });
