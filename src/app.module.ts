@@ -12,6 +12,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { getRedisConfig } from './config/redis/redis';
 import { getHttpConfig } from './config/http/http';
 import { PrismaModule } from './config/orm/prisma/module/prisma.module';
+import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { PrismaModule } from './config/orm/prisma/module/prisma.module';
       inject: [ConfigService],
     }),
     PrismaModule,
+    EncryptModule,
   ],
 })
 export class AppModule implements NestModule {
