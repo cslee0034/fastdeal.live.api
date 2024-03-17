@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigModule } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { MiddlewareConsumer } from '@nestjs/common';
-import { LoggerMiddleware } from './config/common/middleware/logger.middleware';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 describe('AppModule', () => {
   let appModule: AppModule;

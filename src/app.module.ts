@@ -4,7 +4,7 @@ import { env } from './config/env/env';
 import { validationSchema } from './config/env/validator';
 import { WinstonModule } from 'nest-winston';
 import { winstonTransports } from './config/logger/logger';
-import { LoggerMiddleware } from './config/common/middleware/logger.middleware';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
