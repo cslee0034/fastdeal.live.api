@@ -6,6 +6,7 @@ import { json, urlencoded } from 'body-parser';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -51,7 +52,10 @@ async function bootstrap() {
     }),
   );
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new HttpExceptionFilter(logger));
+  app.useGlobalFilters(
+    new HttpExceptionFilter(logger),
+    new PrismaClientExceptionFilter(logger),
+  );
 
   await app.listen(port);
 
