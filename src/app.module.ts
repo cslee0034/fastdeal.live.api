@@ -13,6 +13,7 @@ import { getRedisConfig } from './config/redis/redis';
 import { getHttpConfig } from './config/http/http';
 import { PrismaModule } from './config/orm/prisma/module/prisma.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
+import { UsersModule } from './modules/users/module/users.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { EncryptModule } from './modules/encrypt/module/encrypt.module';
     }),
     PrismaModule,
     EncryptModule,
+    UsersModule,
   ],
 })
 export class AppModule implements NestModule {

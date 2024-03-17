@@ -9,6 +9,8 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PrismaModule } from './config/orm/prisma/module/prisma.module';
+import { EncryptModule } from './modules/encrypt/module/encrypt.module';
+import { UsersModule } from './modules/users/module/users.module';
 
 describe('AppModule', () => {
   let appModule: AppModule;
@@ -18,6 +20,8 @@ describe('AppModule', () => {
   let jwtModule: JwtModule;
   let cacheModule: CacheModule;
   let prismaModule: PrismaModule;
+  let encryptModule: EncryptModule;
+  let usersModule: UsersModule;
 
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
@@ -33,6 +37,8 @@ describe('AppModule', () => {
     jwtModule = module.get<any>(JwtModule);
     cacheModule = module.get<CacheModule>(CacheModule);
     prismaModule = module.get<PrismaModule>(PrismaModule);
+    encryptModule = module.get<EncryptModule>(EncryptModule);
+    usersModule = module.get<UsersModule>(UsersModule);
   });
 
   it('should import AppModule', async () => {
@@ -61,6 +67,14 @@ describe('AppModule', () => {
 
   it('should import prisma module', () => {
     expect(prismaModule).toBeDefined();
+  });
+
+  it('should import encrypt module', () => {
+    expect(encryptModule).toBeDefined();
+  });
+
+  it('should import users module', () => {
+    expect(usersModule).toBeDefined();
   });
 
   it('should configure the middleware', () => {
