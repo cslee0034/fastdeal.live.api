@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { env } from './config/env/env';
 import { validationSchema } from './config/env/validator';
 import { WinstonModule } from 'nest-winston';
 import { winstonTransports } from './config/logger/logger';
+import { LoggerMiddleware } from './config/common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -25,4 +26,8 @@ import { winstonTransports } from './config/logger/logger';
     }),
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
