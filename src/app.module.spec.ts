@@ -8,14 +8,17 @@ import { WinstonModule } from 'nest-winston';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '@nestjs/cache-manager';
+import { PrismaService } from './config/orm/prisma.service';
 
 describe('AppModule', () => {
   let appModule: AppModule;
   let configModule: ConfigModule;
   let httpModule: HttpModule;
-  let winstonModule = WinstonModule;
-  let jwtModule = JwtModule;
-  let cacheModule = CacheModule;
+  let winstonModule: WinstonModule;
+  let jwtModule: JwtModule;
+  let cacheModule: CacheModule;
+
+  let prismaService: PrismaService;
 
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
@@ -30,6 +33,8 @@ describe('AppModule', () => {
     winstonModule = module.get<any>(WinstonModule);
     jwtModule = module.get<any>(JwtModule);
     cacheModule = module.get<CacheModule>(CacheModule);
+
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   it('should import AppModule', async () => {
@@ -54,6 +59,10 @@ describe('AppModule', () => {
 
   it('should import jwt module', () => {
     expect(cacheModule).toBeDefined();
+  });
+
+  it('should provide prisma service', () => {
+    expect(prismaService).toBeDefined();
   });
 
   it('should configure the middleware', () => {

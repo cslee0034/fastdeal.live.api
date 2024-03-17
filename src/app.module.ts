@@ -11,6 +11,7 @@ import { getJwtConfig } from './config/jwt/jwt';
 import { CacheModule } from '@nestjs/cache-manager';
 import { getRedisConfig } from './config/redis/redis';
 import { getHttpConfig } from './config/http/http';
+import { PrismaService } from './config/orm/prisma.service';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { getHttpConfig } from './config/http/http';
       inject: [ConfigService],
     }),
   ],
+  providers: [PrismaService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
