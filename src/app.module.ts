@@ -6,6 +6,8 @@ import { HttpModule } from '@nestjs/axios';
 import { WinstonModule } from 'nest-winston';
 import { winstonTransports } from './config/logger/logger';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { JwtModule } from '@nestjs/jwt';
+import { getJwtConfig } from './config/jwt/jwt';
 
 @Module({
   imports: [
@@ -31,6 +33,11 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
       useFactory: (configService: ConfigService) => ({
         transports: winstonTransports(configService),
       }),
+      inject: [ConfigService],
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => getJwtConfig(configService),
       inject: [ConfigService],
     }),
   ],

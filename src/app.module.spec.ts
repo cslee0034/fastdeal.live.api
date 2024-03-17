@@ -6,12 +6,14 @@ import { MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { WinstonModule } from 'nest-winston';
 import { HttpModule } from '@nestjs/axios';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('AppModule', () => {
   let appModule: AppModule;
   let configModule: ConfigModule;
   let httpModule: HttpModule;
   let winstonModule = WinstonModule;
+  let jwtModule = JwtModule;
 
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
@@ -23,6 +25,7 @@ describe('AppModule', () => {
     appModule = module.get<AppModule>(AppModule);
     configModule = module.get<ConfigModule>(ConfigModule);
     httpModule = module.get<HttpModule>(HttpModule);
+    jwtModule = module.get<any>(JwtModule);
     winstonModule = module.get<any>(WinstonModule);
   });
 
@@ -40,6 +43,10 @@ describe('AppModule', () => {
 
   it('should import winston module', () => {
     expect(winstonModule).toBeDefined();
+  });
+
+  it('should import jwt module', () => {
+    expect(jwtModule).toBeDefined();
   });
 
   it('should configure the middleware', () => {
