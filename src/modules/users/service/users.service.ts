@@ -45,16 +45,4 @@ export class UsersService {
 
     return new UserEntity(existing);
   }
-
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  update(id: number) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }
