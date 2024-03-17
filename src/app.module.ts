@@ -8,6 +8,8 @@ import { winstonTransports } from './config/logger/logger';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
+import { CacheModule } from '@nestjs/cache-manager';
+import { getRedisConfig } from './config/redis/redis';
 
 @Module({
   imports: [
@@ -38,6 +40,12 @@ import { getJwtConfig } from './config/jwt/jwt';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => getJwtConfig(configService),
+      inject: [ConfigService],
+    }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService): Promise<any> =>
+        getRedisConfig(configService),
       inject: [ConfigService],
     }),
   ],

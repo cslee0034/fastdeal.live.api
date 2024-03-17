@@ -9,4 +9,10 @@ export const env = () => ({
     timeout: process.env.HTTP_TIMEOUT,
     max_redirects: process.env.HTTP_MAX_REDIRECTS,
   },
+  cache: {
+    host: process.env.CACHE_HOST,
+    port: process.env.CACHE_PORT,
+    password: process.env.CACHE_PASSWORD,
+    ttl: process.env.CACHE_TTL,
+  },
 });

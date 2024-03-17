@@ -7,4 +7,8 @@ export const validationSchema = Joi.object({
   NAEYEOP_API_PORT: Joi.number().required(),
   HTTP_TIMEOUT: Joi.number().required(),
   HTTP_MAX_REDIRECTS: Joi.number().required(),
+  CACHE_HOST: Joi.string().required(),
+  CACHE_PORT: Joi.number().required(),
+  CACHE_PASSWORD: Joi.string().required(),
+  CACHE_TTL: Joi.number().required(),
 });
