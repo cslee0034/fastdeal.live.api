@@ -29,7 +29,7 @@ export const winstonTransports = (configService: ConfigService) => [
       winston.format.colorize(),
       winston.format.timestamp(),
       utilities.format.nestLike(
-        `${configService.get<string>('app.serverName')}.api`,
+        `${configService.get<string>('app.server_name')}.api`,
         {
           prettyPrint: true,
         },
@@ -37,9 +37,12 @@ export const winstonTransports = (configService: ConfigService) => [
     ),
   }),
   new winstonDaily(
-    dailyOptions('warn', `${configService.get<string>('app.serverName')}.api`),
+    dailyOptions('warn', `${configService.get<string>('app.server_name')}.api`),
   ),
   new winstonDaily(
-    dailyOptions('error', `${configService.get<string>('app.serverName')}.api`),
+    dailyOptions(
+      'error',
+      `${configService.get<string>('app.server_name')}.api`,
+    ),
   ),
 ];

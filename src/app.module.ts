@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
 import { CacheModule } from '@nestjs/cache-manager';
 import { getRedisConfig } from './config/redis/redis';
+import { getHttpConfig } from './config/http/http';
 
 @Module({
   imports: [
@@ -24,27 +25,26 @@ import { getRedisConfig } from './config/redis/redis';
     }),
     HttpModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        timeout: configService.get<number>('http.timeout'),
-        maxRedirects: configService.get<number>('http.max_redirects'),
-      }),
+      useFactory: (configService: ConfigService): object =>
+        getHttpConfig(configService),
       inject: [ConfigService],
     }),
     WinstonModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService): any => ({
         transports: winstonTransports(configService),
       }),
       inject: [ConfigService],
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => getJwtConfig(configService),
+      useFactory: (configService: ConfigService): object =>
+        getJwtConfig(configService),
       inject: [ConfigService],
     }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService): Promise<any> =>
+      useFactory: async (configService: ConfigService): Promise<object> =>
         getRedisConfig(configService),
       inject: [ConfigService],
     }),

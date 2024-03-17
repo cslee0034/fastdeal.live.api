@@ -15,11 +15,12 @@ async function bootstrap() {
   const logger = app.get('winston');
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port');
+  const serverName = configService.get<string>('app.server_name');
 
   const swaggerOptions = new DocumentBuilder()
-    .setTitle(`${configService.get<string>('app.serverName')}`)
+    .setTitle(`${serverName}`)
     .setDescription(
-      `${configService.get<string>('app.serverName')} API description`,
+      `${configService.get<string>('app.server_name')} API description`,
     )
     .setVersion('0.0.1')
     .setContact(
@@ -27,7 +28,7 @@ async function bootstrap() {
       'https://hardworking-everyday.tistory.com/',
       'cslee0034@gmail.com',
     )
-    .addTag(`${configService.get<string>('app.serverName')}.api`)
+    .addTag(`${serverName}.api`)
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);
@@ -54,10 +55,6 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  logger.info(
-    `${configService.get<string>(
-      'app.serverName',
-    )}.api is listening on port ${port}`,
-  );
+  logger.info(`${serverName}.api is listening on port ${port}`);
 }
 bootstrap();
