@@ -1,10 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'body-parser';
 import helmet from 'helmet';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
 
@@ -17,6 +17,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port');
   const serverName = configService.get<string>('app.server_name');
+  const reflector = app.get(Reflector);
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle(`${serverName}`)
@@ -51,11 +52,11 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-  app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(
     new HttpExceptionFilter(logger),
     new PrismaClientExceptionFilter(logger),
   );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
   await app.listen(port);
 
