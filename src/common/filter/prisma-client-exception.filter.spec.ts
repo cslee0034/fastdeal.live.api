@@ -5,19 +5,19 @@ import { Logger } from 'winston';
 
 describe('PrismaClientExceptionFilter', () => {
   let prismaClientExceptionFilter: PrismaClientExceptionFilter;
-  let loggerMock: Logger;
+  let logger: Logger;
 
   beforeEach(async () => {
-    loggerMock = {
-      error: jest.fn(),
-    } as unknown as Logger;
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PrismaClientExceptionFilter,
         {
           provide: WINSTON_MODULE_PROVIDER,
-          useValue: loggerMock,
+          useValue: {
+            error: jest.fn().mockImplementation((text) => {
+              console.log(text);
+            }),
+          },
         },
       ],
     }).compile();
@@ -25,6 +25,7 @@ describe('PrismaClientExceptionFilter', () => {
     prismaClientExceptionFilter = module.get<PrismaClientExceptionFilter>(
       PrismaClientExceptionFilter,
     );
+    logger = module.get<Logger>(WINSTON_MODULE_PROVIDER);
   });
 
   it('should be defined', () => {
