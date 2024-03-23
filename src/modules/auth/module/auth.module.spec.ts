@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { AuthModule } from './auth.module';
 import { AuthController } from '../controller/auth.controller';
 import { AuthService } from '../service/auth.service';
-
 describe('AuthModule', () => {
   let authModule: AuthModule;
   let authController: AuthController;
@@ -21,7 +20,7 @@ describe('AuthModule', () => {
     expect(authModule).toBeDefined();
   });
 
-  it('shoud have authController', () => {
+  it('should have authController', () => {
     expect(authController).toBeDefined();
   });
 
