@@ -3,6 +3,7 @@ import { AuthModule } from './auth.module';
 import { AuthController } from '../controller/auth.controller';
 import { AuthService } from '../service/auth.service';
 import { UsersModule } from '../../users/module/users.module';
+
 describe('AuthModule', () => {
   let authModule: AuthModule;
   let authController: AuthController;

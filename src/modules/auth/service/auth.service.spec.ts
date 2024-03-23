@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { SignUpDto } from '../dto/request/signup.dto';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { RedisService } from '../../cache/service/redis.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -35,6 +35,22 @@ describe('AuthService', () => {
     ),
   };
 
+  const mockRedisService = {
+    set: jest.fn(async (): Promise<void> => {
+      return Promise.resolve();
+    }),
+
+    del: jest.fn(),
+  };
+
+  const mockId = 1;
+  const mockEmail = 'test@email.com';
+  const accessSecret = 'jwt.access.secret';
+  const accessExpiresIn = 'jwt.access.expiresIn';
+  const refreshSecret = 'jwt.refresh.secret';
+  const refreshExpiresIn = 'jwt.refresh.expiresIn';
+  const testLoginToken = 'test_token';
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -47,6 +63,10 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: mockJwtService,
         },
+        {
+          provide: RedisService,
+          useValue: mockRedisService,
+        },
       ],
     }).compile();
 
@@ -57,27 +77,36 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('login', () => {
+    it('should be defined', () => {
+      expect(service.login).toBeDefined();
+    });
+
+    it('should call redis.set function', async () => {
+      await service.login(mockId, testLoginToken);
+
+      expect(mockRedisService.set).toHaveBeenCalled();
+    });
+
+    it('should throw InternalServerException if failed', async () => {
+      mockRedisService.set.mockRejectedValueOnce(
+        new Error('Failed to set token'),
+      );
+
+      await expect(service.login(mockId, mockEmail)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+  });
+
   describe('generateToken', () => {
-    const mockSignUpDto: SignUpDto = {
-      email: 'test@email.com',
-      name: 'test_name',
-      password: 'test_password',
-    };
-
     it('should called with signAsync function', async () => {
-      const id = 1;
-      const email = mockSignUpDto.email;
-      const accessSecret = 'jwt.access.secret';
-      const accessExpiresIn = 'jwt.access.expiresIn';
-      const refreshSecret = 'jwt.refresh.secret';
-      const refreshExpiresIn = 'jwt.refresh.expiresIn';
+      await service.generateToken(mockId, mockEmail);
 
-      await service.generateToken(id, email);
-
-      expect(mockJwtService.signAsync).toBeCalledWith(
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
         expect.objectContaining({
-          id: id,
-          email: email,
+          id: mockId,
+          email: mockEmail,
         }),
         expect.objectContaining({
           secret: accessSecret,
@@ -85,10 +114,10 @@ describe('AuthService', () => {
         }),
       );
 
-      expect(mockJwtService.signAsync).toBeCalledWith(
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
         expect.objectContaining({
-          id: id,
-          email: mockSignUpDto.email,
+          id: mockId,
+          email: mockEmail,
         }),
         expect.objectContaining({
           secret: refreshSecret,
@@ -98,10 +127,7 @@ describe('AuthService', () => {
     });
 
     it('should return token strings object', async () => {
-      const id = 1;
-      const email = mockSignUpDto.email;
-
-      const tokens = await service.generateToken(id, email);
+      const tokens = await service.generateToken(mockId, mockEmail);
 
       expect(tokens).toEqual(
         expect.objectContaining({
@@ -112,14 +138,11 @@ describe('AuthService', () => {
     });
 
     it('should throw error if it fails to generate token', async () => {
-      const id = 1;
-      const email = 'example@email.com';
-
       mockJwtService.signAsync.mockRejectedValueOnce(
         new Error('Failed to create token'),
       );
 
-      await expect(service.generateToken(id, email)).rejects.toThrow(
+      await expect(service.generateToken(mockId, mockEmail)).rejects.toThrow(
         InternalServerErrorException,
       );
     });

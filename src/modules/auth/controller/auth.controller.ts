@@ -19,6 +19,8 @@ export class AuthController {
       createdUser.email,
     );
 
-    return;
+    await this.authService.login(createdUser.id, tokens.refreshToken);
+
+    return tokens;
   }
 }

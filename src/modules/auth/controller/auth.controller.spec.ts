@@ -41,6 +41,20 @@ describe('AuthController', () => {
   };
 
   const mockAuthService = {
+    login: jest
+      .fn()
+      .mockImplementation(
+        (id: string, refreshToken: string): Promise<boolean> => {
+          if (id && refreshToken) {
+            return Promise.resolve(true);
+          } else {
+            return Promise.reject(
+              new InternalServerErrorException('Failed to set refresh token'),
+            );
+          }
+        },
+      ),
+
     generateToken: jest
       .fn()
       .mockImplementation((userId: number, email: string): Promise<Tokens> => {
@@ -117,6 +131,21 @@ describe('AuthController', () => {
         mockCreateUserResult.id as number,
         mockCreateUserResult.email as string,
       );
+    });
+
+    it("should call login with user's id and refreshToken", async () => {
+      await controller.signup(mockSignUpDto as SignUpDto);
+
+      expect(authService.login).toHaveBeenCalledWith(
+        mockCreateUserResult.id as number,
+        mockTokenResult.refreshToken as string,
+      );
+    });
+
+    it('should return tokens', async () => {
+      const result = await controller.signup(mockSignUpDto as SignUpDto);
+
+      expect(result).toEqual(mockTokenResult);
     });
   });
 });
