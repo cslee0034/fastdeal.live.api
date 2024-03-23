@@ -7,10 +7,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from '../../cache/module/redis.module';
 import { EncryptModule } from '../../encrypt/module/encrypt.module';
 import { AccessTokenStrategy } from '../strategies/access-token.strategy';
+import { RefreshTokenStrategy } from '../strategies/refresh-token-strategy';
 
 @Module({
   imports: [UsersModule, EncryptModule, ConfigModule, JwtModule, RedisModule],
   controllers: [AuthController],
-  providers: [AuthService, AccessTokenStrategy],
+  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
 })
 export class AuthModule {}

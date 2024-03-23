@@ -6,6 +6,7 @@ import { UsersModule } from '../../users/module/users.module';
 import { EncryptModule } from '../../encrypt/module/encrypt.module';
 import { ConfigService } from '@nestjs/config';
 import { AccessTokenStrategy } from '../strategies/access-token.strategy';
+import { RefreshTokenStrategy } from '../strategies/refresh-token-strategy';
 
 describe('AuthModule', () => {
   let authModule: AuthModule;
@@ -15,6 +16,7 @@ describe('AuthModule', () => {
   let usersModule: UsersModule;
   let encryptModule: EncryptModule;
   let accessTokenStrategy: AccessTokenStrategy;
+  let refreshTokenStrategy: RefreshTokenStrategy;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -25,6 +27,8 @@ describe('AuthModule', () => {
         get: jest.fn((key: string) => {
           if (key === 'jwt.access.secret') {
             return 'test_access_secret';
+          } else if (key === 'jwt.refresh.secret') {
+            return 'test_refresh_secret';
           }
         }),
       })
@@ -36,6 +40,8 @@ describe('AuthModule', () => {
     usersModule = module.get<UsersModule>(UsersModule);
     encryptModule = module.get<EncryptModule>(EncryptModule);
     accessTokenStrategy = module.get<AccessTokenStrategy>(AccessTokenStrategy);
+    refreshTokenStrategy =
+      module.get<RefreshTokenStrategy>(RefreshTokenStrategy);
   });
   it('should be defined', () => {
     expect(authModule).toBeDefined();
@@ -57,7 +63,11 @@ describe('AuthModule', () => {
     expect(encryptModule).toBeDefined();
   });
 
-  it('should have encryptModule', () => {
+  it('should have accessTokenStrategy', () => {
     expect(accessTokenStrategy).toBeDefined();
+  });
+
+  it('should have refreshTokenStrategy', () => {
+    expect(refreshTokenStrategy).toBeDefined();
   });
 });
