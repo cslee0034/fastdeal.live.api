@@ -8,6 +8,9 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginDto } from '../dto/request/login.dto';
 import { Tokens } from '../types/tokens.type';
@@ -40,6 +43,10 @@ export class AuthController {
 
   @Post('local/login')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: TokensResponseDto })
+  @ApiNotFoundResponse()
+  @ApiUnauthorizedResponse()
+  @ApiInternalServerErrorResponse()
   async login(@Body() loginDto: LoginDto): Promise<Tokens> {
     const user = await this.usersService.findOneByEmail(loginDto.email);
 
