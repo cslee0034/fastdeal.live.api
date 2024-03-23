@@ -15,7 +15,7 @@ describe('UsersService', () => {
   let service: UsersService;
 
   const mockUserRepository = {
-    findOneByEmail: jest.fn((email: string): Promise<User | null> => {
+    findOneByEmail: jest.fn((email: string): Promise<User> => {
       if (email === 'existing@email.com') {
         return Promise.resolve(new UserEntity({ email }));
       } else {
@@ -23,7 +23,7 @@ describe('UsersService', () => {
       }
     }),
 
-    create: jest.fn((): Promise<User | Error> => {
+    create: jest.fn((): Promise<User> => {
       return;
     }),
   };
