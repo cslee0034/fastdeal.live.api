@@ -71,12 +71,24 @@ describe('AuthController', () => {
 
     generateToken: jest
       .fn()
-      .mockImplementation((userId: number, email: string): Promise<Tokens> => {
-        if (userId && email) {
+      .mockImplementation((id: number, email: string): Promise<Tokens> => {
+        if (id && email) {
           return Promise.resolve(mockTokenResult);
         } else {
           return Promise.reject(
             new InternalServerErrorException('Failed to create token'),
+          );
+        }
+      }),
+
+    checkIsLoggedIn: jest
+      .fn()
+      .mockImplementation((id: number, email: string): Promise<Tokens> => {
+        if (id && email) {
+          return Promise.resolve(mockTokenResult);
+        } else {
+          return Promise.reject(
+            new InternalServerErrorException('Failed to get refresh token'),
           );
         }
       }),
@@ -255,6 +267,60 @@ describe('AuthController', () => {
       const result = await controller.logout(id);
 
       expect(result).toEqual({ success: true });
+    });
+  });
+
+  describe('refresh', () => {
+    const userId = 1;
+    const userEmail = 'test@email.com';
+    const userRefreshToken = 'valid_refresh_token';
+
+    it('should be defined', () => {
+      expect(controller.refreshTokens).toBeDefined();
+    });
+
+    it('should call authService.checkIsLoggedIn with id and refreshToken', async () => {
+      await controller.refreshTokens(userId, userEmail, userRefreshToken);
+
+      expect(authService.checkIsLoggedIn).toHaveBeenCalledWith(
+        userId,
+        userRefreshToken,
+      );
+    });
+
+    it("should call authService.generateToken with user's id and email", async () => {
+      await controller.refreshTokens(userId, userEmail, userRefreshToken);
+
+      expect(authService.generateToken).toHaveBeenCalledWith(userId, userEmail);
+    });
+
+    it("should call authService.login with user's id and new refreshToken", async () => {
+      await controller.refreshTokens(userId, userEmail, userRefreshToken);
+
+      expect(authService.login).toHaveBeenCalledWith(
+        userId,
+        mockTokenResult.refreshToken,
+      );
+    });
+
+    it('should return new tokens', async () => {
+      const result = await controller.refreshTokens(
+        userId,
+        userEmail,
+        userRefreshToken,
+      );
+
+      expect(result).toEqual(mockTokenResult);
+    });
+
+    it('should throw UnauthorizedException if checkIsLoggedIn fails', async () => {
+      mockAuthService.checkIsLoggedIn.mockRejectedValueOnce(
+        new UnauthorizedException(),
+      );
+
+      await expect(
+        controller.refreshTokens(userId, userEmail, userRefreshToken),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });

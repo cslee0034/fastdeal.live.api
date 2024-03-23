@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
@@ -23,6 +24,8 @@ import { LoginDto } from '../dto/request/login.dto';
 import { Tokens } from '../types/tokens.type';
 import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
+import { RefreshTokenGuard } from '../../../common/guard/refresh-token-guard';
+import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -76,5 +79,23 @@ export class AuthController {
   async logout(@GetTokenUserId() id: number): Promise<{ success: boolean }> {
     const success = await this.authService.logout(id);
     return { success };
+  }
+
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshTokens(
+    @GetTokenUserId() id: number,
+    @GetTokenUser('email') email: string,
+    @GetTokenUser('refreshToken') refreshToken: string,
+  ): Promise<Tokens> {
+    await this.authService.checkIsLoggedIn(id, refreshToken);
+
+    const tokens = await this.authService.generateToken(id, email);
+
+    await this.authService.login(id, tokens.refreshToken);
+
+    return tokens;
   }
 }
