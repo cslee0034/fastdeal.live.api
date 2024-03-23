@@ -44,7 +44,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('local/login')
+  @Post('local/sign-in')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: TokensResponseDto })
   @ApiNotFoundResponse()
