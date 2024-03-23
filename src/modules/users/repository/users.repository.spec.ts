@@ -3,7 +3,7 @@ import { UserRepository } from './users.repository';
 import { PrismaService } from '../../../config/orm/prisma/service/prisma.service';
 
 describe('UsersRepository', () => {
-  let usersRepository: UserRepository;
+  let repository: UserRepository;
 
   const mockPrismaService = {
     user: {
@@ -23,11 +23,11 @@ describe('UsersRepository', () => {
       ],
     }).compile();
 
-    usersRepository = module.get<UserRepository>(UserRepository);
+    repository = module.get<UserRepository>(UserRepository);
   });
 
   it('should be defined', () => {
-    expect(usersRepository).toBeDefined();
+    expect(repository).toBeDefined();
   });
 
   describe('create', () => {
@@ -41,7 +41,7 @@ describe('UsersRepository', () => {
 
       mockPrismaService.user.create.mockResolvedValue(expectedUser);
 
-      const result = await usersRepository.create(createUserDto);
+      const result = await repository.create(createUserDto);
 
       expect(result).toEqual(expectedUser);
       expect(mockPrismaService.user.create).toHaveBeenCalledWith({
@@ -62,7 +62,7 @@ describe('UsersRepository', () => {
 
       mockPrismaService.user.findUnique.mockResolvedValue(expectedUser);
 
-      const result = await usersRepository.findOneByEmail(email);
+      const result = await repository.findOneByEmail(email);
 
       expect(result).toEqual(expectedUser);
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
@@ -74,7 +74,7 @@ describe('UsersRepository', () => {
       const email = 'nonexistent@example.com';
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await usersRepository.findOneByEmail(email);
+      const result = await repository.findOneByEmail(email);
 
       expect(result).toBeNull();
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
