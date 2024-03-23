@@ -8,8 +8,8 @@ import { UsersService } from '../../users/service/users.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: any;
-  let usersService: any;
+  let authService: AuthService;
+  let usersService: UsersService;
 
   const mockUsersService = {
     create: jest
