@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
+import { AccessTokenGuard } from './common/guard/access-token-guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -46,6 +47,7 @@ async function bootstrap() {
       contentSecurityPolicy: false,
     }),
   );
+  app.useGlobalGuards(new AccessTokenGuard(reflector));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
