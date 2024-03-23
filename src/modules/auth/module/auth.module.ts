@@ -6,10 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from '../../cache/module/redis.module';
 import { EncryptModule } from '../../encrypt/module/encrypt.module';
+import { AccessTokenStrategy } from '../strategies/access-token.strategy';
 
 @Module({
   imports: [UsersModule, EncryptModule, ConfigModule, JwtModule, RedisModule],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, AccessTokenStrategy],
 })
 export class AuthModule {}
