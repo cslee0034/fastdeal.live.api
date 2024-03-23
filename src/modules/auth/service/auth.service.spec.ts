@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from '../../cache/service/redis.service';
@@ -8,13 +11,25 @@ import { RedisService } from '../../cache/service/redis.service';
 describe('AuthService', () => {
   let service: AuthService;
 
-  const mockConfigService = {
-    get: jest.fn((key: string): number | string => {
-      if (typeof key === 'string') {
-        return key;
-      }
+  const mockId = 1;
+  const mockEmail = 'test@email.com';
+  const accessSecret = 'jwt.access.secret';
+  const accessExpiresIn = '3600';
+  const refreshSecret = 'jwt.refresh.secret';
+  const refreshExpiresIn = '3600';
+  const testLoginToken = 'test_token';
 
-      return key;
+  const mockConfigService = {
+    get: jest.fn().mockImplementation((key: string) => {
+      if (key === 'jwt.access.secret') {
+        return accessSecret;
+      } else if (key === 'jwt.access.expiresIn') {
+        return accessExpiresIn;
+      } else if (key === 'jwt.refresh.secret') {
+        return refreshSecret;
+      } else if (key === 'jwt.refresh.expiresIn') {
+        return refreshExpiresIn;
+      }
     }),
   };
 
@@ -41,15 +56,9 @@ describe('AuthService', () => {
     }),
 
     del: jest.fn(),
-  };
 
-  const mockId = 1;
-  const mockEmail = 'test@email.com';
-  const accessSecret = 'jwt.access.secret';
-  const accessExpiresIn = 'jwt.access.expiresIn';
-  const refreshSecret = 'jwt.refresh.secret';
-  const refreshExpiresIn = 'jwt.refresh.expiresIn';
-  const testLoginToken = 'test_token';
+    get: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -109,7 +118,7 @@ describe('AuthService', () => {
     it('should call redis.del function', async () => {
       await service.logout(userId);
 
-      expect(mockRedisService.del).toBeCalledWith(
+      expect(mockRedisService.del).toHaveBeenCalledWith(
         `${mockConfigService.get('jwt.refresh.prefix')}${userId}`,
       );
     });
@@ -169,6 +178,36 @@ describe('AuthService', () => {
       await expect(service.generateToken(mockId, mockEmail)).rejects.toThrow(
         InternalServerErrorException,
       );
+    });
+  });
+
+  describe('checkIsLoggedIn', () => {
+    const userId = 1;
+    const validRefreshToken = 'valid_refresh_token';
+    const invalidRefreshToken = 'invalid_refresh_token';
+
+    it('should return undefined when refresh tokens match', async () => {
+      mockRedisService.get.mockResolvedValueOnce(validRefreshToken);
+
+      await expect(
+        service.checkIsLoggedIn(userId, validRefreshToken),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw UnauthorizedException when refresh tokens do not match', async () => {
+      mockRedisService.get.mockResolvedValueOnce(invalidRefreshToken);
+
+      await expect(
+        service.checkIsLoggedIn(userId, validRefreshToken),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw InternalServerErrorException if failed to get refresh token', async () => {
+      mockRedisService.get.mockRejectedValueOnce(new Error('Redis error'));
+
+      await expect(
+        service.checkIsLoggedIn(userId, validRefreshToken),
+      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 });

@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Tokens } from '../types/tokens.type';
@@ -57,5 +61,24 @@ export class AuthService {
     } catch (error) {
       throw new InternalServerErrorException('Failed to create token');
     }
+  }
+
+  async checkIsLoggedIn(id: number, refreshToken: string) {
+    try {
+      const savedRefreshToken = await this.redisService.get(
+        `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
+      );
+
+      if (savedRefreshToken !== refreshToken) {
+        throw new UnauthorizedException('Refresh token do not match');
+      }
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Failed to get refresh token');
+    }
+    return;
   }
 }
