@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './app.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -9,66 +8,44 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PrismaModule } from './config/orm/prisma/module/prisma.module';
+import { AuthModule } from './modules/auth/module/auth.module';
+import { RedisModule } from './modules/cache/module/redis.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
-import { AuthModule } from './modules/auth/module/auth.module';
 
 describe('AppModule', () => {
   let appModule: AppModule;
-  let configModule: ConfigModule;
   let httpModule: HttpModule;
   let winstonModule: WinstonModule;
   let jwtModule: JwtModule;
   let cacheModule: CacheModule;
   let prismaModule: PrismaModule;
+  let authModule: AuthModule;
+  let redisModule: RedisModule;
   let encryptModule: EncryptModule;
   let usersModule: UsersModule;
-  let authModule: AuthModule;
 
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
-  const mockConfigService = {
-    get: jest.fn().mockImplementation((key: any) => {
-      return key;
-    }),
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        CacheModule.registerAsync({
-          imports: [ConfigModule],
-          useFactory: async (configService: ConfigService): Promise<any> => ({
-            store: 'redis',
-            host: mockConfigService.get('host'),
-            port: mockConfigService.get('port'),
-            password: mockConfigService.get('pass'),
-            ttl: configService.get('ttl'),
-          }),
-          inject: [ConfigService],
-        }),
-      ],
+      imports: [AppModule],
     }).compile();
 
     appModule = module.get<AppModule>(AppModule);
-    configModule = module.get<ConfigModule>(ConfigModule);
     httpModule = module.get<HttpModule>(HttpModule);
     winstonModule = module.get<any>(WinstonModule);
     jwtModule = module.get<any>(JwtModule);
     cacheModule = module.get<CacheModule>(CacheModule);
     prismaModule = module.get<PrismaModule>(PrismaModule);
+    authModule = module.get<AuthModule>(AuthModule);
+    redisModule = module.get<RedisModule>(RedisModule);
     encryptModule = module.get<EncryptModule>(EncryptModule);
     usersModule = module.get<UsersModule>(UsersModule);
-    authModule = module.get<AuthModule>(AuthModule);
   });
 
   it('should import AppModule', async () => {
     expect(appModule).toBeDefined();
-  });
-
-  it('should import config module', () => {
-    expect(configModule).toBeDefined();
   });
 
   it('should import http module', () => {
@@ -91,16 +68,20 @@ describe('AppModule', () => {
     expect(prismaModule).toBeDefined();
   });
 
+  it('should import auth module', () => {
+    expect(authModule).toBeDefined();
+  });
+
+  it('should import redis module', () => {
+    expect(redisModule).toBeDefined();
+  });
+
   it('should import encrypt module', () => {
     expect(encryptModule).toBeDefined();
   });
 
   it('should import users module', () => {
     expect(usersModule).toBeDefined();
-  });
-
-  it('should import auth module', () => {
-    expect(authModule).toBeDefined();
   });
 
   it('should configure the middleware', () => {
