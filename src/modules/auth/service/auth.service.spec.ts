@@ -99,6 +99,30 @@ describe('AuthService', () => {
     });
   });
 
+  describe('logout', () => {
+    const userId = 0;
+
+    it('should be defined', () => {
+      expect(service.logout).toBeDefined();
+    });
+
+    it('should call redis.del function', async () => {
+      await service.logout(userId);
+
+      expect(mockRedisService.del).toBeCalledWith(
+        `${mockConfigService.get('jwt.refresh.prefix')}${userId}`,
+      );
+    });
+
+    it('should throw error if del function fails', async () => {
+      mockRedisService.del.mockRejectedValueOnce(new Error('Failed to logout'));
+
+      await expect(service.logout(userId)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+  });
+
   describe('generateToken', () => {
     it('should called with signAsync function', async () => {
       await service.generateToken(mockId, mockEmail);
