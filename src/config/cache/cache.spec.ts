@@ -1,4 +1,4 @@
-import { getRedisConfig } from './redis';
+import { getCacheConfig } from './cache';
 import { ConfigService } from '@nestjs/config';
 
 jest.mock('@nestjs/config', () => ({
@@ -23,7 +23,7 @@ jest.mock('@nestjs/config', () => ({
 describe('getRedisConfig', () => {
   it('should return the correct redis config', async () => {
     const configService = new ConfigService();
-    const redisConfig = await getRedisConfig(configService);
+    const redisConfig = await getCacheConfig(configService);
 
     expect(redisConfig).toEqual({
       isGlobal: false,
