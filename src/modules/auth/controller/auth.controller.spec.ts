@@ -5,16 +5,20 @@ import {
   ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserEntity } from '../../users/entities/user.entity';
 import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
 import { Tokens } from '../types/tokens.type';
+import { EncryptService } from '../../encrypt/service/encrypt.service';
+import { LoginDto } from '../dto/request/login.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
   let authService: AuthService;
   let usersService: UsersService;
+  let encryptService: EncryptService;
 
   const mockUsersService = {
     create: jest
@@ -68,9 +72,33 @@ describe('AuthController', () => {
       }),
   };
 
+  const mockEncryptService = {
+    compare: jest.fn((key: string, hashedKey: string): Promise<boolean> => {
+      if (hashedKey === 'hashed_' + key) {
+        return Promise.resolve(true);
+      }
+      return Promise.resolve(false);
+    }),
+
+    compareAndThrow: jest
+      .fn()
+      .mockImplementation((key: string, hashedKey: string): Promise<void> => {
+        if (mockEncryptService.compare(key, hashedKey)) {
+          return Promise.resolve();
+        } else {
+          Promise.reject(new UnauthorizedException('Key does not match'));
+        }
+      }),
+  };
+
   const mockSignUpDto: SignUpDto = {
     email: 'test@email.com',
     name: 'test_name',
+    password: 'test_password',
+  };
+
+  const mockLoginDto: LoginDto = {
+    email: 'test@email.com',
     password: 'test_password',
   };
 
@@ -99,12 +127,14 @@ describe('AuthController', () => {
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: UsersService, useValue: mockUsersService },
+        { provide: EncryptService, useValue: mockEncryptService },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
+    encryptService = module.get<EncryptService>(EncryptService);
   });
 
   it('should be defined', () => {
@@ -144,6 +174,53 @@ describe('AuthController', () => {
 
     it('should return tokens', async () => {
       const result = await controller.signup(mockSignUpDto as SignUpDto);
+
+      expect(result).toEqual(mockTokenResult);
+    });
+  });
+
+  describe('login', () => {
+    it('should be defined', () => {
+      expect(controller.login).toBeDefined();
+    });
+
+    it('should call userService.findOneByEmail with LoginUpDto', async () => {
+      await controller.login(mockLoginDto as LoginDto);
+
+      expect(usersService.findOneByEmail).toHaveBeenCalledWith(
+        mockLoginDto.email as string,
+      );
+    });
+
+    it('should call encryptService.compareAndThrow with password', async () => {
+      await controller.login(mockLoginDto as LoginDto);
+
+      expect(encryptService.compareAndThrow).toHaveBeenCalledWith(
+        mockLoginDto.password as string,
+        mockFindOneByEmailResult.password as string,
+      );
+    });
+
+    it("should call generateToken with found user's information", async () => {
+      await controller.login(mockLoginDto as LoginDto);
+
+      expect(authService.generateToken).toHaveBeenCalledWith(
+        mockFindOneByEmailResult.id as number,
+        mockFindOneByEmailResult.email as string,
+      );
+    });
+
+    it("should call login with user's id and refreshToken", async () => {
+      await controller.login(mockLoginDto as LoginDto);
+
+      expect(authService.login).toHaveBeenCalledWith(
+        mockFindOneByEmailResult.id as number,
+        mockTokenResult.refreshToken as string,
+      );
+    });
+
+    it('should return tokens', async () => {
+      const result = await controller.login(mockLoginDto as LoginDto);
 
       expect(result).toEqual(mockTokenResult);
     });

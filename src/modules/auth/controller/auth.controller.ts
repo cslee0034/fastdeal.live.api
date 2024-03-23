@@ -2,18 +2,22 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
 import { AuthService } from '../service/auth.service';
+import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { TokensResponseDto } from '../dto/response/token.dto';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
+import { LoginDto } from '../dto/request/login.dto';
+import { Tokens } from '../types/tokens.type';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly encryptService: EncryptService,
   ) {}
 
   @Post('local/signup')
@@ -30,6 +34,20 @@ export class AuthController {
     );
 
     await this.authService.login(createdUser.id, tokens.refreshToken);
+
+    return tokens;
+  }
+
+  @Post('local/login')
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() loginDto: LoginDto): Promise<Tokens> {
+    const user = await this.usersService.findOneByEmail(loginDto.email);
+
+    await this.encryptService.compareAndThrow(loginDto.password, user.password);
+
+    const tokens = await this.authService.generateToken(user.id, user.email);
+
+    await this.authService.login(user.id, tokens.refreshToken);
 
     return tokens;
   }
