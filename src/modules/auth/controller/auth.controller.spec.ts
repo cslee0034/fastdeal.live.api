@@ -1,10 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../service/auth.service';
 import { AuthController } from './auth.controller';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserEntity } from '../../users/entities/user.entity';
 import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
+import { Tokens } from '../types/tokens.type';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -35,7 +40,19 @@ describe('AuthController', () => {
     }),
   };
 
-  const mockAuthService = {};
+  const mockAuthService = {
+    generateToken: jest
+      .fn()
+      .mockImplementation((userId: number, email: string): Promise<Tokens> => {
+        if (userId && email) {
+          return Promise.resolve(mockTokenResult);
+        } else {
+          return Promise.reject(
+            new InternalServerErrorException('Failed to create token'),
+          );
+        }
+      }),
+  };
 
   const mockSignUpDto: SignUpDto = {
     email: 'test@email.com',
@@ -56,6 +73,11 @@ describe('AuthController', () => {
     name: 'test_name',
     password: 'hashed_test_password',
   });
+
+  const mockTokenResult: Tokens = {
+    accessToken: 'accessToken',
+    refreshToken: 'refreshToken',
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -85,6 +107,15 @@ describe('AuthController', () => {
 
       expect(usersService.create).toHaveBeenCalledWith(
         mockSignUpDto as SignUpDto,
+      );
+    });
+
+    it('should call generateToken with created user information', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto);
+
+      expect(authService.generateToken).toHaveBeenCalledWith(
+        mockCreateUserResult.id as number,
+        mockCreateUserResult.email as string,
       );
     });
   });
