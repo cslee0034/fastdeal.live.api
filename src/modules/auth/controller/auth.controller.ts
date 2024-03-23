@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
 import { AuthService } from '../service/auth.service';
@@ -15,6 +22,7 @@ import {
 import { LoginDto } from '../dto/request/login.dto';
 import { Tokens } from '../types/tokens.type';
 import { Public } from '../../../common/decorator/public.decorator';
+import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -60,5 +68,13 @@ export class AuthController {
     await this.authService.login(user.id, tokens.refreshToken);
 
     return tokens;
+  }
+
+  @Get('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiInternalServerErrorResponse()
+  async logout(@GetTokenUserId() id: number): Promise<{ success: boolean }> {
+    const success = await this.authService.logout(id);
+    return { success };
   }
 }

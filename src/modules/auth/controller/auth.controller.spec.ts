@@ -59,6 +59,16 @@ describe('AuthController', () => {
         },
       ),
 
+    logout: jest.fn().mockImplementation((id: string): Promise<boolean> => {
+      if (id) {
+        return Promise.resolve(true);
+      } else {
+        return Promise.reject(
+          new InternalServerErrorException('Failed to delete refresh token'),
+        );
+      }
+    }),
+
     generateToken: jest
       .fn()
       .mockImplementation((userId: number, email: string): Promise<Tokens> => {
@@ -141,7 +151,7 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('signup', () => {
+  describe('sign-up', () => {
     it('should be defined', () => {
       expect(controller.signup).toBeDefined();
     });
@@ -179,7 +189,7 @@ describe('AuthController', () => {
     });
   });
 
-  describe('login', () => {
+  describe('sign-in', () => {
     it('should be defined', () => {
       expect(controller.login).toBeDefined();
     });
@@ -223,6 +233,28 @@ describe('AuthController', () => {
       const result = await controller.login(mockLoginDto as LoginDto);
 
       expect(result).toEqual(mockTokenResult);
+    });
+  });
+
+  describe('logout', () => {
+    it('should be defined', () => {
+      expect(controller.logout).toBeDefined();
+    });
+
+    it('should call authService.logout with id and refreshToken', async () => {
+      const id = mockCreateUserResult.id as number;
+
+      await controller.logout(id);
+
+      expect(authService.logout).toHaveBeenCalledWith(id);
+    });
+
+    it('should return success', async () => {
+      const id = mockCreateUserResult.id as number;
+
+      const result = await controller.logout(id);
+
+      expect(result).toEqual({ success: true });
     });
   });
 });
