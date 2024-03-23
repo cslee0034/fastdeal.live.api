@@ -14,6 +14,7 @@ import {
 } from '@nestjs/swagger';
 import { LoginDto } from '../dto/request/login.dto';
 import { Tokens } from '../types/tokens.type';
+import { Public } from '../../../common/decorator/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -23,7 +24,8 @@ export class AuthController {
     private readonly encryptService: EncryptService,
   ) {}
 
-  @Post('local/signup')
+  @Public()
+  @Post('local/sign-up')
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({ type: TokensResponseDto })
   @ApiForbiddenResponse()
@@ -41,6 +43,7 @@ export class AuthController {
     return tokens;
   }
 
+  @Public()
   @Post('local/login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: TokensResponseDto })
