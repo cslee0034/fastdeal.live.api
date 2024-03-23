@@ -3,6 +3,7 @@ import { AuthModule } from './auth.module';
 import { AuthController } from '../controller/auth.controller';
 import { AuthService } from '../service/auth.service';
 import { UsersModule } from '../../users/module/users.module';
+import { EncryptModule } from '../../encrypt/module/encrypt.module';
 
 describe('AuthModule', () => {
   let authModule: AuthModule;
@@ -10,6 +11,7 @@ describe('AuthModule', () => {
   let authService: AuthService;
 
   let usersModule: UsersModule;
+  let encryptModule: EncryptModule;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -20,6 +22,7 @@ describe('AuthModule', () => {
     authController = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
     usersModule = module.get<UsersModule>(UsersModule);
+    encryptModule = module.get<EncryptModule>(EncryptModule);
   });
   it('should be defined', () => {
     expect(authModule).toBeDefined();
@@ -35,5 +38,9 @@ describe('AuthModule', () => {
 
   it('should have usersModule', () => {
     expect(usersModule).toBeDefined();
+  });
+
+  it('should have encryptModule', () => {
+    expect(encryptModule).toBeDefined();
   });
 });

@@ -5,9 +5,10 @@ import { UsersModule } from '../../users/module/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from '../../cache/module/redis.module';
+import { EncryptModule } from '../../encrypt/module/encrypt.module';
 
 @Module({
-  imports: [UsersModule, ConfigModule, JwtModule, RedisModule],
+  imports: [UsersModule, EncryptModule, ConfigModule, JwtModule, RedisModule],
   controllers: [AuthController],
   providers: [AuthService],
 })
