@@ -13,6 +13,7 @@ import {
 
 describe('UsersService', () => {
   let service: UsersService;
+  let repository: any;
 
   const mockUserRepository = {
     findOneByEmail: jest.fn((email: string): Promise<User> => {
@@ -50,6 +51,7 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+    repository = module.get<UserRepository>(UserRepository);
   });
 
   it('should be defined', () => {
@@ -70,7 +72,7 @@ describe('UsersService', () => {
     it('should call findOneByEmail', async () => {
       await service.create(mockCreateUserDto as CreateUserDto);
 
-      expect(mockUserRepository.findOneByEmail).toBeCalledWith(
+      expect(repository.findOneByEmail).toHaveBeenCalledWith(
         mockCreateUserDto.email,
       );
     });
@@ -89,11 +91,10 @@ describe('UsersService', () => {
     });
 
     it('should throw error if it fails to create user', async () => {
-      mockUserRepository.create.mockRejectedValueOnce(
+      repository.create.mockRejectedValueOnce(
         new Error('Failed to create user'),
       );
 
-      // eslint-disable-next-line prettier/prettier
       await expect(service.create(mockCreateUserDto)).rejects.toThrow(
         InternalServerErrorException,
       );
@@ -108,7 +109,7 @@ describe('UsersService', () => {
 
       await service.create(mockCreateUserDto as CreateUserDto);
 
-      expect(mockUserRepository.create).toBeCalledWith(
+      expect(repository.create).toBeCalledWith(
         expect.objectContaining({
           email: 'test@email.com',
           name: 'test_name',
@@ -134,7 +135,7 @@ describe('UsersService', () => {
     it('should call findOneByEmail', async () => {
       await service.findOneByEmail(email as string);
 
-      expect(mockUserRepository.findOneByEmail).toBeCalledWith(email);
+      expect(repository.findOneByEmail).toHaveBeenCalledWith(email);
     });
 
     it('should throw error if user is not exists', async () => {
