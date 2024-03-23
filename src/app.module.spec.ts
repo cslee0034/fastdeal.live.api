@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './app.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createMock } from '@golevelup/ts-jest';
 import { MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -25,9 +25,28 @@ describe('AppModule', () => {
 
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
+  const mockConfigService = {
+    get: jest.fn().mockImplementation((key: any) => {
+      return key;
+    }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        AppModule,
+        CacheModule.registerAsync({
+          imports: [ConfigModule],
+          useFactory: async (configService: ConfigService): Promise<any> => ({
+            store: 'redis',
+            host: mockConfigService.get('host'),
+            port: mockConfigService.get('port'),
+            password: mockConfigService.get('pass'),
+            ttl: configService.get('ttl'),
+          }),
+          inject: [ConfigService],
+        }),
+      ],
     }).compile();
 
     appModule = module.get<AppModule>(AppModule);
@@ -61,7 +80,7 @@ describe('AppModule', () => {
     expect(jwtModule).toBeDefined();
   });
 
-  it('should import jwt module', () => {
+  it('should import cache module', () => {
     expect(cacheModule).toBeDefined();
   });
 

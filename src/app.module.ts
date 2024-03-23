@@ -3,14 +3,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { env } from './config/env/env';
 import { validationSchema } from './config/env/validator';
 import { HttpModule } from '@nestjs/axios';
+import { getHttpConfig } from './config/http/http';
 import { WinstonModule } from 'nest-winston';
 import { winstonTransports } from './config/logger/logger';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
-import { CacheModule } from '@nestjs/cache-manager';
-import { getRedisConfig } from './config/redis/redis';
-import { getHttpConfig } from './config/http/http';
+// import { CacheModule } from '@nestjs/cache-manager';
+// import { getRedisConfig } from './config/redis/redis';
 import { PrismaModule } from './config/orm/prisma/module/prisma.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
@@ -45,12 +45,12 @@ import { UsersModule } from './modules/users/module/users.module';
         getJwtConfig(configService),
       inject: [ConfigService],
     }),
-    CacheModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService): Promise<object> =>
-        getRedisConfig(configService),
-      inject: [ConfigService],
-    }),
+    // CacheModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService): Promise<object> =>
+    //     getRedisConfig(configService),
+    //   inject: [ConfigService],
+    // }),
     PrismaModule,
     EncryptModule,
     UsersModule,
