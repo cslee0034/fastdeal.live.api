@@ -7,6 +7,7 @@ import { UserEntity } from '../entities/user.entity';
 
 describe('UsersController', () => {
   let controller: UsersController;
+  let service: UsersService;
 
   const mockUserService = {
     create: jest.fn(async (createUserDto: CreateUserDto) => {
@@ -39,6 +40,7 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
+    service = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
@@ -59,7 +61,7 @@ describe('UsersController', () => {
     it('should called with CreateUserDto', async () => {
       await controller.create(mockCreateUserDto as CreateUserDto);
 
-      expect(mockUserService.create).toBeCalledWith(mockCreateUserDto);
+      expect(service.create).toHaveBeenCalledWith(mockCreateUserDto);
     });
 
     it('should return instance of UserEntity', async () => {
