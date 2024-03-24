@@ -25,4 +25,10 @@ export const validationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().required(),
   JWT_REFRESH_EXPIRES_IN: Joi.number().required(),
   JWT_REFRESH_PREFIX: Joi.string().required(),
+  AWS_REGION: Joi.string().required(),
+  AWS_ACCESS_KEY_ID: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+  AWS_SQS_EMAIL_NAME: Joi.string().required(),
+  AWS_SQS_EMAIL_QUEUE_URL: Joi.string().required(),
+  AWS_SQS_EMAIL_REGION: Joi.string().required(),
 });
