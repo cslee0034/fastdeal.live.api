@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/module/auth.module';
 import { RedisModule } from './modules/cache/module/redis.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
+import { ConfigService } from '@nestjs/config';
 
 describe('AppModule', () => {
   let appModule: AppModule;
@@ -24,6 +25,8 @@ describe('AppModule', () => {
   let redisModule: RedisModule;
   let encryptModule: EncryptModule;
   let usersModule: UsersModule;
+
+  const mockConfigService = createMock<ConfigService>();
 
   const middlewareConsumer = createMock<MiddlewareConsumer>();
 
@@ -85,7 +88,7 @@ describe('AppModule', () => {
   });
 
   it('should configure the middleware', () => {
-    const app = new AppModule();
+    const app = new AppModule(mockConfigService);
     app.configure(middlewareConsumer);
     expect(middlewareConsumer.apply).toHaveBeenCalledWith(LoggerMiddleware);
   });

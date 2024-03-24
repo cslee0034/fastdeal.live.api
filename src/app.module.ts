@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { env } from './config/env/env';
 import { validationSchema } from './config/env/validator';
@@ -14,6 +19,8 @@ import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
 import { AuthModule } from './modules/auth/module/auth.module';
 import { RedisModule } from './modules/cache/module/redis.module';
+import { ProducerModule } from './modules/queue/producer/module/producer.module';
+import * as AWS from 'aws-sdk';
 
 @Module({
   imports: [
@@ -50,10 +57,21 @@ import { RedisModule } from './modules/cache/module/redis.module';
     UsersModule,
     AuthModule,
     RedisModule,
+    ProducerModule,
   ],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnModuleInit {
+  constructor(private readonly configService: ConfigService) {}
+
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+
+  onModuleInit() {
+    AWS.config.update({
+      region: this.configService.get<string>('aws.region'),
+      accessKeyId: this.configService.get<string>('aws.accessKeyId'),
+      secretAccessKey: this.configService.get<string>('aws.secretAccessKey'),
+    });
   }
 }
