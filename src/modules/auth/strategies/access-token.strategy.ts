@@ -8,7 +8,11 @@ import { Payload } from '../types/payload.type';
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          return request?.headers['x-access-token'];
+        },
+      ]),
       secretOrKey: configService.get<string>('jwt.access.secret'),
     });
   }
