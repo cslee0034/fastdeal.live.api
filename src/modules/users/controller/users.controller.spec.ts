@@ -9,7 +9,20 @@ describe('UsersController', () => {
   let controller: UsersController;
   let service: UsersService;
 
+  const email = 'test@email.com' as string;
+  const name = 'test_name' as string;
+  const password = 'test_password' as string;
+
   const mockUserService = {
+    findOneByEmail: jest.fn(async (email: string) => {
+      const createdAt = new Date();
+      const updatedAt = new Date();
+
+      return Promise.resolve(
+        new UserEntity({ email, name, createdAt, updatedAt }),
+      );
+    }),
+
     create: jest.fn(async (createUserDto: CreateUserDto) => {
       const email = createUserDto.email;
       const name = createUserDto.name;
@@ -47,11 +60,29 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
+  describe('findOneByEmail', () => {
+    it('should be defined', () => {
+      expect(controller.findOneByEmail).toBeDefined();
+    });
+
+    it('should called with email', async () => {
+      await controller.findOneByEmail(email);
+
+      expect(service.findOneByEmail).toHaveBeenCalledWith(email);
+    });
+
+    it('should return instance of UserEntity', async () => {
+      const newUser = await controller.findOneByEmail(email);
+
+      expect(newUser).toBeInstanceOf(UserEntity);
+    });
+  });
+
   describe('create user', () => {
     const mockCreateUserDto: CreateUserDto = {
-      email: 'test@email.com',
-      name: 'test_name',
-      password: 'test_password',
+      email,
+      name,
+      password,
     };
 
     it('should be defined', () => {
