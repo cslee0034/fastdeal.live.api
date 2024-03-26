@@ -30,6 +30,10 @@ describe('PrismaService', () => {
     prismaClient = module.get<PrismaClient>(PrismaClient);
   });
 
+  afterAll(async () => {
+    await prismaClient.$disconnect();
+  });
+
   it('should be defined', () => {
     expect(prismaService).toBeDefined();
   });

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from './users.repository';
-import { PrismaService } from '../../../config/orm/prisma/service/prisma.service';
+import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
 
 describe('UsersRepository', () => {
   let repository: UserRepository;

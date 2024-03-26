@@ -3,7 +3,7 @@ import { UsersModule } from './users.module';
 import { UsersService } from '../service/users.service';
 import { UsersController } from '../controller/users.controller';
 import { UserRepository } from '../repository/users.repository';
-import { PrismaService } from '../../../config/orm/prisma/service/prisma.service';
+import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 
 describe('UsersModule', () => {

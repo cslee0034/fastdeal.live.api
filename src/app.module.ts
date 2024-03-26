@@ -14,7 +14,7 @@ import { winstonTransports } from './config/logger/logger';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
-import { PrismaModule } from './config/orm/prisma/module/prisma.module';
+import { PrismaModule } from './common/orm/prisma/module/prisma.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
 import { AuthModule } from './modules/auth/module/auth.module';
