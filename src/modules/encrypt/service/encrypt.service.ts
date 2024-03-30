@@ -30,7 +30,7 @@ export class EncryptService {
   async compareAndThrow(key: string, hashedKey: string): Promise<void> {
     const isSame = await this.compare(key, hashedKey);
     if (!isSame) {
-      throw new UnauthorizedException('Key does not match');
+      throw new UnauthorizedException('Password do not match');
     }
     return;
   }
