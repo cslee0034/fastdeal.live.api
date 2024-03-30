@@ -109,7 +109,7 @@ describe('UsersService', () => {
 
       await service.create(mockCreateUserDto as CreateUserDto);
 
-      expect(repository.create).toBeCalledWith(
+      expect(repository.create).toHaveBeenCalledWith(
         expect.objectContaining({
           email: 'test@email.com',
           name: 'test_name',
