@@ -18,7 +18,6 @@ export class MessageProducer {
         {
           id: `${Date.now()}`,
           body: message,
-          groupId: ' asdf',
         },
       );
     } catch (error) {
