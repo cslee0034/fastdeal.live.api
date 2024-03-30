@@ -26,7 +26,7 @@ describe('EncryptService', () => {
   let service: EncryptService;
 
   const mockConfigService = {
-    get: jest.fn((key: string): number | string => {
+    get: jest.fn().mockImplementation((key: string) => {
       if (key === 'encrypt.salt') {
         return 'salt';
       }
@@ -34,7 +34,6 @@ describe('EncryptService', () => {
       return key;
     }),
   };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
