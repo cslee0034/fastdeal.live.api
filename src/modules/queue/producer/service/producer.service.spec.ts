@@ -2,21 +2,26 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MessageProducer } from './producer.service'; // Adjust the path to where your service is located
 import { ConfigService } from '@nestjs/config';
 import { SqsService } from '@ssut/nestjs-sqs';
-import { createMock } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 
 describe('MessageProducer', () => {
   let messageProducer: MessageProducer;
   let sqsService: SqsService;
 
-  const mockConfigService = createMock<ConfigService>();
+  const messageBody = { hello: 'world' };
+  const queueName = 'test_queue';
+
+  const mockConfigService = {
+    get: jest.fn().mockImplementation((key: string) => {
+      if (key === 'aws.sqs.email.name') {
+        return queueName;
+      }
+    }),
+  };
 
   const mockSqsService = {
     send: jest.fn(),
   };
-
-  const messageBody = { hello: 'world' };
-  const queueName = 'test_queue';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
