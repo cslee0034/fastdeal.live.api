@@ -36,34 +36,34 @@ export class PrismaClientExceptionFilter
       const ctx = host.switchToHttp();
       const response = ctx.getResponse();
       const request = ctx.getRequest();
-      const status =
+      const statusCode =
         error instanceof Prisma.PrismaClientKnownRequestError
           ? HttpStatus.CONFLICT
           : HttpStatus.INTERNAL_SERVER_ERROR;
-      let code;
+      let errorCode;
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        code = error.code || 'UNKNOWN_ERROR';
+        errorCode = error?.code || 'UNKNOWN_ERROR';
       } else {
-        code = 'UNKNOWN_ERROR';
+        errorCode = 'UNKNOWN_ERROR';
       }
-      const message = error.message;
-      const path = request.url;
-      const timestamp = new Date().toISOString();
+      const message = error?.message || 'Priam Client Error';
 
       this.logger.error(`
-        Status: ${status}
-        Code: ${code}
-        Message: ${message}
-        Timestamp: ${timestamp}
-        Path: ${path}
+        success: false,
+        timestamp: ${new Date().toISOString()},
+        path: ${request.url},
+        statusCode: ${statusCode},
+        errorCode: ${errorCode}
+        message: ${message}
       `);
 
-      response.status(status).json({
-        statusCode: status,
+      response.status(statusCode).json({
+        success: false,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        statusCode: statusCode,
+        errorCode: errorCode,
         message: message,
-        error: code,
-        timestamp: timestamp,
-        path: path,
       });
     }
   }
