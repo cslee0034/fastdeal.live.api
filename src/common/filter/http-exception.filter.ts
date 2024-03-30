@@ -10,6 +10,23 @@ import { Request, Response } from 'express';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
+interface IMessage {
+  success: boolean;
+  timestamp: string;
+  path: string;
+  statusCode: number;
+  error: string;
+  message?: string | string[];
+}
+
+interface IError {
+  statusCode: number;
+  error: string;
+  message: string | string[];
+}
+
+type ErrorType = string | IError;
+
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   constructor(
@@ -26,36 +43,54 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const error = exception.getResponse() as
       | string
       | { statusCode: number; error: string; message: string | string[] };
-    const timestamp = new Date().toISOString();
 
-    if (typeof error === 'string') {
-      this.logger.error(`
-      success: false
-      timestamp: ${timestamp}
-      statusCode: ${statusCode}
-      path: ${request.url}
-      error: ${error}
-      `);
+    const message: IMessage = this.formatMessage(request, statusCode, error);
 
-      response.status(statusCode).json({
-        success: false,
-        timestamp: timestamp,
-        statusCode: statusCode,
-        path: request.url,
-        error: error,
-      });
-    } else {
-      this.logger.error(`
-      success: false
-      timestamp: ${timestamp}
-      error: ${(error.statusCode, error.error, error.message)}
-      `);
+    this.logMessage(message, statusCode);
 
-      response.status(statusCode).json({
-        success: false,
-        timestamp: timestamp,
-        ...error,
-      });
-    }
+    response.status(statusCode).json(message);
   }
+
+  private formatMessage = (
+    request: Request,
+    statusCode: number,
+    error: ErrorType,
+  ): IMessage => {
+    if (typeof error === 'string') {
+      return {
+        success: false,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        statusCode,
+        error,
+      };
+    } else {
+      return {
+        success: false,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        statusCode: statusCode,
+        error: error?.error,
+        message: error?.message,
+      };
+    }
+  };
+
+  private logMessage = (message: object, statusCode: number): void => {
+    // 5xx 에러는 error 로 출력하고, 그 외에는 warn으로 출력한다.
+    if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error(this.messageToString(message));
+    } else {
+      this.logger.warn(this.messageToString(message));
+    }
+  };
+
+  private messageToString = (message: object): string => {
+    let logString = '';
+    for (const [key, value] of Object.entries(message)) {
+      logString += `\n${key}: ${value}`;
+    }
+
+    return logString;
+  };
 }

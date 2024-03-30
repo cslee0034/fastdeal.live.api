@@ -68,7 +68,7 @@ describe('HttpExceptionFilter', () => {
 
   const mockExecutionContext = createMock<ExecutionContext>({
     switchToHttp: () => ({
-      getRequest: () => ({ url: '/test', headers: { authorization: 'auth' } }),
+      getRequest: () => ({}),
       getResponse: () => mockResponse,
     }),
   });
@@ -81,6 +81,9 @@ describe('HttpExceptionFilter', () => {
           provide: WINSTON_MODULE_PROVIDER,
           useValue: {
             error: jest.fn().mockImplementation((text) => {
+              console.log(text);
+            }),
+            warn: jest.fn().mockImplementation((text) => {
               console.log(text);
             }),
           },
@@ -114,13 +117,23 @@ describe('HttpExceptionFilter', () => {
     );
   });
 
-  it('should handle different types of HTTP status codes', () => {
-    const statuses = [400, 404, 403, 422];
+  it('should handle 5xx status error with logger.error', () => {
+    const statuses = [500, 501, 502, 503];
     statuses.forEach((status) => {
       const mockException = new HttpException('Error', status);
       httpExceptionFilter.catch(mockException, mockExecutionContext);
       expect(mockResponse.status).toHaveBeenCalledWith(status);
       expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  it('should handle 4xx status error with logger.warn', () => {
+    const statuses = [400, 401, 402, 403];
+    statuses.forEach((status) => {
+      const mockException = new HttpException('Error', status);
+      httpExceptionFilter.catch(mockException, mockExecutionContext);
+      expect(mockResponse.status).toHaveBeenCalledWith(status);
+      expect(logger.warn).toHaveBeenCalled();
     });
   });
 
