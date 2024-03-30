@@ -1,16 +1,17 @@
 version: '3.1'
 
 services:
-  postgres:
-    image: postgres:latest
+  mysql:
+    image: mysql:latest
     environment:
-      POSTGRES_USER: ${RDB_USERNAME}
-      POSTGRES_PASSWORD: ${RDB_PASSWORD}
-      POSTGRES_DB: ${RDB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${RDB_PASSWORD}
+      MYSQL_DATABASE: ${RDB_DATABASE}
+      MYSQL_USER: ${RDB_USERNAME}
+      MYSQL_PASSWORD: ${RDB_PASSWORD}
     ports:
       - '${RDB_PORT}:${RDB_PORT}'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
 
   redis:
     image: redis:latest
@@ -23,5 +24,5 @@ services:
       REDIS_PASSWORD: ${CACHE_PASSWORD}
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:
