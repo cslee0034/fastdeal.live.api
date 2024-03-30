@@ -36,7 +36,7 @@ describe('RedisService', () => {
       const value = 'test_value';
       const ttl = 1000; // 1초
       await service.set(key, value, ttl);
-      expect(cacheManager.set).toBeCalledWith(key, value, { ttl: 1 });
+      expect(cacheManager.set).toHaveBeenCalledWith(key, value, { ttl: 1 });
     });
   });
 
@@ -54,14 +54,14 @@ describe('RedisService', () => {
     it('should delete a key', async () => {
       const key = 'test_key';
       await service.del(key);
-      expect(cacheManager.del).toBeCalledWith(key);
+      expect(cacheManager.del).toHaveBeenCalledWith(key);
     });
   });
 
   describe('reset', () => {
     it('should reset cache', async () => {
       await service.reset();
-      expect(cacheManager.reset).toBeCalled();
+      expect(cacheManager.reset).toHaveBeenCalled();
     });
   });
 });
