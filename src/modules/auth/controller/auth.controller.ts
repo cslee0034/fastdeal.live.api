@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { SignUpDto } from '../dto/request/signup.dto';
@@ -26,6 +27,7 @@ import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
 import { RefreshTokenGuard } from '../../../common/guard/refresh-token-guard';
 import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -56,12 +58,14 @@ export class AuthController {
 
   @Public()
   @Post('local/sign-in')
-  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: TokensResponseDto })
   @ApiNotFoundResponse()
   @ApiUnauthorizedResponse()
   @ApiInternalServerErrorResponse()
-  async login(@Body() signInDto: SignInDto): Promise<Tokens> {
+  async login(
+    @Body() signInDto: SignInDto,
+    @Res() res: Response,
+  ): Promise<void> {
     const user = await this.usersService.findOneByEmail(signInDto.email);
 
     await this.encryptService.compareAndThrow(
@@ -73,7 +77,11 @@ export class AuthController {
 
     await this.authService.login(user.id, tokens.refreshToken);
 
-    return tokens;
+    await this.authService.setTokens(res, tokens);
+
+    res.status(HttpStatus.OK).json({ success: true });
+
+    return;
   }
 
   @Get('logout')

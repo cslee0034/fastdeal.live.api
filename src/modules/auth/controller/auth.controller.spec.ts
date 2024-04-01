@@ -13,6 +13,7 @@ import { UsersService } from '../../users/service/users.service';
 import { Tokens } from '../types/tokens.type';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { SignInDto } from '../dto/request/signin.dto';
+import * as httpMocks from 'node-mocks-http';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -76,7 +77,19 @@ describe('AuthController', () => {
           return Promise.resolve(mockTokenResult);
         } else {
           return Promise.reject(
-            new InternalServerErrorException('Failed to create token'),
+            new InternalServerErrorException('Failed to create tokens'),
+          );
+        }
+      }),
+
+    setTokens: jest
+      .fn()
+      .mockImplementation((res: Response, tokens: Tokens): Promise<void> => {
+        if (res && tokens) {
+          return Promise.resolve();
+        } else {
+          return Promise.reject(
+            new InternalServerErrorException('Failed to set token'),
           );
         }
       }),
@@ -143,6 +156,8 @@ describe('AuthController', () => {
     refreshToken: 'refreshToken',
   };
 
+  const mockResponse = httpMocks.createResponse();
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -176,7 +191,7 @@ describe('AuthController', () => {
       );
     });
 
-    it('should call generateTokens with created user information', async () => {
+    it('should call generateToken with created user information', async () => {
       await controller.signup(mockSignUpDto as SignUpDto);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
@@ -207,7 +222,7 @@ describe('AuthController', () => {
     });
 
     it('should call userService.findOneByEmail with LoginUpDto', async () => {
-      await controller.login(mockLoginDto as SignInDto);
+      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(usersService.findOneByEmail).toHaveBeenCalledWith(
         mockLoginDto.email as string,
@@ -215,7 +230,7 @@ describe('AuthController', () => {
     });
 
     it('should call encryptService.compareAndThrow with password', async () => {
-      await controller.login(mockLoginDto as SignInDto);
+      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(encryptService.compareAndThrow).toHaveBeenCalledWith(
         mockLoginDto.password as string,
@@ -223,8 +238,8 @@ describe('AuthController', () => {
       );
     });
 
-    it("should call generateTokens with found user's information", async () => {
-      await controller.login(mockLoginDto as SignInDto);
+    it("should call generateToken with found user's information", async () => {
+      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
@@ -233,7 +248,7 @@ describe('AuthController', () => {
     });
 
     it("should call login with user's id and refreshToken", async () => {
-      await controller.login(mockLoginDto as SignInDto);
+      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
@@ -241,10 +256,13 @@ describe('AuthController', () => {
       );
     });
 
-    it('should return tokens', async () => {
-      const result = await controller.login(mockLoginDto as SignInDto);
+    it('should return { success: true }', async () => {
+      const mockJson = jest.fn();
+      mockResponse.json = mockJson;
 
-      expect(result).toEqual(mockTokenResult);
+      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+
+      expect(mockJson).toHaveBeenCalledWith({ success: true });
     });
   });
 
