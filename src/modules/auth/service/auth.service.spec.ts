@@ -7,17 +7,28 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from '../../cache/service/redis.service';
+import * as httpMocks from 'node-mocks-http';
+import { CookieOptions } from 'express';
 
 describe('AuthService', () => {
   let service: AuthService;
 
   const mockId = 1;
   const mockEmail = 'test@email.com';
+
   const accessSecret = 'jwt.access.secret';
   const accessExpiresIn = '3600';
+
   const refreshSecret = 'jwt.refresh.secret';
   const refreshExpiresIn = '3600';
-  const testLoginToken = 'test_token';
+
+  const mockAccessToken = 'mock_access_token';
+  const mockRefreshToken = 'mock_refresh_token';
+
+  const mockTokens = {
+    accessToken: mockAccessToken,
+    refreshToken: mockRefreshToken,
+  };
 
   const mockConfigService = {
     get: jest.fn().mockImplementation((key: string) => {
@@ -60,6 +71,15 @@ describe('AuthService', () => {
     get: jest.fn(),
   };
 
+  type MockResponse = Response & {
+    cookie: jest.MockedFunction<
+      (name: string, val: string, options?: CookieOptions) => Response
+    >;
+  };
+
+  const mockResponse: MockResponse = httpMocks.createResponse() as any;
+  mockResponse.cookie = jest.fn();
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -92,7 +112,7 @@ describe('AuthService', () => {
     });
 
     it('should call redis.set function', async () => {
-      await service.login(mockId, testLoginToken);
+      await service.login(mockId, mockRefreshToken);
 
       expect(mockRedisService.set).toHaveBeenCalled();
     });
@@ -170,14 +190,36 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw error if it fails to generate token', async () => {
+    it('should throw error if it fails to generate tokens', async () => {
       mockJwtService.signAsync.mockRejectedValueOnce(
-        new Error('Failed to create token'),
+        new Error('Failed to create tokens'),
       );
 
       await expect(service.generateTokens(mockId, mockEmail)).rejects.toThrow(
         InternalServerErrorException,
       );
+    });
+  });
+
+  describe('setTokens', () => {
+    it('should be defined', () => {
+      expect(service.setTokens).toBeDefined();
+    });
+
+    it('should call response.cookie function', () => {
+      service.setTokens(mockResponse as any, mockTokens);
+
+      expect(mockResponse.cookie).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw error if it fails to set tokens', async () => {
+      mockResponse.cookie.mockImplementationOnce(() => {
+        throw new InternalServerErrorException('Failed to set tokens');
+      });
+
+      await expect(
+        service.setTokens(mockResponse as any, mockTokens),
+      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 

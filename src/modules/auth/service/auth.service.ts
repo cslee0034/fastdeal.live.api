@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Tokens } from '../types/tokens.type';
 import { RedisService } from '../../cache/service/redis.service';
+import { Response, CookieOptions } from 'express';
 @Injectable()
 export class AuthService {
   constructor(
@@ -61,6 +62,23 @@ export class AuthService {
     } catch (error) {
       throw new InternalServerErrorException('Failed to create tokens');
     }
+  }
+
+  async setTokens(res: Response, tokens: Tokens) {
+    const options: CookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    };
+
+    try {
+      res.cookie('accessToken', tokens.accessToken, options);
+      res.cookie('refreshToken', tokens.refreshToken, options);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to set tokens');
+    }
+
+    return;
   }
 
   async checkIsLoggedIn(id: number, refreshToken: string) {
