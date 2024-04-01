@@ -8,6 +8,7 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
 import { AccessTokenGuard } from './common/guard/access-token-guard';
+import { TransformInterceptor } from './common/interceptor/transform-interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -47,18 +48,21 @@ async function bootstrap() {
       contentSecurityPolicy: false,
     }),
   );
-  app.useGlobalGuards(new AccessTokenGuard(reflector));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-  app.useGlobalFilters(
-    new HttpExceptionFilter(logger),
-    new PrismaClientExceptionFilter(logger),
+  app.useGlobalGuards(new AccessTokenGuard(reflector));
+  app.useGlobalInterceptors(
+    new TransformInterceptor(),
+    new ClassSerializerInterceptor(reflector),
   );
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
+  app.useGlobalFilters(
+    new PrismaClientExceptionFilter(logger),
+    new HttpExceptionFilter(logger),
+  );
 
   await app.listen(port);
 
