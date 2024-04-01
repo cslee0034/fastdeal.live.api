@@ -12,7 +12,6 @@ import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
 import { AuthService } from '../service/auth.service';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
-import { TokensResponseDto } from '../dto/response/token.dto';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -39,7 +38,7 @@ export class AuthController {
 
   @Public()
   @Post('local/sign-up')
-  @ApiCreatedResponse({ type: TokensResponseDto })
+  @ApiCreatedResponse()
   @ApiForbiddenResponse()
   @ApiInternalServerErrorResponse()
   async signup(
@@ -64,7 +63,7 @@ export class AuthController {
 
   @Public()
   @Post('local/sign-in')
-  @ApiOkResponse({ type: TokensResponseDto })
+  @ApiOkResponse()
   @ApiNotFoundResponse()
   @ApiUnauthorizedResponse()
   @ApiInternalServerErrorResponse()
