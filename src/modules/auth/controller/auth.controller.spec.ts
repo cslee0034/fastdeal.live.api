@@ -12,7 +12,7 @@ import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
 import { Tokens } from '../types/tokens.type';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
-import { LoginDto } from '../dto/request/login.dto';
+import { SignInDto } from '../dto/request/signin.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -119,7 +119,7 @@ describe('AuthController', () => {
     password: 'test_password',
   };
 
-  const mockLoginDto: LoginDto = {
+  const mockLoginDto: SignInDto = {
     email: 'test@email.com',
     password: 'test_password',
   };
@@ -207,7 +207,7 @@ describe('AuthController', () => {
     });
 
     it('should call userService.findOneByEmail with LoginUpDto', async () => {
-      await controller.login(mockLoginDto as LoginDto);
+      await controller.login(mockLoginDto as SignInDto);
 
       expect(usersService.findOneByEmail).toHaveBeenCalledWith(
         mockLoginDto.email as string,
@@ -215,7 +215,7 @@ describe('AuthController', () => {
     });
 
     it('should call encryptService.compareAndThrow with password', async () => {
-      await controller.login(mockLoginDto as LoginDto);
+      await controller.login(mockLoginDto as SignInDto);
 
       expect(encryptService.compareAndThrow).toHaveBeenCalledWith(
         mockLoginDto.password as string,
@@ -224,7 +224,7 @@ describe('AuthController', () => {
     });
 
     it("should call generateTokens with found user's information", async () => {
-      await controller.login(mockLoginDto as LoginDto);
+      await controller.login(mockLoginDto as SignInDto);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
@@ -233,7 +233,7 @@ describe('AuthController', () => {
     });
 
     it("should call login with user's id and refreshToken", async () => {
-      await controller.login(mockLoginDto as LoginDto);
+      await controller.login(mockLoginDto as SignInDto);
 
       expect(authService.login).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
@@ -242,7 +242,7 @@ describe('AuthController', () => {
     });
 
     it('should return tokens', async () => {
-      const result = await controller.login(mockLoginDto as LoginDto);
+      const result = await controller.login(mockLoginDto as SignInDto);
 
       expect(result).toEqual(mockTokenResult);
     });

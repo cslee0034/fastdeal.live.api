@@ -20,7 +20,7 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { LoginDto } from '../dto/request/login.dto';
+import { SignInDto } from '../dto/request/signin.dto';
 import { Tokens } from '../types/tokens.type';
 import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
@@ -61,10 +61,13 @@ export class AuthController {
   @ApiNotFoundResponse()
   @ApiUnauthorizedResponse()
   @ApiInternalServerErrorResponse()
-  async login(@Body() loginDto: LoginDto): Promise<Tokens> {
-    const user = await this.usersService.findOneByEmail(loginDto.email);
+  async login(@Body() signInDto: SignInDto): Promise<Tokens> {
+    const user = await this.usersService.findOneByEmail(signInDto.email);
 
-    await this.encryptService.compareAndThrow(loginDto.password, user.password);
+    await this.encryptService.compareAndThrow(
+      signInDto.password,
+      user.password,
+    );
 
     const tokens = await this.authService.generateTokens(user.id, user.email);
 
