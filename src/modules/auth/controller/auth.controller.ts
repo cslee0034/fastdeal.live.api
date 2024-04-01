@@ -21,7 +21,6 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SignInDto } from '../dto/request/signin.dto';
-import { Tokens } from '../types/tokens.type';
 import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
 import { RefreshTokenGuard } from '../../../common/guard/refresh-token-guard';
@@ -100,18 +99,25 @@ export class AuthController {
   @Public()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
-  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiInternalServerErrorResponse()
   async refreshTokens(
     @GetTokenUserId() id: number,
     @GetTokenUser('email') email: string,
     @GetTokenUser('refreshToken') refreshToken: string,
-  ): Promise<Tokens> {
+    @Res() res: Response,
+  ): Promise<void> {
     await this.authService.checkIsLoggedIn(id, refreshToken);
 
     const tokens = await this.authService.generateTokens(id, email);
 
     await this.authService.login(id, tokens.refreshToken);
 
-    return tokens;
+    await this.authService.setTokens(res, tokens);
+
+    res.status(HttpStatus.OK).json({ success: true });
+
+    return;
   }
 }

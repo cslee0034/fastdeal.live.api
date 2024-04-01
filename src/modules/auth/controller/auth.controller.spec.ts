@@ -301,7 +301,12 @@ describe('AuthController', () => {
     });
 
     it('should call authService.checkIsLoggedIn with id and refreshToken', async () => {
-      await controller.refreshTokens(userId, userEmail, userRefreshToken);
+      await controller.refreshTokens(
+        userId,
+        userEmail,
+        userRefreshToken,
+        mockResponse as any,
+      );
 
       expect(authService.checkIsLoggedIn).toHaveBeenCalledWith(
         userId,
@@ -310,7 +315,12 @@ describe('AuthController', () => {
     });
 
     it("should call authService.generateTokens with user's id and email", async () => {
-      await controller.refreshTokens(userId, userEmail, userRefreshToken);
+      await controller.refreshTokens(
+        userId,
+        userEmail,
+        userRefreshToken,
+        mockResponse as any,
+      );
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
         userId,
@@ -319,22 +329,17 @@ describe('AuthController', () => {
     });
 
     it("should call authService.login with user's id and new refreshToken", async () => {
-      await controller.refreshTokens(userId, userEmail, userRefreshToken);
+      await controller.refreshTokens(
+        userId,
+        userEmail,
+        userRefreshToken,
+        mockResponse as any,
+      );
 
       expect(authService.login).toHaveBeenCalledWith(
         userId,
         mockTokenResult.refreshToken,
       );
-    });
-
-    it('should return new tokens', async () => {
-      const result = await controller.refreshTokens(
-        userId,
-        userEmail,
-        userRefreshToken,
-      );
-
-      expect(result).toEqual(mockTokenResult);
     });
 
     it('should throw UnauthorizedException if checkIsLoggedIn fails', async () => {
@@ -343,8 +348,27 @@ describe('AuthController', () => {
       );
 
       await expect(
-        controller.refreshTokens(userId, userEmail, userRefreshToken),
+        controller.refreshTokens(
+          userId,
+          userEmail,
+          userRefreshToken,
+          mockResponse as any,
+        ),
       ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should return { success: true }', async () => {
+      const mockJson = jest.fn();
+      mockResponse.json = mockJson;
+
+      await controller.refreshTokens(
+        userId,
+        userEmail,
+        userRefreshToken,
+        mockResponse as any,
+      );
+
+      expect(mockJson).toHaveBeenCalledWith({ success: true });
     });
   });
 });
