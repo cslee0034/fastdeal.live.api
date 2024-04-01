@@ -44,7 +44,7 @@ export class AuthController {
   async signup(@Body() signUpDto: SignUpDto) {
     const createdUser = await this.usersService.create(signUpDto);
 
-    const tokens = await this.authService.generateToken(
+    const tokens = await this.authService.generateTokens(
       createdUser.id,
       createdUser.email,
     );
@@ -66,7 +66,7 @@ export class AuthController {
 
     await this.encryptService.compareAndThrow(loginDto.password, user.password);
 
-    const tokens = await this.authService.generateToken(user.id, user.email);
+    const tokens = await this.authService.generateTokens(user.id, user.email);
 
     await this.authService.login(user.id, tokens.refreshToken);
 
@@ -92,7 +92,7 @@ export class AuthController {
   ): Promise<Tokens> {
     await this.authService.checkIsLoggedIn(id, refreshToken);
 
-    const tokens = await this.authService.generateToken(id, email);
+    const tokens = await this.authService.generateTokens(id, email);
 
     await this.authService.login(id, tokens.refreshToken);
 

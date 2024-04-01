@@ -69,7 +69,7 @@ describe('AuthController', () => {
       }
     }),
 
-    generateToken: jest
+    generateTokens: jest
       .fn()
       .mockImplementation((id: number, email: string): Promise<Tokens> => {
         if (id && email) {
@@ -176,10 +176,10 @@ describe('AuthController', () => {
       );
     });
 
-    it('should call generateToken with created user information', async () => {
+    it('should call generateTokens with created user information', async () => {
       await controller.signup(mockSignUpDto as SignUpDto);
 
-      expect(authService.generateToken).toHaveBeenCalledWith(
+      expect(authService.generateTokens).toHaveBeenCalledWith(
         mockCreateUserResult.id as number,
         mockCreateUserResult.email as string,
       );
@@ -223,10 +223,10 @@ describe('AuthController', () => {
       );
     });
 
-    it("should call generateToken with found user's information", async () => {
+    it("should call generateTokens with found user's information", async () => {
       await controller.login(mockLoginDto as LoginDto);
 
-      expect(authService.generateToken).toHaveBeenCalledWith(
+      expect(authService.generateTokens).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
         mockFindOneByEmailResult.email as string,
       );
@@ -288,10 +288,13 @@ describe('AuthController', () => {
       );
     });
 
-    it("should call authService.generateToken with user's id and email", async () => {
+    it("should call authService.generateTokens with user's id and email", async () => {
       await controller.refreshTokens(userId, userEmail, userRefreshToken);
 
-      expect(authService.generateToken).toHaveBeenCalledWith(userId, userEmail);
+      expect(authService.generateTokens).toHaveBeenCalledWith(
+        userId,
+        userEmail,
+      );
     });
 
     it("should call authService.login with user's id and new refreshToken", async () => {

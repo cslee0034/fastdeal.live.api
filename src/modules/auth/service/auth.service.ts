@@ -39,7 +39,7 @@ export class AuthService {
     }
   }
 
-  async generateToken(id: number, email: string): Promise<Tokens> {
+  async generateTokens(id: number, email: string): Promise<Tokens> {
     const payload = {
       id: id,
       email: email,
@@ -59,7 +59,7 @@ export class AuthService {
 
       return { accessToken, refreshToken };
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create token');
+      throw new InternalServerErrorException('Failed to create tokens');
     }
   }
 

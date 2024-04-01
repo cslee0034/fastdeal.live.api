@@ -132,9 +132,9 @@ describe('AuthService', () => {
     });
   });
 
-  describe('generateToken', () => {
+  describe('generateTokens', () => {
     it('should called with signAsync function', async () => {
-      await service.generateToken(mockId, mockEmail);
+      await service.generateTokens(mockId, mockEmail);
 
       expect(mockJwtService.signAsync).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -160,7 +160,7 @@ describe('AuthService', () => {
     });
 
     it('should return token strings object', async () => {
-      const tokens = await service.generateToken(mockId, mockEmail);
+      const tokens = await service.generateTokens(mockId, mockEmail);
 
       expect(tokens).toEqual(
         expect.objectContaining({
@@ -175,7 +175,7 @@ describe('AuthService', () => {
         new Error('Failed to create token'),
       );
 
-      await expect(service.generateToken(mockId, mockEmail)).rejects.toThrow(
+      await expect(service.generateTokens(mockId, mockEmail)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
