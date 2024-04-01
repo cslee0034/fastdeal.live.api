@@ -39,11 +39,13 @@ export class AuthController {
 
   @Public()
   @Post('local/sign-up')
-  @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({ type: TokensResponseDto })
   @ApiForbiddenResponse()
   @ApiInternalServerErrorResponse()
-  async signup(@Body() signUpDto: SignUpDto) {
+  async signup(
+    @Body() signUpDto: SignUpDto,
+    @Res() res: Response,
+  ): Promise<void> {
     const createdUser = await this.usersService.create(signUpDto);
 
     const tokens = await this.authService.generateTokens(
@@ -53,7 +55,11 @@ export class AuthController {
 
     await this.authService.login(createdUser.id, tokens.refreshToken);
 
-    return tokens;
+    await this.authService.setTokens(res, tokens);
+
+    res.status(HttpStatus.CREATED).json({ success: true });
+
+    return;
   }
 
   @Public()

@@ -184,7 +184,7 @@ describe('AuthController', () => {
     });
 
     it('should call userService.create with SignUpDto', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto);
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(usersService.create).toHaveBeenCalledWith(
         mockSignUpDto as SignUpDto,
@@ -192,7 +192,7 @@ describe('AuthController', () => {
     });
 
     it('should call generateToken with created user information', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto);
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
         mockCreateUserResult.id as number,
@@ -201,7 +201,7 @@ describe('AuthController', () => {
     });
 
     it("should call login with user's id and refreshToken", async () => {
-      await controller.signup(mockSignUpDto as SignUpDto);
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
         mockCreateUserResult.id as number,
@@ -209,10 +209,13 @@ describe('AuthController', () => {
       );
     });
 
-    it('should return tokens', async () => {
-      const result = await controller.signup(mockSignUpDto as SignUpDto);
+    it('should return { success: true }', async () => {
+      const mockJson = jest.fn();
+      mockResponse.json = mockJson;
 
-      expect(result).toEqual(mockTokenResult);
+      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+
+      expect(mockJson).toHaveBeenCalledWith({ success: true });
     });
   });
 
