@@ -72,8 +72,8 @@ export class AuthService {
     };
 
     try {
-      res.cookie('accessToken', tokens.accessToken, options);
-      res.cookie('refreshToken', tokens.refreshToken, options);
+      res.cookie('x-access-token', tokens.accessToken, options);
+      res.cookie('x-refresh-token', tokens.refreshToken, options);
     } catch (error) {
       throw new InternalServerErrorException('Failed to set tokens');
     }
