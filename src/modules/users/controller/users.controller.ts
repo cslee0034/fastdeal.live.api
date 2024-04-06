@@ -17,6 +17,6 @@ export class UsersController {
   @Post()
   @ApiCreatedResponse({ type: UserEntity })
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    return this.usersService.createLocal(createUserDto);
   }
 }

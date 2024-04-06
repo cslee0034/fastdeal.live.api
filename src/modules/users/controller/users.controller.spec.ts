@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from '../service/users.service';
-import { UserRepository } from '../repository/users.repository';
+import { UsersRepository } from '../repository/users.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserEntity } from '../entities/user.entity';
 
@@ -10,7 +10,9 @@ describe('UsersController', () => {
   let service: UsersService;
 
   const email = 'test@email.com' as string;
-  const name = 'test_name' as string;
+  const provider = 'local' as string;
+  const firstName = 'test_first_name' as string;
+  const lastName = 'test_last_name' as string;
   const password = 'test_password' as string;
 
   const mockUserService = {
@@ -19,18 +21,19 @@ describe('UsersController', () => {
       const updatedAt = new Date();
 
       return Promise.resolve(
-        new UserEntity({ email, name, createdAt, updatedAt }),
+        new UserEntity({ email, firstName, lastName, createdAt, updatedAt }),
       );
     }),
 
-    create: jest.fn(async (createUserDto: CreateUserDto) => {
+    createLocal: jest.fn(async (createUserDto: CreateUserDto) => {
       const email = createUserDto.email;
-      const name = createUserDto.name;
+      const firstName = createUserDto.firstName;
+      const lastName = createUserDto.lastName;
       const createdAt = new Date();
       const updatedAt = new Date();
 
       return Promise.resolve(
-        new UserEntity({ email, name, createdAt, updatedAt }),
+        new UserEntity({ email, firstName, lastName, createdAt, updatedAt }),
       );
     }),
   };
@@ -46,7 +49,7 @@ describe('UsersController', () => {
           useValue: mockUserService,
         },
         {
-          provide: UserRepository,
+          provide: UsersRepository,
           useValue: mockUserRepository,
         },
       ],
@@ -81,7 +84,9 @@ describe('UsersController', () => {
   describe('create user', () => {
     const mockCreateUserDto: CreateUserDto = {
       email,
-      name,
+      provider,
+      firstName,
+      lastName,
       password,
     };
 
@@ -92,7 +97,7 @@ describe('UsersController', () => {
     it('should called with CreateUserDto', async () => {
       await controller.create(mockCreateUserDto as CreateUserDto);
 
-      expect(service.create).toHaveBeenCalledWith(mockCreateUserDto);
+      expect(service.createLocal).toHaveBeenCalledWith(mockCreateUserDto);
     });
 
     it('should return instance of UserEntity', async () => {
