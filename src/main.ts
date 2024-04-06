@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'body-parser';
 import helmet from 'helmet';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
@@ -11,15 +13,14 @@ import { AccessTokenGuard } from './common/guard/access-token-guard';
 import { TransformInterceptor } from './common/interceptor/transform-interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: true,
-  });
+  const app = await NestFactory.create(AppModule);
 
   const logger = app.get('winston');
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port');
   const serverName = configService.get<string>('app.server_name');
   const reflector = app.get(Reflector);
+  const clientUrl = `${configService.get<string>('client.url')}`;
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle(`${serverName}`)
@@ -48,6 +49,14 @@ async function bootstrap() {
       contentSecurityPolicy: false,
     }),
   );
+  app.use(
+    cors({
+      origin: clientUrl,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    }),
+  );
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
