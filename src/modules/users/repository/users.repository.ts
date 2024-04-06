@@ -12,7 +12,13 @@ export class UsersRepository {
   async create(
     createUserDto: CreateUserDto | CreateOauthUserDto,
   ): Promise<User> {
-    const { email, provider, firstName, lastName } = createUserDto;
+    const {
+      email,
+      provider = 'local',
+      firstName = null,
+      lastName = null,
+    } = createUserDto;
+
     let password = null;
 
     if ('password' in createUserDto) {
