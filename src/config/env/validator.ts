@@ -3,8 +3,10 @@ import Joi from 'joi';
 export const validationSchema = Joi.object({
   NODE_ENV: Joi.string().required(),
   SERVER_NAME: Joi.string().required(),
+  API_PROTOCOL: Joi.string().required(),
   API_HOST: Joi.string().required(),
   API_PORT: Joi.number().required(),
+  CLIENT_URL: Joi.string().required(),
   HTTP_TIMEOUT: Joi.number().required(),
   HTTP_MAX_REDIRECTS: Joi.number().required(),
   RDB_HOST: Joi.string().required(),
@@ -31,4 +33,6 @@ export const validationSchema = Joi.object({
   AWS_SQS_EMAIL_NAME: Joi.string().required(),
   AWS_SQS_EMAIL_QUEUE_URL: Joi.string().required(),
   AWS_SQS_EMAIL_REGION: Joi.string().required(),
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
 });

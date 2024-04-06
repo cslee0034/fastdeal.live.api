@@ -2,8 +2,12 @@ export const env = () => ({
   app: {
     env: process.env.NODE_ENV,
     server_name: process.env.SERVER_NAME,
+    protocol: process.env.API_PROTOCOL,
     host: process.env.API_HOST,
     port: +process.env.API_PORT,
+  },
+  client: {
+    url: process.env.CLIENT_URL,
   },
   http: {
     timeout: process.env.HTTP_TIMEOUT,
@@ -50,5 +54,9 @@ export const env = () => ({
         region: process.env.AWS_SQS_EMAIL_REGION,
       },
     },
+  },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
 });
