@@ -26,6 +26,8 @@ import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.deco
 import { RefreshTokenGuard } from '../../../common/guard/refresh-token-guard';
 import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
 import { Response } from 'express';
+import { GoogleAuthGuard } from '../../../common/guard/google-auth-guard';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +35,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly encryptService: EncryptService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Public()
@@ -44,7 +47,7 @@ export class AuthController {
     @Body() signUpDto: SignUpDto,
     @Res() res: Response,
   ): Promise<void> {
-    const createdUser = await this.usersService.create(signUpDto);
+    const createdUser = await this.usersService.createLocal(signUpDto);
 
     const tokens = await this.authService.generateTokens(
       createdUser.id,
@@ -84,6 +87,32 @@ export class AuthController {
     await this.authService.setTokens(res, tokens);
 
     res.status(HttpStatus.OK).json({ success: true });
+
+    return;
+  }
+
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/login')
+  async google(): Promise<{ success: boolean }> {
+    return { success: true };
+  }
+
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/redirect')
+  async googleRedirect(
+    @Res() res: Response,
+    @GetTokenUserId() id: number,
+    @GetTokenUser('email') email: string,
+  ): Promise<void> {
+    const tokens = await this.authService.generateTokens(id, email);
+
+    await this.authService.login(id, tokens.refreshToken);
+
+    await this.authService.setTokens(res, tokens);
+
+    res.redirect(`${this.configService.get<string>('client.url')}/api/google`);
 
     return;
   }

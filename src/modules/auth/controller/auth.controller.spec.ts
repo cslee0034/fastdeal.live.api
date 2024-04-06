@@ -14,6 +14,7 @@ import { Tokens } from '../types/tokens.type';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { SignInDto } from '../dto/request/signin.dto';
 import * as httpMocks from 'node-mocks-http';
+import { ConfigService } from '@nestjs/config';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -22,13 +23,15 @@ describe('AuthController', () => {
   let encryptService: EncryptService;
 
   const mockUsersService = {
-    create: jest
+    createLocal: jest
       .fn()
       .mockImplementation((mockSignUpDto: SignUpDto): Promise<UserEntity> => {
         if (
           mockSignUpDto.email === 'test@email.com' &&
+          mockSignUpDto.provider === 'local' &&
           mockSignUpDto.password === 'test_password' &&
-          mockSignUpDto.name === 'test_name'
+          mockSignUpDto.firstName === 'test_first_name' &&
+          mockSignUpDto.lastName === 'test_last_name'
         ) {
           return Promise.resolve(mockCreateUserResult);
         } else {
@@ -126,9 +129,17 @@ describe('AuthController', () => {
       }),
   };
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      return key;
+    }),
+  };
+
   const mockSignUpDto: SignUpDto = {
     email: 'test@email.com',
-    name: 'test_name',
+    provider: 'local',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
     password: 'test_password',
   };
 
@@ -140,14 +151,16 @@ describe('AuthController', () => {
   const mockCreateUserResult: UserEntity = new UserEntity({
     id: 1,
     email: 'test@email.com',
-    name: 'test_name',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
     password: 'hashed_test_password',
   });
 
   const mockFindOneByEmailResult: UserEntity = new UserEntity({
     id: 1,
     email: 'test@email.com',
-    name: 'test_name',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
     password: 'hashed_test_password',
   });
 
@@ -165,6 +178,7 @@ describe('AuthController', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: UsersService, useValue: mockUsersService },
         { provide: EncryptService, useValue: mockEncryptService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -186,7 +200,7 @@ describe('AuthController', () => {
     it('should call userService.create with SignUpDto', async () => {
       await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
-      expect(usersService.create).toHaveBeenCalledWith(
+      expect(usersService.createLocal).toHaveBeenCalledWith(
         mockSignUpDto as SignUpDto,
       );
     });
@@ -266,6 +280,24 @@ describe('AuthController', () => {
       await controller.login(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(mockJson).toHaveBeenCalledWith({ success: true });
+    });
+  });
+
+  describe('google', () => {
+    it('should be defined', () => {
+      expect(controller.google).toBeDefined();
+    });
+
+    it('should return { success: true }', async () => {
+      const result = await controller.google();
+
+      expect(result).toEqual({ success: true });
+    });
+  });
+
+  describe('googleRedirect', () => {
+    it('should be defined', () => {
+      expect(controller.googleRedirect).toBeDefined();
     });
   });
 
