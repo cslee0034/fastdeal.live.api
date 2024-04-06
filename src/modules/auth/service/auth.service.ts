@@ -25,7 +25,9 @@ export class AuthService {
       );
       return true;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to set refresh token');
+      throw new InternalServerErrorException(
+        'Failed to set refresh token to redis',
+      );
     }
   }
 
@@ -36,7 +38,9 @@ export class AuthService {
       );
       return true;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to delete refresh token');
+      throw new InternalServerErrorException(
+        'Failed to delete refresh token from redis',
+      );
     }
   }
 
@@ -75,7 +79,7 @@ export class AuthService {
       res.cookie('x-access-token', tokens.accessToken, options);
       res.cookie('x-refresh-token', tokens.refreshToken, options);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to set tokens');
+      throw new InternalServerErrorException('Failed to set tokens to cookie');
     }
 
     return;
@@ -95,7 +99,9 @@ export class AuthService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Failed to get refresh token');
+      throw new InternalServerErrorException(
+        'Failed to get refresh token from redis',
+      );
     }
     return;
   }
