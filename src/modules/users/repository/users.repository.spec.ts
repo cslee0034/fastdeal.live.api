@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserRepository } from './users.repository';
+import { UsersRepository } from './users.repository';
 import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
+import { Role } from '../entities/user.entity';
 
 describe('UsersRepository', () => {
-  let repository: UserRepository;
+  let repository: UsersRepository;
 
   const mockPrismaService = {
     user: {
@@ -15,7 +16,7 @@ describe('UsersRepository', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserRepository,
+        UsersRepository,
         {
           provide: PrismaService,
           useValue: mockPrismaService,
@@ -23,7 +24,7 @@ describe('UsersRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<UserRepository>(UserRepository);
+    repository = module.get<UsersRepository>(UsersRepository);
   });
 
   it('should be defined', () => {
@@ -34,8 +35,11 @@ describe('UsersRepository', () => {
     it('should create a new user', async () => {
       const createUserDto = {
         email: 'test@email.com',
-        name: 'test_user',
+        provider: 'local',
+        firstName: 'test_first_name',
+        lastName: 'test_last_name',
         password: 'password',
+        role: Role.USER,
       };
       const expectedUser = { id: 1, ...createUserDto };
 
@@ -56,8 +60,10 @@ describe('UsersRepository', () => {
       const expectedUser = {
         id: 1,
         email,
-        name: 'test_user',
+        firstName: 'test_first_name',
+        lastName: 'test_last_name',
         password: 'test_password',
+        role: Role.USER,
       };
 
       mockPrismaService.user.findUnique.mockResolvedValue(expectedUser);
