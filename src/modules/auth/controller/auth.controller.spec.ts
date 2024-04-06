@@ -227,7 +227,7 @@ describe('AuthController', () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
 
-      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(mockJson).toHaveBeenCalledWith({ success: true });
     });
@@ -235,11 +235,11 @@ describe('AuthController', () => {
 
   describe('sign-in', () => {
     it('should be defined', () => {
-      expect(controller.login).toBeDefined();
+      expect(controller.signin).toBeDefined();
     });
 
     it('should call userService.findOneByEmail with LoginUpDto', async () => {
-      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(usersService.findOneByEmail).toHaveBeenCalledWith(
         mockLoginDto.email as string,
@@ -247,7 +247,7 @@ describe('AuthController', () => {
     });
 
     it('should call encryptService.compareAndThrow with password', async () => {
-      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(encryptService.compareAndThrow).toHaveBeenCalledWith(
         mockLoginDto.password as string,
@@ -256,7 +256,7 @@ describe('AuthController', () => {
     });
 
     it("should call generateToken with found user's information", async () => {
-      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
@@ -265,7 +265,7 @@ describe('AuthController', () => {
     });
 
     it("should call login with user's id and refreshToken", async () => {
-      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
         mockFindOneByEmailResult.id as number,
@@ -277,7 +277,7 @@ describe('AuthController', () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
 
-      await controller.login(mockLoginDto as SignInDto, mockResponse as any);
+      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(mockJson).toHaveBeenCalledWith({ success: true });
     });
