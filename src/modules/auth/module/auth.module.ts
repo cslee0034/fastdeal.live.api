@@ -8,10 +8,16 @@ import { RedisModule } from '../../cache/module/redis.module';
 import { EncryptModule } from '../../encrypt/module/encrypt.module';
 import { AccessTokenStrategy } from '../strategies/access-token.strategy';
 import { RefreshTokenStrategy } from '../strategies/refresh-token-strategy';
+import { GoogleStrategy } from '../strategies/google-strategy';
 
 @Module({
   imports: [UsersModule, EncryptModule, ConfigModule, JwtModule, RedisModule],
   controllers: [AuthController],
-  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    GoogleStrategy,
+  ],
 })
 export class AuthModule {}
