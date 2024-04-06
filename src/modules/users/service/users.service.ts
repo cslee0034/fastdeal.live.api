@@ -1,29 +1,29 @@
 import {
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { UserRepository } from '../repository/users.repository';
+import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
+import { UsersManager } from '../manager/users.manager';
+import { CreateOauthUserDto } from '../dto/create-oauth-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UsersRepository,
+    private readonly usersManager: UsersManager,
     private readonly encryptService: EncryptService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOneByEmail(
       createUserDto.email,
     );
 
-    if (existingUser) {
-      throw new ForbiddenException('User already exists');
-    }
+    this.usersManager.validateLocalUser(existingUser);
 
     try {
       createUserDto.password = await this.encryptService.hash(
@@ -37,12 +37,24 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<UserEntity | null> {
-    const existing = await this.userRepository.findOneByEmail(email);
+    const existingUser = await this.userRepository.findOneByEmail(email);
 
-    if (!existing) {
+    if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
-    return new UserEntity(existing);
+    return new UserEntity(existingUser);
+  }
+
+  async findOrCreateOauth(
+    createOauthUserDto: CreateOauthUserDto,
+  ): Promise<UserEntity> {
+    const existingUser = await this.userRepository.findOneByEmail(
+      createOauthUserDto.email,
+    );
+
+    this.usersManager.validateOauthUser(existingUser);
+
+    return new UserEntity(await this.userRepository.create(createOauthUserDto));
   }
 }
