@@ -1,10 +1,12 @@
-import { IsEmail, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
+import { Provider } from '../entities/user.entity';
 
 export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Provider)
   provider: string;
 
   @MaxLength(30)
