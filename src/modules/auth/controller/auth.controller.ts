@@ -18,6 +18,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SignInDto } from '../dto/request/signin.dto';
@@ -28,6 +29,7 @@ import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator
 import { Response } from 'express';
 import { GoogleAuthGuard } from '../../../common/guard/google-auth-guard';
 import { ConfigService } from '@nestjs/config';
+import { SuccessResponseDto } from '../dto/response/success-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -40,9 +42,26 @@ export class AuthController {
 
   @Public()
   @Post('local/sign-up')
-  @ApiCreatedResponse()
-  @ApiForbiddenResponse()
-  @ApiInternalServerErrorResponse()
+  @ApiOperation({
+    summary: 'Sign up a user',
+    description:
+      'This endpoint is used to sign up a user with email and password.',
+  })
+  @ApiCreatedResponse({
+    description: 'The user has been successfully created.',
+    type: SuccessResponseDto,
+  })
+  @ApiForbiddenResponse({
+    description: 'User already exists',
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'Failed to create user,\
+       Failed to create tokens,\
+       Failed to set refresh token to redis,\
+       Failed to set tokens to cookie,\
+       Internal server error',
+  })
   async signup(
     @Body() signUpDto: SignUpDto,
     @Res() res: Response,
@@ -65,11 +84,29 @@ export class AuthController {
 
   @Public()
   @Post('local/sign-in')
-  @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @ApiUnauthorizedResponse()
-  @ApiInternalServerErrorResponse()
-  async login(
+  @ApiOperation({
+    summary: 'Sign in a user',
+    description:
+      'This endpoint is used to sign in a user with email and password.',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully signed in.',
+    type: SuccessResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Password do not match',
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'Failed to create tokens,\
+       Failed to set refresh token to redis,\
+       Failed to set tokens to cookie,\
+       Internal server error',
+  })
+  async signin(
     @Body() signInDto: SignInDto,
     @Res() res: Response,
   ): Promise<void> {
@@ -93,6 +130,14 @@ export class AuthController {
 
   @Public()
   @UseGuards(GoogleAuthGuard)
+  @ApiOperation({
+    summary: 'Google OAuth2 login',
+    description:
+      'This endpoint is used to authenticate a user with Google OAuth2.',
+  })
+  @ApiOkResponse({
+    description: 'User will be redirected to Google OAuth2 login page.',
+  })
   @Get('google/login')
   async google(): Promise<{ success: boolean }> {
     return { success: true };
@@ -101,25 +146,70 @@ export class AuthController {
   @Public()
   @UseGuards(GoogleAuthGuard)
   @Get('google/redirect')
+  @ApiOperation({
+    summary: 'Google OAuth2 redirect',
+    description:
+      'This endpoint is used to redirect the user after Google OAuth2 authentication.',
+  })
+  @ApiOkResponse({
+    description: 'User will be redirected to {client-url}/api/google',
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'User will be redirected to {client-url}/api/google?error=${error.message}',
+  })
   async googleRedirect(
     @Res() res: Response,
     @GetTokenUserId() id: number,
     @GetTokenUser('email') email: string,
+    @GetTokenUser('firstName') firstName: string,
+    @GetTokenUser('lastName') lastName: string,
+    @GetTokenUser('provider') provider: string,
   ): Promise<void> {
-    const tokens = await this.authService.generateTokens(id, email);
+    try {
+      const user = await this.usersService.findOrCreateOauth({
+        email,
+        provider,
+        firstName,
+        lastName,
+      });
 
-    await this.authService.login(id, tokens.refreshToken);
+      const tokens = await this.authService.generateTokens(user.id, user.email);
 
-    await this.authService.setTokens(res, tokens);
+      await this.authService.login(id, tokens.refreshToken);
 
-    res.redirect(`${this.configService.get<string>('client.url')}/api/google`);
+      await this.authService.setTokens(res, tokens);
 
-    return;
+      res.redirect(
+        `${this.configService.get<string>('client.url')}/api/google`,
+      );
+
+      return;
+    } catch (error) {
+      res.redirect(
+        `${this.configService.get<string>('client.url')}/api/google?error=${error.message}`,
+      );
+
+      return;
+    }
   }
 
   @Get('logout')
   @HttpCode(HttpStatus.OK)
-  @ApiInternalServerErrorResponse()
+  @ApiOperation({
+    summary: 'Logout a user',
+    description:
+      "This endpoint requires an 'x-access-token' cookie for authentication.",
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully logged out.',
+    type: SuccessResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'Failed to delete refresh token from redis,\
+       Internal server error',
+  })
   async logout(@GetTokenUserId() id: number): Promise<{ success: boolean }> {
     const success = await this.authService.logout(id);
     return { success };
@@ -128,9 +218,26 @@ export class AuthController {
   @Public()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiInternalServerErrorResponse()
+  @ApiOperation({
+    summary: 'Refresh tokens',
+    description:
+      "This endpoint requires an 'x-refresh-token' cookie for token rotation.",
+  })
+  @ApiOkResponse({
+    description: 'The tokens have been successfully refreshed.',
+    type: SuccessResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Refresh token do not match',
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'Failed to get refresh token from redis,\
+       Failed to create tokens,\
+       Failed to set refresh token to redis,\
+       Failed to set tokens to cookie,\
+       Internal server error',
+  })
   async refreshTokens(
     @GetTokenUserId() id: number,
     @GetTokenUser('email') email: string,
