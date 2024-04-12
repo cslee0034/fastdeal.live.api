@@ -1,7 +1,7 @@
 export const env = () => ({
   app: {
     env: process.env.NODE_ENV,
-    serverName: process.env.serverName,
+    serverName: process.env.SERVER_NAME,
     protocol: process.env.API_PROTOCOL,
     host: process.env.API_HOST,
     port: +process.env.API_PORT,
@@ -11,7 +11,7 @@ export const env = () => ({
   },
   http: {
     timeout: process.env.HTTP_TIMEOUT,
-    maxRedirects: process.env.HTTP_maxRedirects,
+    maxRedirects: process.env.HTTP_MAX_REDIRECTS,
   },
   rdb: {
     host: process.env.RDB_HOST,
