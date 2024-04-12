@@ -76,8 +76,14 @@ export class AuthService {
     };
 
     try {
-      res.cookie('x-access-token', tokens.accessToken, options);
-      res.cookie('x-refresh-token', tokens.refreshToken, options);
+      res.cookie('x-access-token', tokens.accessToken, {
+        ...options,
+        maxAge: this.configService.get<number>('jwt.access.expiresIn'),
+      });
+      res.cookie('x-refresh-token', tokens.refreshToken, {
+        ...options,
+        maxAge: this.configService.get<number>('jwt.refresh.expiresIn'),
+      });
     } catch (error) {
       throw new InternalServerErrorException('Failed to set tokens to cookie');
     }
