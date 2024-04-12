@@ -9,7 +9,7 @@ jest.mock('@nestjs/config', () => ({
       switch (key) {
         case 'app.env':
           return 'development';
-        case 'app.server_name':
+        case 'app.serverName':
           return 'server';
         default:
           return null;
@@ -35,7 +35,7 @@ describe('winstonTransports', () => {
     winstonTransports(configService);
 
     expect(configService.get).toHaveBeenCalledWith('app.env');
-    expect(configService.get).toHaveBeenCalledWith('app.server_name');
+    expect(configService.get).toHaveBeenCalledWith('app.serverName');
   });
 
   it('should contain the correct number of transports', () => {

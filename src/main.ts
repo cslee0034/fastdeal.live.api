@@ -18,14 +18,14 @@ async function bootstrap() {
   const logger = app.get('winston');
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port');
-  const serverName = configService.get<string>('app.server_name');
+  const serverName = configService.get<string>('app.serverName');
   const reflector = app.get(Reflector);
   const clientUrl = `${configService.get<string>('client.url')}`;
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle(`${serverName}`)
     .setDescription(
-      `${configService.get<string>('app.server_name')} API description`,
+      `${configService.get<string>('app.serverName')} API description`,
     )
     .setVersion('0.0.1')
     .setContact(

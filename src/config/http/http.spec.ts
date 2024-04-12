@@ -6,7 +6,7 @@ describe('getHttpConfig', () => {
 
   beforeEach(() => {
     configService = new ConfigService({
-      http: { timeout: 3000, max_redirects: 10 },
+      http: { timeout: 3000, maxRedirects: 10 },
     });
   });
 
