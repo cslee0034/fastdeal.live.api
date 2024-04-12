@@ -16,5 +16,5 @@ export class CreateUserDto {
   lastName: string;
 
   @MaxLength(30)
-  password: string;
+  password?: string;
 }

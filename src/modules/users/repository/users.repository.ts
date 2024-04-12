@@ -2,16 +2,13 @@ import { PrismaService } from '../../../common/orm/prisma/service/prisma.service
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '@prisma/client';
-import { CreateOauthUserDto } from '../dto/create-oauth-user.dto';
 import { Role } from '../entities/user.entity';
 
 @Injectable()
 export class UsersRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createUserDto: CreateUserDto | CreateOauthUserDto,
-  ): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const {
       email,
       provider = 'local',

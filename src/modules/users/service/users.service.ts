@@ -8,7 +8,6 @@ import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { UsersManager } from '../manager/users.manager';
-import { CreateOauthUserDto } from '../dto/create-oauth-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -47,7 +46,7 @@ export class UsersService {
   }
 
   async findOrCreateOauth(
-    createOauthUserDto: CreateOauthUserDto,
+    createOauthUserDto: CreateUserDto,
   ): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOneByEmail(
       createOauthUserDto.email,

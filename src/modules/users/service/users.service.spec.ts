@@ -3,7 +3,6 @@ import { UsersService } from './users.service';
 import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { CreateOauthUserDto } from '../dto/create-oauth-user.dto';
 import { User } from '@prisma/client';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import {
@@ -163,7 +162,7 @@ describe('UsersService', () => {
   });
 
   describe('findOrCreateOauth', () => {
-    const mockCreateUserDto: CreateOauthUserDto = {
+    const mockCreateUserDto: CreateUserDto = {
       email: 'test@email.com',
       provider: 'local',
       firstName: 'test_first_name',
@@ -175,7 +174,7 @@ describe('UsersService', () => {
     });
 
     it('should call findOneByEmail', async () => {
-      await service.findOrCreateOauth(mockCreateUserDto as CreateOauthUserDto);
+      await service.findOrCreateOauth(mockCreateUserDto as CreateUserDto);
 
       expect(repository.findOneByEmail).toHaveBeenCalledWith(
         mockCreateUserDto.email,
@@ -183,14 +182,14 @@ describe('UsersService', () => {
     });
 
     it('should call validateOauthUser', async () => {
-      await service.findOrCreateOauth(mockCreateUserDto as CreateOauthUserDto);
+      await service.findOrCreateOauth(mockCreateUserDto as CreateUserDto);
 
       expect(manager.validateOauthUser).toHaveBeenCalled();
     });
 
     it('should return user entity', async () => {
       const user = await service.findOrCreateOauth(
-        mockCreateUserDto as CreateOauthUserDto,
+        mockCreateUserDto as CreateUserDto,
       );
 
       expect(user).toBeInstanceOf(UserEntity);
