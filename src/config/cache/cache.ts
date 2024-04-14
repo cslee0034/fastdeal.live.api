@@ -5,9 +5,7 @@ export const getCacheConfig = async (configService: ConfigService) => {
   return {
     isGlobal: false,
     store: redisStore,
-    host: configService.get<string>('cache.host'),
-    port: configService.get<string>('cache.port'),
+    url: configService.get<string>('cache.url'),
     password: configService.get<string>('cache.password'),
-    ttl: +configService.get<number>('cache.ttl'),
   };
 };

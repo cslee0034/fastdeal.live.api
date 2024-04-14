@@ -24,10 +24,8 @@ export const env = () => ({
     url: process.env.RDB_URL,
   },
   cache: {
-    host: process.env.CACHE_HOST,
-    port: process.env.CACHE_PORT,
+    url: process.env.CACHE_URL,
     password: process.env.CACHE_PASSWORD,
-    ttl: process.env.CACHE_TTL,
   },
   encrypt: {
     salt: process.env.ENCRYPT_SALT,
@@ -58,5 +56,8 @@ export const env = () => ({
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  },
+  slack: {
+    webhookUrl: process.env.SLACK_WEBHOOK_URL,
   },
 });
