@@ -6,7 +6,7 @@ on:
       - migration/*
 
 jobs:
-  test:
+  migration:
     runs-on: ubuntu-latest
     steps:
       - name: Define Variables
