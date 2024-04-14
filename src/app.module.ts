@@ -22,6 +22,8 @@ import { RedisModule } from './modules/cache/module/redis.module';
 import { ProducerModule } from './modules/queue/producer/module/producer.module';
 import * as AWS from 'aws-sdk';
 import { SlackModule } from 'nestjs-slack-webhook';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -67,6 +69,8 @@ import { SlackModule } from 'nestjs-slack-webhook';
     RedisModule,
     ProducerModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule, OnModuleInit {
   constructor(private readonly configService: ConfigService) {}
