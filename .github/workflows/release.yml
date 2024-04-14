@@ -1,0 +1,180 @@
+name: Test and deploy
+
+on:
+  push:
+    branches:
+      - release/*
+
+jobs:
+  unit-and-e2e-test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.3
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+    env:
+      RDB_URL: mysql://root:password@localhost:3306/test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Test pre notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,repo,author
+          custom_payload: |
+            {
+              attachments: [{
+                color: 'good',
+                text: `${process.env.AS_WORKFLOW} at ${process.env.AS_REPO} by ${process.env.AS_AUTHOR}`,
+                fields: [{
+                  title: 'starting test...',
+                  short: false
+                }]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+      - name: Install nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Cache dependency
+        uses: actions/cache@v3
+        id: cache
+        with:
+          # 'node_modules를 캐싱
+          path: node_modules
+          # yarn.lock의 파일이 바뀔때마다 다시 캐싱
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Prisma setup
+        run: |
+          npm install -g prisma
+          npx prisma generate
+          npx prisma db push
+
+      - name: Run unit tests
+        run: yarn test
+
+      - name: Run e2e tests
+        run: yarn test:e2e
+        env:
+          MYSQL_HOST: localhost
+          MYSQL_USER: root
+          MYSQL_PASSWORD: password
+          MYSQL_DB: test
+          GREETING: ${{ secrets.GREETING }}
+
+      - name: Test post notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: job,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: unit-and-e2e-test
+    steps:
+      - name: Deploy pre notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,repo,author
+          custom_payload: |
+            {
+              attachments: [{
+                color: 'good',
+                text: `${process.env.AS_WORKFLOW} at ${process.env.AS_REPO} by ${process.env.AS_AUTHOR}`,
+                fields: [{
+                  title: 'starting deploy ...',
+                  short: false
+                }]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Extract branch name and set as image tag
+        id: extract-branch
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/release/}
+          echo "IMAGE_TAG=${BRANCH_NAME}" >> $GITHUB_ENV
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        id: build-image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: container-nomadio-api
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: service-nomadio-api
+          cluster: cluster-nomadio-api
+          wait-for-service-stability: true
+
+      - name: Deploy post notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: workflow,repo,author,action,took,pullRequest
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
