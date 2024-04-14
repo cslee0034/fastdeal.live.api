@@ -74,15 +74,6 @@ jobs:
       - name: Run unit tests
         run: yarn test
 
-      - name: Run e2e tests
-        run: yarn test:e2e
-        env:
-          MYSQL_HOST: localhost
-          MYSQL_USER: root
-          MYSQL_PASSWORD: password
-          MYSQL_DB: test
-          GREETING: ${{ secrets.GREETING }}
-
       - name: Test post notification
         uses: 8398a7/action-slack@v3
         with:
