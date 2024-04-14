@@ -9,6 +9,7 @@ import { createMock } from '@golevelup/ts-jest';
 describe('PrismaClientExceptionFilter', () => {
   let prismaClientExceptionFilter: PrismaClientExceptionFilter;
   let logger: Logger;
+  let slack: any;
 
   const timestamp = new Date().toISOString();
 
@@ -74,6 +75,10 @@ describe('PrismaClientExceptionFilter', () => {
             }),
           },
         },
+        {
+          provide: 'SLACK_TOKEN',
+          useValue: { send: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -81,6 +86,7 @@ describe('PrismaClientExceptionFilter', () => {
       PrismaClientExceptionFilter,
     );
     logger = module.get<Logger>(WINSTON_MODULE_PROVIDER);
+    slack = module.get('SLACK_TOKEN');
   });
 
   it('should be defined', () => {
@@ -128,5 +134,11 @@ describe('PrismaClientExceptionFilter', () => {
         message: 'Unique constraint failed on the email',
       }),
     );
+  });
+
+  it('shoui call slack.send', () => {
+    prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
+
+    expect(slack.send).toHaveBeenCalled();
   });
 });

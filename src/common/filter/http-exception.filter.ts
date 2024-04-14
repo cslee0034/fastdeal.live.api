@@ -9,6 +9,7 @@ import {
 import { Request, Response } from 'express';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { IncomingWebhook } from '@slack/webhook';
 
 interface IMessage {
   success: boolean;
@@ -31,6 +32,7 @@ type ErrorType = string | IError;
 export class HttpExceptionFilter implements ExceptionFilter {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    @Inject('SLACK_TOKEN') private readonly slack: IncomingWebhook,
   ) {}
 
   catch(exception: HttpException, host: ArgumentsHost): void {
@@ -80,6 +82,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // 5xx 에러는 error 로 출력하고, 그 외에는 warn으로 출력한다.
     if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(this.messageToString(message));
+      this.slack.send(this.messageToString(message));
     } else {
       this.logger.warn(this.messageToString(message));
     }

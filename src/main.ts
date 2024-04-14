@@ -21,6 +21,7 @@ async function bootstrap() {
   const serverName = configService.get<string>('app.serverName');
   const reflector = app.get(Reflector);
   const clientUrl = `${configService.get<string>('client.url')}`;
+  const slack = app.get('SLACK_TOKEN');
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle(`${serverName}`)
@@ -69,8 +70,8 @@ async function bootstrap() {
     new ClassSerializerInterceptor(reflector),
   );
   app.useGlobalFilters(
-    new PrismaClientExceptionFilter(logger),
-    new HttpExceptionFilter(logger),
+    new PrismaClientExceptionFilter(logger, slack),
+    new HttpExceptionFilter(logger, slack),
   );
 
   await app.listen(port);

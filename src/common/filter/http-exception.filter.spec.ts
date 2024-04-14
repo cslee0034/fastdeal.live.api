@@ -8,6 +8,7 @@ import { ExecutionContext, HttpException } from '@nestjs/common';
 describe('HttpExceptionFilter', () => {
   let httpExceptionFilter: HttpExceptionFilter;
   let logger: Logger;
+  let slack: any;
 
   const timestamp = new Date().toISOString();
 
@@ -88,11 +89,16 @@ describe('HttpExceptionFilter', () => {
             }),
           },
         },
+        {
+          provide: 'SLACK_TOKEN',
+          useValue: { send: jest.fn() },
+        },
       ],
     }).compile();
 
     httpExceptionFilter = module.get<HttpExceptionFilter>(HttpExceptionFilter);
     logger = module.get<Logger>(WINSTON_MODULE_PROVIDER);
+    slack = module.get('SLACK_TOKEN');
   });
 
   it('should be defined', () => {
@@ -176,5 +182,14 @@ describe('HttpExceptionFilter', () => {
         statusCode: 500,
       }),
     );
+  });
+
+  it('should send slack message for 5xx errors', () => {
+    const statuses = [500, 501, 502, 503];
+    statuses.forEach((status) => {
+      const mockException = new HttpException('Error', status);
+      httpExceptionFilter.catch(mockException, mockExecutionContext);
+      expect(slack.send).toHaveBeenCalled();
+    });
   });
 });

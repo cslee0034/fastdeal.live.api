@@ -21,6 +21,7 @@ import { AuthModule } from './modules/auth/module/auth.module';
 import { RedisModule } from './modules/cache/module/redis.module';
 import { ProducerModule } from './modules/queue/producer/module/producer.module';
 import * as AWS from 'aws-sdk';
+import { SlackModule } from 'nestjs-slack-webhook';
 
 @Module({
   imports: [
@@ -50,6 +51,13 @@ import * as AWS from 'aws-sdk';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): object =>
         getJwtConfig(configService),
+      inject: [ConfigService],
+    }),
+    SlackModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        url: configService.get<string>('slack.webhookUrl'),
+      }),
       inject: [ConfigService],
     }),
     PrismaModule,

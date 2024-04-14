@@ -9,6 +9,18 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { IncomingWebhook } from '@slack/webhook';
+
+interface IMessage {
+  success: boolean;
+  timestamp: string;
+  path: string;
+  statusCode: number;
+  errorCode: string;
+  message?: string | string[];
+}
+
+type ErrorType = any;
 
 @Catch(
   Prisma.PrismaClientKnownRequestError,
@@ -22,6 +34,7 @@ export class PrismaClientExceptionFilter
 {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    @Inject('SLACK_TOKEN') private readonly slack: IncomingWebhook,
   ) {
     super();
   }
@@ -46,25 +59,42 @@ export class PrismaClientExceptionFilter
       } else {
         errorCode = 'UNKNOWN_ERROR';
       }
-      const message = error?.message || 'Priam Client Error';
 
-      this.logger.error(`
-        success: false,
-        timestamp: ${new Date().toISOString()},
-        path: ${request.url},
-        statusCode: ${statusCode},
-        errorCode: ${errorCode}
-        message: ${message}
-      `);
+      const message = this.formatMessage(request, statusCode, errorCode, error);
 
-      response.status(statusCode).json({
-        success: false,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-        statusCode: statusCode,
-        errorCode: errorCode,
-        message: message,
-      });
+      this.logMessage(message);
+
+      response.status(statusCode).json(message);
     }
   }
+
+  private formatMessage = (
+    request: Request,
+    statusCode: number,
+    errorCode: string,
+    error: ErrorType,
+  ): IMessage => {
+    return {
+      success: false,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      statusCode: statusCode,
+      errorCode: errorCode,
+      message: error?.message || 'Priam Client Error',
+    };
+  };
+
+  private logMessage = (message: object): void => {
+    this.logger.error(this.messageToString(message));
+    this.slack.send(this.messageToString(message));
+  };
+
+  private messageToString = (message: object): string => {
+    let logString = '';
+    for (const [key, value] of Object.entries(message)) {
+      logString += `\n${key}: ${value}`;
+    }
+
+    return logString;
+  };
 }
