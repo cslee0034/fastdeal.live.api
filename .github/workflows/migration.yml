@@ -1,0 +1,80 @@
+name: Excute migration
+
+on:
+  push:
+    branches:
+      - migration/*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Define Variables
+        run: |
+          echo "MIGRATION_COMMAND=${GITHUB_REF#refs/heads/migration/}" >> $GITHUB_ENV
+          echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
+      - name: Display Variables
+        run: |
+          echo "MIGRATION_COMMAND=$MIGRATION_COMMAND"
+          echo "REPO_NAME=$REPO_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME"
+
+      - name: Connect to bastion server
+        uses: appleboy/ssh-action@master
+        env:
+          REPO_NAME: ${{ env.REPO_NAME }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          MIGRATION_COMMAND: ${{ env.MIGRATION_COMMAND }}
+          RDB_URL: ${{ secrets.RDB_URL }}
+        with:
+          key: ${{ secrets.BASTION_KEY }}
+          host: ${{ secrets.BASTION_HOST }}
+          username: ${{ secrets.BASTION_USER_NAME }}
+          port: ${{ secrets.BASTION_PORT }}
+          envs: REPO_NAME, BRANCH_NAME, MIGRATION_COMMAND, RDB_URL
+          script: |
+            echo "#### 1. Connected to bastion server ####"
+
+            echo "#### 2. Install git ####"
+            sudo dnf install git -y
+
+            echo "#### 3. Clone repository ####"
+            cd ~
+            if ls | grep -q "$REPO_NAME"; then
+              echo "Directory already exists"
+            else
+              git clone ${{ secrets.GIT_REPOSITORY_URL }}
+            fi
+
+            echo "#### 4. Checkout and pull branch ####"
+            cd $REPO_NAME
+            git fetch
+            git checkout $BRANCH_NAME || git checkout -b $BRANCH_NAME origin/$BRANCH_NAME
+            echo "Checked out to $BRANCH_NAME"
+            git pull
+
+            echo "#### 5. Generate .env file ####"
+            echo "RDB_URL=$RDB_URL" > .env
+
+            echo "#### 6. Install npm and prisma ####"
+            sudo dnf install nodejs -y
+            sudo dnf install npm -y
+            sudo npm install -g prisma
+
+            echo "#### 7. Run migration ####"
+            if [[ "$MIGRATION_COMMAND" == "push" ]]; then
+              sudo npx prisma db push --skip-generate
+            elif [[ "$MIGRATION_COMMAND" == "force-reset" ]]; then
+              sudo npx prisma db push --force-reset --skip-generate
+            elif [[ "$MIGRATION_COMMAND" == "migrate" ]]; then
+              sudo npx prisma migrate deploy
+            elif [[ "$MIGRATION_COMMAND" == "seed" ]]; then
+              sudo npm install ts-node
+              sudo npx prisma generate
+              sudo chmod +x ./prisma/seed.ts
+              sudo npx prisma db seed
+            else
+              echo "No specific command for this branch"
+            fi
