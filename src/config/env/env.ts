@@ -14,13 +14,6 @@ export const env = () => ({
     maxRedirects: process.env.HTTP_MAX_REDIRECTS,
   },
   rdb: {
-    host: process.env.RDB_HOST,
-    port: +process.env.RDB_PORT,
-    username: process.env.RDB_USERNAME,
-    password: process.env.RDB_PASSWORD,
-    database: process.env.RDB_DATABASE,
-    synchronize: process.env.RDB_SYNCHRONIZE,
-    logging: process.env.RDB_LOGGING,
     url: process.env.RDB_URL,
   },
   cache: {
