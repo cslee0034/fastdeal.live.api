@@ -22,6 +22,8 @@ describe('AuthController', () => {
   let usersService: UsersService;
   let encryptService: EncryptService;
 
+  const oauthProviders = ['google'];
+
   const mockUsersService = {
     createLocal: jest
       .fn()
@@ -46,6 +48,33 @@ describe('AuthController', () => {
         return Promise.reject(new NotFoundException('User not found'));
       }
     }),
+
+    findOrCreateOauth: jest
+      .fn()
+      .mockImplementation(
+        ({
+          email,
+          provider,
+          firstName,
+          lastName,
+        }: {
+          email: string;
+          provider: string;
+          firstName: string;
+          lastName: string;
+        }): Promise<UserEntity> => {
+          if (
+            email === 'test@email.com' &&
+            oauthProviders.includes(provider) &&
+            firstName === 'test_first_name' &&
+            lastName === 'test_last_name'
+          ) {
+            return Promise.resolve(mockCreateUserResult);
+          } else {
+            return Promise.reject(new InternalServerErrorException());
+          }
+        },
+      ),
   };
 
   const mockAuthService = {
@@ -223,6 +252,15 @@ describe('AuthController', () => {
       );
     });
 
+    it('should call setTokens with response and tokens', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(authService.setTokens).toHaveBeenCalledWith(
+        mockResponse as any,
+        mockTokenResult,
+      );
+    });
+
     it('should return { success: true }', async () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
@@ -273,6 +311,15 @@ describe('AuthController', () => {
       );
     });
 
+    it('should call setTokens with response and tokens', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(authService.setTokens).toHaveBeenCalledWith(
+        mockResponse as any,
+        mockTokenResult,
+      );
+    });
+
     it('should return { success: true }', async () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
@@ -298,6 +345,85 @@ describe('AuthController', () => {
   describe('googleRedirect', () => {
     it('should be defined', () => {
       expect(controller.googleRedirect).toBeDefined();
+    });
+
+    it('should call findOrCreateOauth', async () => {
+      await controller.googleRedirect(
+        mockResponse as any,
+        1,
+        mockSignUpDto.email as string,
+        mockSignUpDto.firstName as string,
+        mockSignUpDto.lastName as string,
+        'google',
+      );
+
+      expect(usersService.findOrCreateOauth).toHaveBeenCalledWith({
+        email: mockSignUpDto.email as string,
+        provider: 'google',
+        firstName: mockSignUpDto.firstName as string,
+        lastName: mockSignUpDto.lastName as string,
+      });
+    });
+
+    it('should call generateToken with find or created user information', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(authService.generateTokens).toHaveBeenCalledWith(
+        mockCreateUserResult.id as number,
+        mockCreateUserResult.email as string,
+      );
+    });
+
+    it("should call login with user's id and refreshToken", async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(authService.login).toHaveBeenCalledWith(
+        mockCreateUserResult.id as number,
+        mockTokenResult.refreshToken as string,
+      );
+    });
+
+    it('should call setTokens with response and tokens', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(authService.setTokens).toHaveBeenCalledWith(
+        mockResponse as any,
+        mockTokenResult,
+      );
+    });
+
+    it('should redirect to client url', async () => {
+      const mockRedirect = jest.fn();
+      mockResponse.redirect = mockRedirect;
+
+      await controller.googleRedirect(
+        mockResponse as any,
+        1,
+        mockSignUpDto.email as string,
+        mockSignUpDto.firstName as string,
+        mockSignUpDto.lastName as string,
+        'google',
+      );
+
+      expect(mockRedirect).toHaveBeenCalledWith('client.url/api/google');
+    });
+
+    it('should throw InternalServerErrorException if provider is not oauth provider', async () => {
+      const mockRedirect = jest.fn();
+      mockResponse.redirect = mockRedirect;
+
+      await controller.googleRedirect(
+        mockResponse as any,
+        1,
+        mockSignUpDto.email as string,
+        mockSignUpDto.firstName as string,
+        mockSignUpDto.lastName as string,
+        'local',
+      );
+
+      expect(mockRedirect).toHaveBeenCalledWith(
+        'client.url/api/google?error=Internal Server Error',
+      );
     });
   });
 

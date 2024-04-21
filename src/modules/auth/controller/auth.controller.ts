@@ -186,6 +186,7 @@ export class AuthController {
 
       return;
     } catch (error) {
+      console.log(error);
       res.redirect(
         `${this.configService.get<string>('client.url')}/api/google?error=${error.message}`,
       );
