@@ -4,24 +4,24 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${RDB_PASSWORD}
-      MYSQL_DATABASE: ${RDB_DATABASE}
-      MYSQL_USER: ${RDB_USERNAME}
-      MYSQL_PASSWORD: ${RDB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: nomad-io
+      MYSQL_USER: lcs0112
+      MYSQL_PASSWORD: 1234
     ports:
-      - '${RDB_PORT}:${RDB_PORT}'
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
 
   redis:
     image: redis:latest
-    command: redis-server --requirepass ${CACHE_PASSWORD}
+    command: redis-server --requirepass 1234
     ports:
-      - '${CACHE_PORT}:${CACHE_PORT}'
+      - '6379:6379'
     volumes:
       - redis_data:/data
     environment:
-      REDIS_PASSWORD: ${CACHE_PASSWORD}
+      REDIS_PASSWORD: 1234
 
 volumes:
   mysql_data:
