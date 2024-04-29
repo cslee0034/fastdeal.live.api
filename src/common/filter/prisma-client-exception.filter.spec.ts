@@ -87,6 +87,7 @@ describe('PrismaClientExceptionFilter', () => {
     );
     logger = module.get<Logger>(WINSTON_MODULE_PROVIDER);
     slack = module.get('SLACK_TOKEN');
+    process.env.NODE_ENV = 'development';
   });
 
   it('should be defined', () => {
@@ -136,7 +137,9 @@ describe('PrismaClientExceptionFilter', () => {
     );
   });
 
-  it('shoui call slack.send', () => {
+  it('should call slack.send if env is production', () => {
+    process.env.NODE_ENV = 'production';
+
     prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
 
     expect(slack.send).toHaveBeenCalled();

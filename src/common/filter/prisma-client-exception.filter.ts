@@ -12,6 +12,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { IncomingWebhook } from '@slack/webhook';
 
 interface IMessage {
+  environment: string;
   success: boolean;
   timestamp: string;
   path: string;
@@ -59,8 +60,17 @@ export class PrismaClientExceptionFilter
       } else {
         errorCode = 'UNKNOWN_ERROR';
       }
+      const KSTDate = new Date().toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul',
+      });
 
-      const message = this.formatMessage(request, statusCode, errorCode, error);
+      const message = this.formatMessage({
+        request,
+        statusCode,
+        KSTDate,
+        errorCode,
+        error,
+      });
 
       this.logMessage(message);
 
@@ -68,15 +78,23 @@ export class PrismaClientExceptionFilter
     }
   }
 
-  private formatMessage = (
-    request: Request,
-    statusCode: number,
-    errorCode: string,
-    error: ErrorType,
-  ): IMessage => {
+  private formatMessage = ({
+    request,
+    statusCode,
+    KSTDate,
+    errorCode,
+    error,
+  }: {
+    request: Request;
+    statusCode: number;
+    KSTDate: string;
+    errorCode: string;
+    error: ErrorType;
+  }): IMessage => {
     return {
+      environment: process.env.NODE_ENV,
       success: false,
-      timestamp: new Date().toISOString(),
+      timestamp: KSTDate,
       path: request.url,
       statusCode: statusCode,
       errorCode: errorCode,
@@ -86,7 +104,12 @@ export class PrismaClientExceptionFilter
 
   private logMessage = (message: object): void => {
     this.logger.error(this.messageToString(message));
-    this.slack.send(this.messageToString(message));
+
+    if (process.env.NODE_ENV === 'production') {
+      this.slack.send(this.messageToString(message));
+    }
+
+    return;
   };
 
   private messageToString = (message: object): string => {
