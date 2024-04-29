@@ -37,9 +37,9 @@ export const winstonTransports = (configService: ConfigService) => [
     ),
   }),
   new winstonDaily(
-    dailyOptions('warn', `${configService.get<string>('app.serverName')}.api`),
+    dailyOptions('warn', `${configService.get<string>('app.serverName')}`),
   ),
   new winstonDaily(
-    dailyOptions('error', `${configService.get<string>('app.serverName')}.api`),
+    dailyOptions('error', `${configService.get<string>('app.serverName')}`),
   ),
 ];
