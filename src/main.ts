@@ -15,19 +15,18 @@ import { TransformInterceptor } from './common/interceptor/transform-interceptor
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const logger = app.get('winston');
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('app.port');
+  const environment = configService.get<string>('app.env');
   const serverName = configService.get<string>('app.serverName');
+  const port = configService.get<number>('app.port');
   const reflector = app.get(Reflector);
   const clientUrl = `${configService.get<string>('client.url')}`;
+  const logger = app.get('winston');
   const slack = app.get('SLACK_TOKEN');
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle(`${serverName}`)
-    .setDescription(
-      `${configService.get<string>('app.serverName')} API description`,
-    )
+    .setDescription(`${serverName} API description`)
     .setVersion('0.0.1')
     .setContact(
       'cslee0034',
@@ -39,7 +38,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);
 
-  if (configService.get<string>('app.env') === 'development') {
+  if (environment === 'development') {
     SwaggerModule.setup('api', app, document);
   }
 
