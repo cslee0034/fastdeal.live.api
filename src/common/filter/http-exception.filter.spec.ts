@@ -99,6 +99,7 @@ describe('HttpExceptionFilter', () => {
     httpExceptionFilter = module.get<HttpExceptionFilter>(HttpExceptionFilter);
     logger = module.get<Logger>(WINSTON_MODULE_PROVIDER);
     slack = module.get('SLACK_TOKEN');
+    process.env.NODE_ENV = 'development';
   });
 
   it('should be defined', () => {
@@ -185,6 +186,7 @@ describe('HttpExceptionFilter', () => {
   });
 
   it('should send slack message for 5xx errors', () => {
+    process.env.NODE_ENV = 'production';
     const statuses = [500, 501, 502, 503];
     statuses.forEach((status) => {
       const mockException = new HttpException('Error', status);

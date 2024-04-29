@@ -12,6 +12,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { IncomingWebhook } from '@slack/webhook';
 
 interface IMessage {
+  environment: string;
   success: boolean;
   timestamp: string;
   path: string;
@@ -45,31 +46,47 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const error = exception.getResponse() as
       | string
       | { statusCode: number; error: string; message: string | string[] };
+    const KSTDate = new Date().toLocaleString('ko-KR', {
+      timeZone: 'Asia/Seoul',
+    });
 
-    const message: IMessage = this.formatMessage(request, statusCode, error);
+    const message: IMessage = this.formatMessage({
+      request,
+      statusCode,
+      KSTDate,
+      error,
+    });
 
     this.logMessage(message, statusCode);
 
     response.status(statusCode).json(message);
   }
 
-  private formatMessage = (
-    request: Request,
-    statusCode: number,
-    error: ErrorType,
-  ): IMessage => {
+  private formatMessage = ({
+    request,
+    statusCode,
+    KSTDate,
+    error,
+  }: {
+    request: Request;
+    statusCode: number;
+    KSTDate: string;
+    error: ErrorType;
+  }): IMessage => {
     if (typeof error === 'string') {
       return {
+        environment: process.env.NODE_ENV,
         success: false,
-        timestamp: new Date().toISOString(),
+        timestamp: KSTDate,
         path: request.url,
         statusCode,
         error,
       };
     } else {
       return {
+        environment: process.env.NODE_ENV,
         success: false,
-        timestamp: new Date().toISOString(),
+        timestamp: KSTDate,
         path: request.url,
         statusCode: statusCode,
         error: error?.error,
@@ -79,13 +96,28 @@ export class HttpExceptionFilter implements ExceptionFilter {
   };
 
   private logMessage = (message: object, statusCode: number): void => {
-    // 5xx 에러는 error 로 출력하고, 그 외에는 warn으로 출력한다.
-    if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(this.messageToString(message));
-      this.slack.send(this.messageToString(message));
-    } else {
+    /**
+     * 5xx 이하 에러(4xx)는 warn으로 출력한다.
+     */
+    if (statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.warn(this.messageToString(message));
+      return;
     }
+
+    /**
+     * 5xx 이상의 에러는 error로 출력한다.
+     * slack으로 메시지를 전송하기 전에 로컬에서 에러 메시지를 출력한다.
+     */
+    this.logger.error(this.messageToString(message));
+
+    /**
+     * production 환경에서만 slack으로 에러 메시지를 전송한다.
+     */
+    if (process.env.NODE_ENV === 'production') {
+      this.slack.send(this.messageToString(message));
+    }
+
+    return;
   };
 
   private messageToString = (message: object): string => {
