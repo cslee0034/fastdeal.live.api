@@ -1,8 +1,8 @@
 {
   "name": "nomad-io.api",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "0.1.0",
+  "description": "nomad worker community",
+  "author": "cslee0034@gmail.com",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
