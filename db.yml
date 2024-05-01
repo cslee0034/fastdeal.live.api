@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: nomad-io
-      MYSQL_USER: lcs0112
+      MYSQL_USER: cslee0034
       MYSQL_PASSWORD: 1234
     ports:
       - '3306:3306'
