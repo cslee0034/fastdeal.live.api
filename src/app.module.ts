@@ -14,14 +14,15 @@ import { winstonTransports } from './config/logger/logger';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
-import { PrismaModule } from './common/orm/prisma/module/prisma.module';
-import { EncryptModule } from './modules/encrypt/module/encrypt.module';
-import { UsersModule } from './modules/users/module/users.module';
-import { AuthModule } from './modules/auth/module/auth.module';
-import { RedisModule } from './modules/cache/module/redis.module';
-import { ProducerModule } from './modules/queue/producer/module/producer.module';
-import * as AWS from 'aws-sdk';
 import { SlackModule } from 'nestjs-slack-webhook';
+import { PrismaModule } from './common/orm/prisma/module/prisma.module';
+import { AuthModule } from './modules/auth/module/auth.module';
+import { EncryptModule } from './modules/encrypt/module/encrypt.module';
+import { ProducerModule } from './modules/queue/producer/module/producer.module';
+import { RedisModule } from './modules/cache/module/redis.module';
+import { UsersModule } from './modules/users/module/users.module';
+import { LocationsModule } from './modules/locations/module/locations.module';
+import * as AWS from 'aws-sdk';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -63,11 +64,12 @@ import { AppService } from './app.service';
       inject: [ConfigService],
     }),
     PrismaModule,
-    EncryptModule,
-    UsersModule,
     AuthModule,
     RedisModule,
+    EncryptModule,
     ProducerModule,
+    UsersModule,
+    LocationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
