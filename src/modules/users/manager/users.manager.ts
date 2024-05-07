@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
+import { Provider } from '@prisma/client';
 
 @Injectable()
 export class UsersManager {
@@ -8,7 +9,7 @@ export class UsersManager {
       return;
     }
 
-    if (existingUser.provider !== 'local') {
+    if (existingUser.provider !== Provider.local) {
       throw new ForbiddenException(
         `User already exists with ${existingUser.provider} provider`,
       );
@@ -22,7 +23,7 @@ export class UsersManager {
       return;
     }
 
-    if (existingUser.provider === 'local') {
+    if (existingUser.provider === Provider.local) {
       throw new ForbiddenException(
         `User already exists with ${existingUser.provider} provider`,
       );

@@ -1,23 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import { Provider, Role, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
-
-export enum Provider {
-  LOCAL = 'local',
-  GOOGLE = 'google',
-}
-
-export enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
-}
 
 export class UserEntity implements User {
   @ApiProperty({
     description: 'The id of the user',
-    example: 0,
+    example: '1af07b9b-0b1b-4b3d-8e1b-4f4b9b7b1b1b',
   })
-  id: number;
+  id: string;
 
   @ApiProperty({
     description: 'The email of the user',
@@ -26,7 +16,7 @@ export class UserEntity implements User {
   email: string;
 
   @ApiProperty({ enum: Provider })
-  provider: string;
+  provider: Provider;
 
   @Exclude() // 인스턴스를 직렬화할 때 해당 필드를 제외
   password: string;
@@ -44,7 +34,7 @@ export class UserEntity implements User {
   lastName: string;
 
   @ApiProperty({ enum: Role })
-  role: string;
+  role: Role;
 
   @ApiProperty({
     description: 'The created date of the user',

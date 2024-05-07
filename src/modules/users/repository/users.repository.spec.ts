@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersRepository } from './users.repository';
 import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
-import { Role } from '../entities/user.entity';
+import { Provider, Role } from '@prisma/client';
 
 describe('UsersRepository', () => {
   let repository: UsersRepository;
@@ -35,11 +35,11 @@ describe('UsersRepository', () => {
     it('should create a new user', async () => {
       const createUserDto = {
         email: 'test@email.com',
-        provider: 'local',
+        provider: Provider.local,
         firstName: 'test_first_name',
         lastName: 'test_last_name',
         password: 'password',
-        role: Role.USER,
+        role: Role.user,
       };
       const expectedUser = { id: 1, ...createUserDto };
 
@@ -63,7 +63,7 @@ describe('UsersRepository', () => {
         firstName: 'test_first_name',
         lastName: 'test_last_name',
         password: 'test_password',
-        role: Role.USER,
+        role: Role.user,
       };
 
       mockPrismaService.user.findUnique.mockResolvedValue(expectedUser);

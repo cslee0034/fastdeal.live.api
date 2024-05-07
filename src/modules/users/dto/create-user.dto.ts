@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
-import { Provider } from '../entities/user.entity';
+import { Provider } from '@prisma/client';
 
 export class CreateUserDto {
   @IsEmail()

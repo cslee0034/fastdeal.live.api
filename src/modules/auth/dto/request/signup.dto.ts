@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateUserDto } from '../../../users/dto/create-user.dto';
 import { IsEmail, IsEnum, MaxLength } from 'class-validator';
-import { Provider } from '../../../users/entities/user.entity';
+import { Provider } from '@prisma/client';
 
 export class SignUpDto implements CreateUserDto {
   @ApiProperty({

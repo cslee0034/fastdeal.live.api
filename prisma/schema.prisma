@@ -14,13 +14,25 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   email     String   @unique
-  provider  String
-  password  String?
-  firstName String?
-  lastName  String?
-  role      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  provider  Provider @default(local)
+  password  String   @db.VarChar(255)
+  firstName String?  @db.VarChar(30)
+  lastName  String?  @db.VarChar(30)
+  role      Role     @default(user)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @db.Timestamp(0)
+
+  @@index([email])
+}
+
+enum Provider {
+  local
+  google
+}
+
+enum Role {
+  user
+  admin
 }

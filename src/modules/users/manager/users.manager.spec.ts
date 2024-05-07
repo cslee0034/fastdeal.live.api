@@ -2,15 +2,16 @@ import { Test } from '@nestjs/testing';
 import { UsersManager } from './users.manager';
 import { ForbiddenException } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
+import { Provider } from '@prisma/client';
 
 describe('UsersManager', () => {
   let manager: UsersManager;
 
   const mockUser = {
-    id: 1,
+    id: '1',
     email: 'test@email.com',
     password: 'test_password',
-    provider: 'local',
+    provider: Provider.local,
   } as UserEntity;
 
   beforeEach(async () => {
@@ -45,7 +46,10 @@ describe('UsersManager', () => {
     });
 
     it('should throw ForbiddenException if user already exists', () => {
-      const googleUser = { ...mockUser, provider: 'google' } as UserEntity;
+      const googleUser = {
+        ...mockUser,
+        provider: Provider.google,
+      } as UserEntity;
 
       expect(() => manager.validateLocalUser(googleUser)).toThrow(
         ForbiddenException,
@@ -73,7 +77,10 @@ describe('UsersManager', () => {
     });
 
     it('should throw ForbiddenException if user already exists', () => {
-      const googleUser = { ...mockUser, provider: 'google' } as UserEntity;
+      const googleUser = {
+        ...mockUser,
+        provider: Provider.google,
+      } as UserEntity;
 
       expect(() => manager.validateOauthUser(googleUser)).toThrow(
         ForbiddenException,

@@ -16,7 +16,7 @@ export class AuthService {
     private readonly redisService: RedisService,
   ) {}
 
-  async login(id: number, refreshToken: string): Promise<boolean> {
+  async login(id: string, refreshToken: string): Promise<boolean> {
     try {
       await this.redisService.set(
         `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
@@ -31,7 +31,7 @@ export class AuthService {
     }
   }
 
-  async logout(id: number): Promise<boolean> {
+  async logout(id: string): Promise<boolean> {
     try {
       await this.redisService.del(
         `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
@@ -44,7 +44,7 @@ export class AuthService {
     }
   }
 
-  async generateTokens(id: number, email: string): Promise<Tokens> {
+  async generateTokens(id: string, email: string): Promise<Tokens> {
     const payload = {
       id: id,
       email: email,
@@ -91,7 +91,7 @@ export class AuthService {
     return;
   }
 
-  async checkIsLoggedIn(id: number, refreshToken: string) {
+  async checkIsLoggedIn(id: string, refreshToken: string) {
     try {
       const savedRefreshToken = await this.redisService.get(
         `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,

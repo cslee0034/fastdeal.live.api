@@ -178,7 +178,7 @@ describe('AuthController', () => {
   };
 
   const mockCreateUserResult: UserEntity = new UserEntity({
-    id: 1,
+    id: '1',
     email: 'test@email.com',
     firstName: 'test_first_name',
     lastName: 'test_last_name',
@@ -186,7 +186,7 @@ describe('AuthController', () => {
   });
 
   const mockFindOneByEmailResult: UserEntity = new UserEntity({
-    id: 1,
+    id: '1',
     email: 'test@email.com',
     firstName: 'test_first_name',
     lastName: 'test_last_name',
@@ -238,7 +238,7 @@ describe('AuthController', () => {
       await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
-        mockCreateUserResult.id as number,
+        mockCreateUserResult.id as string,
         mockCreateUserResult.email as string,
       );
     });
@@ -247,7 +247,7 @@ describe('AuthController', () => {
       await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
-        mockCreateUserResult.id as number,
+        mockCreateUserResult.id as string,
         mockTokenResult.refreshToken as string,
       );
     });
@@ -297,7 +297,7 @@ describe('AuthController', () => {
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
-        mockFindOneByEmailResult.id as number,
+        mockFindOneByEmailResult.id as string,
         mockFindOneByEmailResult.email as string,
       );
     });
@@ -306,7 +306,7 @@ describe('AuthController', () => {
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
-        mockFindOneByEmailResult.id as number,
+        mockFindOneByEmailResult.id as string,
         mockTokenResult.refreshToken as string,
       );
     });
@@ -350,7 +350,7 @@ describe('AuthController', () => {
     it('should call findOrCreateOauth', async () => {
       await controller.googleRedirect(
         mockResponse as any,
-        1,
+        '1',
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
@@ -369,7 +369,7 @@ describe('AuthController', () => {
       await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.generateTokens).toHaveBeenCalledWith(
-        mockCreateUserResult.id as number,
+        mockCreateUserResult.id as string,
         mockCreateUserResult.email as string,
       );
     });
@@ -378,7 +378,7 @@ describe('AuthController', () => {
       await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
-        mockCreateUserResult.id as number,
+        mockCreateUserResult.id as string,
         mockTokenResult.refreshToken as string,
       );
     });
@@ -398,7 +398,7 @@ describe('AuthController', () => {
 
       await controller.googleRedirect(
         mockResponse as any,
-        1,
+        '1',
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
@@ -414,7 +414,7 @@ describe('AuthController', () => {
 
       await controller.googleRedirect(
         mockResponse as any,
-        1,
+        '1',
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
@@ -433,7 +433,7 @@ describe('AuthController', () => {
     });
 
     it('should call authService.logout with id and refreshToken', async () => {
-      const id = mockCreateUserResult.id as number;
+      const id = mockCreateUserResult.id as string;
 
       await controller.logout(id);
 
@@ -441,7 +441,7 @@ describe('AuthController', () => {
     });
 
     it('should return success', async () => {
-      const id = mockCreateUserResult.id as number;
+      const id = mockCreateUserResult.id as string;
 
       const result = await controller.logout(id);
 
@@ -450,7 +450,7 @@ describe('AuthController', () => {
   });
 
   describe('refresh', () => {
-    const userId = 1;
+    const userId = '1';
     const userEmail = 'test@email.com';
     const userRefreshToken = 'valid_refresh_token';
 

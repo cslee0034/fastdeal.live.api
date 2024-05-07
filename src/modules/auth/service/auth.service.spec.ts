@@ -13,7 +13,7 @@ import { CookieOptions } from 'express';
 describe('AuthService', () => {
   let service: AuthService;
 
-  const mockId = 1;
+  const mockId = '1';
   const mockEmail = 'test@email.com';
 
   const accessSecret = 'jwt.access.secret';
@@ -129,7 +129,7 @@ describe('AuthService', () => {
   });
 
   describe('logout', () => {
-    const userId = 0;
+    const userId = '0';
 
     it('should be defined', () => {
       expect(service.logout).toBeDefined();
@@ -224,7 +224,7 @@ describe('AuthService', () => {
   });
 
   describe('checkIsLoggedIn', () => {
-    const userId = 1;
+    const userId = '1';
     const validRefreshToken = 'valid_refresh_token';
     const invalidRefreshToken = 'invalid_refresh_token';
 

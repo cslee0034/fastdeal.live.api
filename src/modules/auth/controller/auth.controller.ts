@@ -160,7 +160,7 @@ export class AuthController {
   })
   async googleRedirect(
     @Res() res: Response,
-    @GetTokenUserId() id: number,
+    @GetTokenUserId() id: string,
     @GetTokenUser('email') email: string,
     @GetTokenUser('firstName') firstName: string,
     @GetTokenUser('lastName') lastName: string,
@@ -211,7 +211,7 @@ export class AuthController {
       'Failed to delete refresh token from redis,\
        Internal server error',
   })
-  async logout(@GetTokenUserId() id: number): Promise<{ success: boolean }> {
+  async logout(@GetTokenUserId() id: string): Promise<{ success: boolean }> {
     const success = await this.authService.logout(id);
     return { success };
   }
@@ -240,7 +240,7 @@ export class AuthController {
        Internal server error',
   })
   async refreshTokens(
-    @GetTokenUserId() id: number,
+    @GetTokenUserId() id: string,
     @GetTokenUser('email') email: string,
     @GetTokenUser('refreshToken') refreshToken: string,
     @Res() res: Response,

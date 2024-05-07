@@ -2,7 +2,7 @@ import { PrismaService } from '../../../common/orm/prisma/service/prisma.service
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '@prisma/client';
-import { Role } from '../entities/user.entity';
+import { Provider, Role } from '@prisma/client';
 
 @Injectable()
 export class UsersRepository {
@@ -22,16 +22,22 @@ export class UsersRepository {
       password = createUserDto.password;
     }
 
+    const enumProvider = this.mapProvider(provider);
+
     return await this.prisma.user.create({
       data: {
         email,
-        provider,
+        provider: enumProvider,
         password,
         firstName,
         lastName,
-        role: Role.USER,
+        role: Role.user,
       },
     });
+  }
+
+  private mapProvider(provider: string): Provider {
+    return provider === 'google' ? Provider.google : Provider.local;
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
