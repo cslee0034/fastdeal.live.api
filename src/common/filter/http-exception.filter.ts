@@ -19,6 +19,7 @@ interface IMessage {
   statusCode: number;
   error: string;
   message?: string | string[];
+  stack?: string;
 }
 
 interface IError {
@@ -55,11 +56,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode,
       KSTDate,
       error,
+      stack: exception.stack,
     });
 
     this.logMessage(message, statusCode);
 
-    response.status(statusCode).json(message);
+    const clientMessage = this.omitStack(message);
+
+    response.status(statusCode).json(clientMessage);
   }
 
   private formatMessage = ({
@@ -67,11 +71,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     statusCode,
     KSTDate,
     error,
+    stack,
   }: {
     request: Request;
     statusCode: number;
     KSTDate: string;
     error: ErrorType;
+    stack: string;
   }): IMessage => {
     if (typeof error === 'string') {
       return {
@@ -81,6 +87,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         path: request.url,
         statusCode,
         error,
+        stack,
       };
     } else {
       return {
@@ -91,6 +98,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         statusCode: statusCode,
         error: error?.error,
         message: error?.message,
+        stack,
       };
     }
   };
@@ -127,5 +135,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     return logString;
+  };
+
+  private omitStack = (message: IMessage): IMessage => {
+    return {
+      ...message,
+      stack: '',
+    };
   };
 }

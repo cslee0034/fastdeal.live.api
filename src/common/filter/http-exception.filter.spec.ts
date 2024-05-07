@@ -39,6 +39,7 @@ describe('HttpExceptionFilter', () => {
     statusCode: 0 as number,
     path: '' as string,
     error: '' as string | object,
+    stack: '' as string,
 
     status: jest.fn().mockImplementation(function (status) {
       this.statusCode = status;
@@ -56,10 +57,12 @@ describe('HttpExceptionFilter', () => {
         this.timestamp = timestamp;
         this.path = path;
         this.error = error;
+        this.stack = '';
       } else if (typeof error === 'object') {
         this.success = success;
         this.timestamp = timestamp;
         this.error = { ...error };
+        this.stack = '';
       }
       return this;
     }),
