@@ -104,13 +104,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
   };
 
   private logMessage = (message: IMessage, statusCode: number): void => {
-    const messageString = this.messageToString(message as IMessage);
+    const stringifiedMessage = this.messageToString(message);
 
     /**
      * 5xx 이하 에러(4xx)는 warn으로 출력한다.
      */
     if (statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.warn(messageString);
+      this.logger.warn(stringifiedMessage);
       return;
     }
 
@@ -118,13 +118,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
      * 5xx 이상의 에러는 error로 출력한다.
      * slack으로 메시지를 전송하기 전에 로컬에서 에러 메시지를 출력한다.
      */
-    this.logger.error(messageString);
+    this.logger.error(stringifiedMessage);
 
     /**
      * production 환경에서만 slack으로 에러 메시지를 전송한다.
      */
     if (process.env.NODE_ENV === 'production') {
-      this.slack.send(messageString);
+      this.slack.send(stringifiedMessage);
     }
 
     return;
