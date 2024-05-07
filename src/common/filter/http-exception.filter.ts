@@ -103,12 +103,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
   };
 
-  private logMessage = (message: object, statusCode: number): void => {
+  private logMessage = (message: IMessage, statusCode: number): void => {
+    const messageString = this.messageToString(message as IMessage);
+
     /**
      * 5xx 이하 에러(4xx)는 warn으로 출력한다.
      */
     if (statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.warn(this.messageToString(message));
+      this.logger.warn(messageString);
       return;
     }
 
@@ -116,19 +118,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
      * 5xx 이상의 에러는 error로 출력한다.
      * slack으로 메시지를 전송하기 전에 로컬에서 에러 메시지를 출력한다.
      */
-    this.logger.error(this.messageToString(message));
+    this.logger.error(messageString);
 
     /**
      * production 환경에서만 slack으로 에러 메시지를 전송한다.
      */
     if (process.env.NODE_ENV === 'production') {
-      this.slack.send(this.messageToString(message));
+      this.slack.send(messageString);
     }
 
     return;
   };
 
-  private messageToString = (message: object): string => {
+  private messageToString = (message: IMessage): string => {
     let logString = '';
     for (const [key, value] of Object.entries(message)) {
       logString += `\n${key}: ${value}`;
