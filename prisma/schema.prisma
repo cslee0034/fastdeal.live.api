@@ -14,15 +14,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  provider  Provider @default(local)
-  password  String?  @db.VarChar(255)
-  firstName String?  @db.VarChar(30)
-  lastName  String?  @db.VarChar(30)
-  role      Role     @default(user)
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
+  id              String            @id @default(uuid())
+  email           String            @unique
+  provider        Provider          @default(local)
+  password        String?           @db.VarChar(255)
+  firstName       String?           @db.VarChar(30)
+  lastName        String?           @db.VarChar(30)
+  role            Role              @default(user)
+  createdAt       DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime          @updatedAt @db.Timestamp(0)
+  UserNationality UserNationality[]
+  CityScore       CityScore[]
 
   @@index([email])
 }
@@ -35,4 +37,97 @@ enum Provider {
 enum Role {
   user
   admin
+}
+
+model Country {
+  id              String            @id @default(uuid())
+  countryCode     String            @unique @db.Char(2)
+  countryName     String            @unique @db.VarChar(50)
+  currency        String            @db.VarChar(3)
+  exchangeRate    Float
+  createdAt       DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime          @updatedAt @db.Timestamp(0)
+  UserNationality UserNationality[]
+  City            City[]
+  CountryTag      CountryTag[]
+
+  @@index([countryCode])
+}
+
+model UserNationality {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  countryId String
+  country   Country  @relation(fields: [countryId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @db.Timestamp(0)
+
+  @@index([userId, countryId])
+}
+
+model City {
+  id          String      @id @default(uuid())
+  cityName    String      @unique @db.VarChar(50)
+  countryId   String
+  country     Country     @relation(fields: [countryId], references: [id])
+  weather     String?     @db.VarChar(20)
+  temperature Float?
+  humidity    Float?
+  windSpeed   Float?
+  createdAt   DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime    @updatedAt @db.Timestamp(0)
+  CityScore   CityScore[]
+  CityTag     CityTag[]
+
+  @@index([cityName])
+}
+
+model CityScore {
+  id                  String   @id @default(uuid())
+  cityId              String
+  city                City     @relation(fields: [cityId], references: [id])
+  voterId             String
+  user                User     @relation(fields: [voterId], references: [id])
+  internetSpeed       Float
+  costOfLiving        Float
+  touristFriendliness Float
+  safety              Float
+  recommendScore      Float
+  createdAt           DateTime @default(now()) @db.Timestamp(0)
+  updatedAt           DateTime @updatedAt @db.Timestamp(0)
+
+  @@unique([cityId, voterId])
+  @@index([cityId])
+}
+
+model Tag {
+  id         String       @id @default(uuid())
+  tagName    String       @unique @db.VarChar(50)
+  createdAt  DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt  DateTime     @updatedAt @db.Timestamp(0)
+  CountryTag CountryTag[]
+  CityTag    CityTag[]
+
+  @@index([tagName])
+}
+
+model CountryTag {
+  id        String  @id @default(uuid())
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id])
+  tagId     String
+  tag       Tag     @relation(fields: [tagId], references: [id])
+
+  @@index([countryId, tagId])
+}
+
+model CityTag {
+  id     String @id @default(uuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id])
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@index([cityId, tagId])
 }
