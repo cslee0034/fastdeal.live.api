@@ -25,6 +25,8 @@ import { LocationsModule } from './modules/locations/module/locations.module';
 import * as AWS from 'aws-sdk';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './common/guard/role.guard';
 
 @Module({
   imports: [
@@ -72,7 +74,13 @@ import { AppService } from './app.service';
     LocationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule, OnModuleInit {
   constructor(private readonly configService: ConfigService) {}
