@@ -21,7 +21,6 @@ import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { ProducerModule } from './modules/queue/producer/module/producer.module';
 import { RedisModule } from './modules/cache/module/redis.module';
 import { UsersModule } from './modules/users/module/users.module';
-import { LocationsModule } from './modules/locations/module/locations.module';
 import * as AWS from 'aws-sdk';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -71,7 +70,6 @@ import { RolesGuard } from './common/guard/role.guard';
     EncryptModule,
     ProducerModule,
     UsersModule,
-    LocationsModule,
   ],
   controllers: [AppController],
   providers: [
