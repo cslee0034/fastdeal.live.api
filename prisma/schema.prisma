@@ -40,16 +40,18 @@ enum Role {
 }
 
 model Country {
-  id              String            @id @default(uuid())
-  countryCode     String            @unique @db.Char(2)
-  countryName     String            @unique @db.VarChar(50)
-  currency        String            @db.VarChar(3)
-  exchangeRate    Float
-  createdAt       DateTime          @default(now()) @db.Timestamp(0)
-  updatedAt       DateTime          @updatedAt @db.Timestamp(0)
-  UserNationality UserNationality[]
-  City            City[]
-  CountryTag      CountryTag[]
+  id                     String            @id @default(uuid())
+  countryCode            String            @unique @db.Char(2)
+  countryName            String            @unique @db.VarChar(50)
+  currency               String            @db.VarChar(3)
+  exchangeRate           Float
+  createdAt              DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt              DateTime          @updatedAt @db.Timestamp(0)
+  UserNationality        UserNationality[]
+  City                   City[]
+  CountryTag             CountryTag[]
+  TravelAlretNationality TravelAlret[]     @relation("TravelAlretNationality")
+  TravelAlretDestination TravelAlret[]     @relation("TravelAlretDestination")
 
   @@index([countryCode])
 }
@@ -64,6 +66,28 @@ model UserNationality {
   updatedAt     DateTime @updatedAt @db.Timestamp(0)
 
   @@index([userId, nationalityId])
+}
+
+model TravelAlret {
+  id            String       @id @default(uuid())
+  nationalityId String
+  nationality   Country      @relation("TravelAlretNationality", fields: [nationalityId], references: [id])
+  destinationId String
+  destination   Country      @relation("TravelAlretDestination", fields: [destinationId], references: [id])
+  travelStatus  TravelStatus
+  createdAt     DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime     @updatedAt @db.Timestamp(0)
+
+  @@index([nationalityId])
+  @@index([nationalityId, travelStatus])
+}
+
+enum TravelStatus {
+  green
+  indigo
+  yellow
+  red
+  black
 }
 
 model City {
