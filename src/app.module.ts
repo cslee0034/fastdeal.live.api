@@ -17,9 +17,10 @@ import { getJwtConfig } from './config/jwt/jwt';
 import { SlackModule } from 'nestjs-slack-webhook';
 import { PrismaModule } from './common/orm/prisma/module/prisma.module';
 import { AuthModule } from './modules/auth/module/auth.module';
+import { RedisModule } from './modules/cache/module/redis.module';
+import { CountriesModule } from './modules/countries/module/countries.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { ProducerModule } from './modules/queue/producer/module/producer.module';
-import { RedisModule } from './modules/cache/module/redis.module';
 import { UsersModule } from './modules/users/module/users.module';
 import * as AWS from 'aws-sdk';
 import { AppController } from './app.controller';
@@ -67,6 +68,7 @@ import { RolesGuard } from './common/guard/role.guard';
     PrismaModule,
     AuthModule,
     RedisModule,
+    CountriesModule,
     EncryptModule,
     ProducerModule,
     UsersModule,
