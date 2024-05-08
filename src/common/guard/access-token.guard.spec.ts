@@ -2,7 +2,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { AccessTokenGuard } from './access-token-guard';
+import { AccessTokenGuard } from './access-token.guard';
 
 describe('AccessTokenGuard', () => {
   let guard: AccessTokenGuard;

@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
-import { AccessTokenGuard } from './common/guard/access-token-guard';
+import { AccessTokenGuard } from './common/guard/access-token.guard';
 import { TransformInterceptor } from './common/interceptor/transform-interceptor';
 
 async function bootstrap() {

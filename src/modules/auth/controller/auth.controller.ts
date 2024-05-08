@@ -24,10 +24,10 @@ import {
 import { SignInDto } from '../dto/request/signin.dto';
 import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
-import { RefreshTokenGuard } from '../../../common/guard/refresh-token-guard';
+import { RefreshTokenGuard } from '../../../common/guard/refresh-token.guard';
 import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
 import { Response } from 'express';
-import { GoogleAuthGuard } from '../../../common/guard/google-auth-guard';
+import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { SuccessResponseDto } from '../dto/response/success-response.dto';
 
