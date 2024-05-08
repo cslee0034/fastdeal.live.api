@@ -35,6 +35,16 @@ export class UsersService {
     }
   }
 
+  async findOneById(id: string): Promise<UserEntity | null> {
+    const existingUser = await this.userRepository.findOneById(id);
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    return new UserEntity(existingUser);
+  }
+
   async findOneByEmail(email: string): Promise<UserEntity | null> {
     const existingUser = await this.userRepository.findOneByEmail(email);
 

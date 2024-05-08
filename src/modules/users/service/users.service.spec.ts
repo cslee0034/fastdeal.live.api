@@ -19,6 +19,14 @@ describe('UsersService', () => {
   let mockCreateUserDto: CreateUserDto;
 
   const mockUserRepository = {
+    findOneById: jest.fn((id: string): Promise<User> => {
+      if (id === '1') {
+        return Promise.resolve(new UserEntity({ id }));
+      } else {
+        return Promise.resolve(null);
+      }
+    }),
+
     findOneByEmail: jest.fn((email: string): Promise<User> => {
       if (email === 'existing@email.com') {
         return Promise.resolve(new UserEntity({ email }));
@@ -128,6 +136,34 @@ describe('UsersService', () => {
       );
 
       expect(user).toBeInstanceOf(UserEntity);
+    });
+  });
+
+  describe('findOneById', () => {
+    const id = '1';
+
+    it('should be defined', () => {
+      expect(service.findOneById).toBeDefined();
+    });
+
+    it('should call findOneById', async () => {
+      await service.findOneById(id);
+
+      expect(repository.findOneById).toHaveBeenCalledWith(id);
+    });
+
+    it('should throw error if user is not exists', async () => {
+      const id = '2';
+
+      await expect(service.findOneById(id)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return user entity if user exists', async () => {
+      const id = '1';
+
+      const result = await service.findOneById(id);
+
+      expect(result).toBeInstanceOf(UserEntity);
     });
   });
 

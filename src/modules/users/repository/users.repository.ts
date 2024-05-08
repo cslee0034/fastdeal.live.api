@@ -40,6 +40,12 @@ export class UsersRepository {
     return provider === 'google' ? Provider.google : Provider.local;
   }
 
+  async findOneById(id: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: { id: id },
+    });
+  }
+
   async findOneByEmail(email: string): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: { email: email },
