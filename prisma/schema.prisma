@@ -50,8 +50,8 @@ model Country {
   UserNationality        UserNationality[]
   City                   City[]
   CountryTag             CountryTag[]
-  TravelAlretNationality TravelAlret[]     @relation("TravelAlretNationality")
-  TravelAlretDestination TravelAlret[]     @relation("TravelAlretDestination")
+  TravelAlretNationality TravelAlert[]     @relation("TravelAlertNationality")
+  TravelAlretDestination TravelAlert[]     @relation("TravelAlertDestination")
 
   @@index([countryCode])
 }
@@ -68,21 +68,21 @@ model UserNationality {
   @@index([userId, nationalityId])
 }
 
-model TravelAlret {
-  id            String       @id @default(uuid())
+model TravelAlert {
+  id            String      @id @default(uuid())
   nationalityId String
-  nationality   Country      @relation("TravelAlretNationality", fields: [nationalityId], references: [id])
+  nationality   Country     @relation("TravelAlertNationality", fields: [nationalityId], references: [id])
   destinationId String
-  destination   Country      @relation("TravelAlretDestination", fields: [destinationId], references: [id])
-  travelStatus  TravelStatus
-  createdAt     DateTime     @default(now()) @db.Timestamp(0)
-  updatedAt     DateTime     @updatedAt @db.Timestamp(0)
+  destination   Country     @relation("TravelAlertDestination", fields: [destinationId], references: [id])
+  alertStatus   AlertStatus
+  createdAt     DateTime    @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime    @updatedAt @db.Timestamp(0)
 
   @@index([nationalityId])
-  @@index([nationalityId, travelStatus])
+  @@index([nationalityId, alertStatus])
 }
 
-enum TravelStatus {
+enum AlertStatus {
   green
   indigo
   yellow
