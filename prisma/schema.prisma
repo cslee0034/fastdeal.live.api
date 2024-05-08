@@ -55,15 +55,15 @@ model Country {
 }
 
 model UserNationality {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  countryId String
-  country   Country  @relation(fields: [countryId], references: [id])
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  nationalityId String
+  nationality   Country  @relation(fields: [nationalityId], references: [id])
+  createdAt     DateTime @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime @updatedAt @db.Timestamp(0)
 
-  @@index([userId, countryId])
+  @@index([userId, nationalityId])
 }
 
 model City {
