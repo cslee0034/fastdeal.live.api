@@ -34,7 +34,7 @@ describe('UsersModule', () => {
     expect(usersModule).toBeDefined();
   });
 
-  it('shoud have UsersController', () => {
+  it('should have UsersController', () => {
     expect(usersController).toBeDefined();
   });
 
