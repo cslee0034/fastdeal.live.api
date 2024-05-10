@@ -42,9 +42,10 @@ enum Role {
 model Country {
   id                     String            @id @default(uuid())
   countryCode            String            @unique @db.Char(2)
-  countryName            String            @unique @db.VarChar(50)
+  countryName            String            @unique @db.VarChar(100)
   currency               String            @db.VarChar(3)
   exchangeRate           Float
+  continent              Continent
   createdAt              DateTime          @default(now()) @db.Timestamp(0)
   updatedAt              DateTime          @updatedAt @db.Timestamp(0)
   UserNationality        UserNationality[]
@@ -54,6 +55,16 @@ model Country {
   TravelAlretDestination TravelAlert[]     @relation("TravelAlertDestination")
 
   @@index([countryCode])
+}
+
+enum Continent {
+  Africa
+  Antarctica
+  Asia
+  Europe
+  NorthAmerica
+  SouthAmerica
+  Oceania
 }
 
 model UserNationality {
