@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesController } from './countries.controller';
 import { CountriesService } from '../service/countries.service';
 import { CreateCountryDto } from '../dto/create-country.dto';
+import { Continent } from '@prisma/client';
 
 describe('CountriesController', () => {
   let controller: CountriesController;
@@ -16,6 +17,7 @@ describe('CountriesController', () => {
     countryName: 'Korea',
     currency: 'KRW',
     exchangeRate: 1200,
+    continent: Continent.asia,
   };
 
   beforeEach(async () => {

@@ -58,13 +58,13 @@ model Country {
 }
 
 enum Continent {
-  Africa
-  Antarctica
-  Asia
-  Europe
-  NorthAmerica
-  SouthAmerica
-  Oceania
+  africa
+  antarctica
+  asia
+  europe
+  northAmerica
+  southAmerica
+  oceania
 }
 
 model UserNationality {

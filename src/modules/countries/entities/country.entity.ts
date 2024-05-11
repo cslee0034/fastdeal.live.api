@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Country } from '@prisma/client';
+import { Continent, Country } from '@prisma/client';
 
 export class CountryEntity implements Country {
   @ApiProperty({
@@ -31,6 +31,12 @@ export class CountryEntity implements Country {
     example: '1.0',
   })
   exchangeRate: number;
+
+  @ApiProperty({
+    description: 'The continent of the country',
+    example: 'active',
+  })
+  continent: Continent;
 
   @ApiProperty({
     description: 'The created date of the country',

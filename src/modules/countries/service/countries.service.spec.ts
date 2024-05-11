@@ -4,6 +4,7 @@ import { CountryEntity } from '../entities/country.entity';
 import { CreateCountryDto } from '../dto/create-country.dto';
 import { CountriesRepository } from '../repository/countries.repository';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Continent } from '@prisma/client';
 
 describe('CountriesService', () => {
   let service: CountriesService;
@@ -73,6 +74,7 @@ describe('CountriesService', () => {
       countryName: 'Korea',
       currency: 'KRW',
       exchangeRate: 1200,
+      continent: Continent.asia,
     };
 
     await expect(service.create(mockCreateCountryDto)).rejects.toThrow(

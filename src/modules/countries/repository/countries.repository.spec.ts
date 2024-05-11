@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesRepository } from './countries.repository';
 import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
 import { CountryEntity } from '../entities/country.entity';
+import { Continent } from '@prisma/client';
 
 describe('CountriesRepository', () => {
   let repository: CountriesRepository;
@@ -43,6 +44,7 @@ describe('CountriesRepository', () => {
         countryName: 'Korea',
         currency: 'KRW',
         exchangeRate: 1200,
+        continent: Continent.asia,
       };
       const result = await repository.create(createCountryDto);
 

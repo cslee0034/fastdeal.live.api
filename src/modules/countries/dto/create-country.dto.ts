@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
+import { Continent } from '@prisma/client';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Length,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateCountryDto {
   @IsNotEmpty()
@@ -17,6 +24,10 @@ export class CreateCountryDto {
   currency: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   exchangeRate: number;
+
+  @IsNotEmpty()
+  @IsString()
+  continent: Continent;
 }
