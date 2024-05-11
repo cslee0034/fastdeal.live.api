@@ -5,6 +5,7 @@ import { CreateCountryDto } from '../dto/create-country.dto';
 import { CountriesRepository } from '../repository/countries.repository';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Continent } from '@prisma/client';
+import { UpdateCountryDto } from '../dto/update-country.dto';
 
 describe('CountriesService', () => {
   let service: CountriesService;
@@ -17,6 +18,11 @@ describe('CountriesService', () => {
     exchangeRate: 1200,
   };
 
+  const mockUpdateCountryDto = {
+    fromCountryId: '1',
+    ...mockCreateCountryDto,
+  };
+
   const mockCountriesRepository = {
     create: jest
       .fn()
@@ -26,6 +32,16 @@ describe('CountriesService', () => {
         }
 
         return Promise.resolve(new CountryEntity(createCountryDto));
+      }),
+
+    update: jest
+      .fn()
+      .mockImplementation((updateCountryDto: UpdateCountryDto) => {
+        if (updateCountryDto.fromCountryId === 'NOT_EXISTING_COUNTRY_ID') {
+          return Promise.reject(new Error());
+        }
+
+        return Promise.resolve(new CountryEntity(updateCountryDto));
       }),
   };
 
@@ -80,5 +96,25 @@ describe('CountriesService', () => {
     await expect(service.create(mockCreateCountryDto)).rejects.toThrow(
       InternalServerErrorException,
     );
+  });
+
+  describe('update', () => {
+    it('should be defined', () => {
+      expect(service.update).toBeDefined();
+    });
+
+    it('should call repository.update', async () => {
+      await service.update(mockUpdateCountryDto as UpdateCountryDto);
+
+      expect(repository.update).toHaveBeenCalledWith(mockUpdateCountryDto);
+    });
+  });
+
+  it('should return updated country', async () => {
+    const result = await service.update(
+      mockUpdateCountryDto as UpdateCountryDto,
+    );
+
+    expect(result).toEqual(new CountryEntity(mockUpdateCountryDto));
   });
 });
