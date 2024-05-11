@@ -66,4 +66,20 @@ export class UsersService {
 
     return new UserEntity(await this.userRepository.create(createOauthUserDto));
   }
+
+  /**
+   * 토큰을 내보내기 위해 res.json()을 사용하면
+   * class-serializer와 transform-interceptor가 동작하지 않기 때문에
+   * 별도의 사용자 응답 변환 메서드를 만들어 사용한다
+   */
+  convertUserResponse(user: UserEntity) {
+    return {
+      success: true,
+      id: user.id,
+      email: user.email,
+      provider: user.provider,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+  }
 }

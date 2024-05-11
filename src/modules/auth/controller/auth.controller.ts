@@ -15,6 +15,7 @@ import { EncryptService } from '../../encrypt/service/encrypt.service';
 import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -30,6 +31,7 @@ import { Response } from 'express';
 import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { SuccessResponseDto } from '../dto/response/success-response.dto';
+import { ConvertedUserResponseDto } from '../dto/response/user-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -48,8 +50,8 @@ export class AuthController {
       'This endpoint is used to sign up a user with email and password.',
   })
   @ApiCreatedResponse({
-    description: 'The user has been successfully created.',
-    type: SuccessResponseDto,
+    description: 'The user has been successfully created and cookie is set.',
+    type: ConvertedUserResponseDto,
   })
   @ApiForbiddenResponse({
     description: 'User already exists',
@@ -77,7 +79,9 @@ export class AuthController {
 
     await this.authService.setTokens(res, tokens);
 
-    res.status(HttpStatus.CREATED).json({ success: true });
+    res
+      .status(HttpStatus.CREATED)
+      .json(this.usersService.convertUserResponse(createdUser));
 
     return;
   }
@@ -90,8 +94,8 @@ export class AuthController {
       'This endpoint is used to sign in a user with email and password.',
   })
   @ApiOkResponse({
-    description: 'The user has been successfully signed in.',
-    type: SuccessResponseDto,
+    description: 'The user has been successfully signed in and cookie is set.',
+    type: ConvertedUserResponseDto,
   })
   @ApiNotFoundResponse({
     description: 'User not found',
@@ -123,7 +127,7 @@ export class AuthController {
 
     await this.authService.setTokens(res, tokens);
 
-    res.status(HttpStatus.OK).json({ success: true });
+    res.status(HttpStatus.OK).json(this.usersService.convertUserResponse(user));
 
     return;
   }
@@ -211,7 +215,7 @@ export class AuthController {
       'Failed to delete refresh token from redis,\
        Internal server error',
   })
-  async logout(@GetTokenUserId() id: string): Promise<{ success: boolean }> {
+  async logout(@GetTokenUserId() id: string): Promise<SuccessResponseDto> {
     const success = await this.authService.logout(id);
     return { success };
   }
@@ -224,9 +228,14 @@ export class AuthController {
     description:
       "This endpoint requires an 'x-refresh-token' cookie for token rotation.",
   })
+  @ApiHeader({
+    name: 'x-refresh-token',
+    description: 'The refresh token',
+  })
   @ApiOkResponse({
-    description: 'The tokens have been successfully refreshed.',
-    type: SuccessResponseDto,
+    description:
+      'The tokens have been successfully refreshed and cookie is set.',
+    type: ConvertedUserResponseDto,
   })
   @ApiUnauthorizedResponse({
     description: 'Refresh token do not match',
@@ -247,13 +256,15 @@ export class AuthController {
   ): Promise<void> {
     await this.authService.checkIsLoggedIn(id, refreshToken);
 
+    const user = await this.usersService.findOneById(id);
+
     const tokens = await this.authService.generateTokens(id, email);
 
     await this.authService.login(id, tokens.refreshToken);
 
     await this.authService.setTokens(res, tokens);
 
-    res.status(HttpStatus.OK).json({ success: true });
+    res.status(HttpStatus.OK).json(this.usersService.convertUserResponse(user));
 
     return;
   }

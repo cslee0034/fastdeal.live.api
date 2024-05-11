@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Tokens } from '../types/tokens.type';
 import { RedisService } from '../../cache/service/redis.service';
 import { Response, CookieOptions } from 'express';
+
 @Injectable()
 export class AuthService {
   constructor(

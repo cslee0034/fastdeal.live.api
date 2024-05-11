@@ -231,4 +231,30 @@ describe('UsersService', () => {
       expect(user).toBeInstanceOf(UserEntity);
     });
   });
+
+  describe('convertUserResponse', () => {
+    it('should be defined', () => {
+      expect(service.convertUserResponse).toBeDefined();
+    });
+
+    it('should return user response', () => {
+      const user = new UserEntity({
+        id: '1',
+        email: 'test@email.com',
+        password: 'test_password',
+        firstName: 'test_first_name',
+        lastName: 'test_last_name',
+      });
+
+      const result = service.convertUserResponse(user);
+
+      expect(result).toEqual({
+        success: true,
+        id: '1',
+        email: 'test@email.com',
+        firstName: 'test_first_name',
+        lastName: 'test_last_name',
+      });
+    });
+  });
 });

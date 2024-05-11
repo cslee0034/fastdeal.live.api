@@ -49,6 +49,16 @@ describe('AuthController', () => {
       }
     }),
 
+    findOneById: jest
+      .fn()
+      .mockImplementation((id: string): Promise<UserEntity> => {
+        if (id === '1') {
+          return Promise.resolve(mockFindOneByEmailResult);
+        } else {
+          return Promise.reject(new NotFoundException('User not found'));
+        }
+      }),
+
     findOrCreateOauth: jest
       .fn()
       .mockImplementation(
@@ -75,6 +85,15 @@ describe('AuthController', () => {
           }
         },
       ),
+
+    convertUserResponse: jest.fn().mockImplementation((user: UserEntity) => {
+      return {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+    }),
   };
 
   const mockAuthService = {
@@ -261,13 +280,26 @@ describe('AuthController', () => {
       );
     });
 
-    it('should return { success: true }', async () => {
+    it('should call user convert user response', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(usersService.convertUserResponse).toHaveBeenCalledWith(
+        mockCreateUserResult,
+      );
+    });
+
+    it('should return converted user', async () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
 
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
-      expect(mockJson).toHaveBeenCalledWith({ success: true });
+      expect(mockJson).toHaveBeenCalledWith({
+        id: mockCreateUserResult.id,
+        email: mockCreateUserResult.email,
+        firstName: mockCreateUserResult.firstName,
+        lastName: mockCreateUserResult.lastName,
+      });
     });
   });
 
@@ -320,13 +352,26 @@ describe('AuthController', () => {
       );
     });
 
-    it('should return { success: true }', async () => {
+    it('should call user convert user response', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(usersService.convertUserResponse).toHaveBeenCalledWith(
+        mockCreateUserResult,
+      );
+    });
+
+    it('should return converted user', async () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
 
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
-      expect(mockJson).toHaveBeenCalledWith({ success: true });
+      expect(mockJson).toHaveBeenCalledWith({
+        id: mockFindOneByEmailResult.id,
+        email: mockFindOneByEmailResult.email,
+        firstName: mockFindOneByEmailResult.firstName,
+        lastName: mockFindOneByEmailResult.lastName,
+      });
     });
   });
 
@@ -515,7 +560,15 @@ describe('AuthController', () => {
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should return { success: true }', async () => {
+    it('should call user convert user response', async () => {
+      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+
+      expect(usersService.convertUserResponse).toHaveBeenCalledWith(
+        mockCreateUserResult,
+      );
+    });
+
+    it('should return converted user', async () => {
       const mockJson = jest.fn();
       mockResponse.json = mockJson;
 
@@ -526,7 +579,12 @@ describe('AuthController', () => {
         mockResponse as any,
       );
 
-      expect(mockJson).toHaveBeenCalledWith({ success: true });
+      expect(mockJson).toHaveBeenCalledWith({
+        id: mockFindOneByEmailResult.id,
+        email: mockFindOneByEmailResult.email,
+        firstName: mockFindOneByEmailResult.firstName,
+        lastName: mockFindOneByEmailResult.lastName,
+      });
     });
   });
 });
