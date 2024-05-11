@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Patch, Post } from '@nestjs/common';
 import { CountriesService } from '../service/countries.service';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { CreateCountryDto } from '../dto/create-country.dto';
@@ -18,5 +18,11 @@ export class CountriesController {
   @Patch()
   update(@Body() updateCountryDto: UpdateCountryDto) {
     return this.countriesService.update(updateCountryDto);
+  }
+
+  @Roles(['admin'])
+  @Delete()
+  delete(@Body() id: string) {
+    return this.countriesService.delete(id);
   }
 }
