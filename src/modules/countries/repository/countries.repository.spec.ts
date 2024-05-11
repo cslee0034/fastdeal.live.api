@@ -16,6 +16,12 @@ describe('CountriesRepository', () => {
       update: jest.fn().mockImplementation((updateCountryDto) => {
         return Promise.resolve(new CountryEntity(updateCountryDto));
       }),
+
+      delete: jest.fn().mockImplementation((countryId: string) => {
+        return Promise.resolve({
+          id: countryId,
+        });
+      }),
     },
   };
 
@@ -80,6 +86,21 @@ describe('CountriesRepository', () => {
       expect(mockPrismaService.country.update).toHaveBeenCalledWith({
         where: { id: updateCountryDto.fromCountryId },
         data: updateCountryDto,
+      });
+    });
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(repository.delete).toBeDefined();
+    });
+
+    it('should delete a country', async () => {
+      const countryId = '1';
+      await repository.delete(countryId);
+
+      expect(mockPrismaService.country.delete).toHaveBeenCalledWith({
+        where: { id: countryId },
       });
     });
   });

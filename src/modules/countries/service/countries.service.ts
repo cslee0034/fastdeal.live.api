@@ -27,4 +27,14 @@ export class CountriesService {
       );
     }
   }
+
+  async delete(id: string) {
+    try {
+      return await this.countriesRepository.delete(id);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
+      );
+    }
+  }
 }

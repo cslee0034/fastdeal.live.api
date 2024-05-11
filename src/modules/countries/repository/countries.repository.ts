@@ -17,4 +17,8 @@ export class CountriesRepository {
       data: updateCountryDto,
     });
   }
+
+  async delete(id: string) {
+    return this.prisma.country.delete({ where: { id } });
+  }
 }

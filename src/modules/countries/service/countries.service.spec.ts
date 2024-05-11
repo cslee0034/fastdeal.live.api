@@ -43,6 +43,14 @@ describe('CountriesService', () => {
 
         return Promise.resolve(new CountryEntity(updateCountryDto));
       }),
+
+    delete: jest.fn().mockImplementation((id: string) => {
+      if (id === 'NOT_EXISTING_COUNTRY_ID') {
+        return Promise.reject(new Error());
+      }
+
+      return Promise.resolve({ id });
+    }),
   };
 
   beforeEach(async () => {
@@ -116,5 +124,25 @@ describe('CountriesService', () => {
     );
 
     expect(result).toEqual(new CountryEntity(mockUpdateCountryDto));
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(service.delete).toBeDefined();
+    });
+
+    it('should call repository.delete', async () => {
+      await service.delete('1');
+
+      expect(repository.delete).toHaveBeenCalledWith('1');
+    });
+
+    it('should throw InternalServerErrorException when repository.delete throws an error', async () => {
+      const mockCountryId = 'NOT_EXISTING_COUNTRY_ID';
+
+      await expect(service.delete(mockCountryId)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
   });
 });
