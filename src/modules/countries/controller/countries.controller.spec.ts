@@ -12,6 +12,7 @@ describe('CountriesController', () => {
   const mockCountriesService = {
     create: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
   };
 
   const mockCreateCountryDto = {
@@ -67,6 +68,18 @@ describe('CountriesController', () => {
       controller.update(mockUpdateCountryDto as UpdateCountryDto);
 
       expect(service.update).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(controller.delete).toBeDefined();
+    });
+
+    it('should call service.delete', () => {
+      controller.delete('1');
+
+      expect(service.delete).toHaveBeenCalled();
     });
   });
 });
