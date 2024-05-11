@@ -90,6 +90,7 @@ describe('AuthController', () => {
       return {
         id: user.id,
         email: user.email,
+        provider: user.provider,
         firstName: user.firstName,
         lastName: user.lastName,
       };
@@ -199,6 +200,7 @@ describe('AuthController', () => {
   const mockCreateUserResult: UserEntity = new UserEntity({
     id: '1',
     email: 'test@email.com',
+    provider: 'local',
     firstName: 'test_first_name',
     lastName: 'test_last_name',
     password: 'hashed_test_password',
@@ -207,6 +209,7 @@ describe('AuthController', () => {
   const mockFindOneByEmailResult: UserEntity = new UserEntity({
     id: '1',
     email: 'test@email.com',
+    provider: 'local',
     firstName: 'test_first_name',
     lastName: 'test_last_name',
     password: 'hashed_test_password',
@@ -297,6 +300,7 @@ describe('AuthController', () => {
       expect(mockJson).toHaveBeenCalledWith({
         id: mockCreateUserResult.id,
         email: mockCreateUserResult.email,
+        provider: mockCreateUserResult.provider,
         firstName: mockCreateUserResult.firstName,
         lastName: mockCreateUserResult.lastName,
       });
@@ -369,6 +373,7 @@ describe('AuthController', () => {
       expect(mockJson).toHaveBeenCalledWith({
         id: mockFindOneByEmailResult.id,
         email: mockFindOneByEmailResult.email,
+        provider: mockFindOneByEmailResult.provider,
         firstName: mockFindOneByEmailResult.firstName,
         lastName: mockFindOneByEmailResult.lastName,
       });
@@ -582,6 +587,7 @@ describe('AuthController', () => {
       expect(mockJson).toHaveBeenCalledWith({
         id: mockFindOneByEmailResult.id,
         email: mockFindOneByEmailResult.email,
+        provider: mockFindOneByEmailResult.provider,
         firstName: mockFindOneByEmailResult.firstName,
         lastName: mockFindOneByEmailResult.lastName,
       });
