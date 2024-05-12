@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Tokens } from '../types/tokens.type';
 import { RedisService } from '../../cache/service/redis.service';
 import { Response, CookieOptions } from 'express';
+import { AUTH_ERROR } from '../error/auth.error';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
       return true;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Failed to set refresh token to redis',
+        AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN,
       );
     }
   }
@@ -40,7 +41,7 @@ export class AuthService {
       return true;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Failed to delete refresh token from redis',
+        AUTH_ERROR.FAILED_TO_DELETE_REFRESH_TOKEN,
       );
     }
   }
@@ -65,7 +66,9 @@ export class AuthService {
 
       return { accessToken, refreshToken };
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create tokens');
+      throw new InternalServerErrorException(
+        AUTH_ERROR.FAILED_TO_CREATE_TOKENS,
+      );
     }
   }
 
@@ -86,7 +89,9 @@ export class AuthService {
         maxAge: this.configService.get<number>('jwt.refresh.expiresIn'),
       });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to set tokens to cookie');
+      throw new InternalServerErrorException(
+        AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE,
+      );
     }
 
     return;
@@ -99,7 +104,7 @@ export class AuthService {
       );
 
       if (savedRefreshToken !== refreshToken) {
-        throw new UnauthorizedException('Refresh token do not match');
+        throw new UnauthorizedException(AUTH_ERROR.REFRESH_TOKEN_DO_NOT_MATCH);
       }
     } catch (error) {
       if (error instanceof UnauthorizedException) {
@@ -107,7 +112,7 @@ export class AuthService {
       }
 
       throw new InternalServerErrorException(
-        'Failed to get refresh token from redis',
+        AUTH_ERROR.FAILED_TO_GET_REFRESH_TOKEN,
       );
     }
     return;

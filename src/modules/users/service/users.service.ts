@@ -8,6 +8,7 @@ import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { UsersManager } from '../manager/users.manager';
+import { USERS_ERROR } from '../error/users.error';
 
 @Injectable()
 export class UsersService {
@@ -31,7 +32,7 @@ export class UsersService {
 
       return new UserEntity(await this.userRepository.create(createUserDto));
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create user');
+      throw new InternalServerErrorException(USERS_ERROR.FAILED_TO_CREATE_USER);
     }
   }
 
@@ -39,7 +40,7 @@ export class UsersService {
     const existingUser = await this.userRepository.findOneById(id);
 
     if (!existingUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(USERS_ERROR.USER_NOT_FOUND);
     }
 
     return new UserEntity(existingUser);
@@ -49,7 +50,7 @@ export class UsersService {
     const existingUser = await this.userRepository.findOneByEmail(email);
 
     if (!existingUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(USERS_ERROR.USER_NOT_FOUND);
     }
 
     return new UserEntity(existingUser);

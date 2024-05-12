@@ -32,6 +32,9 @@ import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { SuccessResponseDto } from '../dto/response/success-response.dto';
 import { ConvertedUserResponseDto } from '../dto/response/user-response.dto';
+import { AUTH_ERROR } from '../error/auth.error';
+import { USERS_ERROR } from '../../users/error/users.error';
+import { ENCRYPT_ERROR } from '../../encrypt/error/encrypt.error';
 
 @Controller('auth')
 export class AuthController {
@@ -47,22 +50,21 @@ export class AuthController {
   @ApiOperation({
     summary: 'Sign up a user',
     description:
-      'This endpoint is used to sign up a user with email and password.',
+      'This endpoint is used to sign up a user with email and password in local provider.',
   })
   @ApiCreatedResponse({
     description: 'The user has been successfully created and cookie is set.',
     type: ConvertedUserResponseDto,
   })
   @ApiForbiddenResponse({
-    description: 'User already exists',
+    description: USERS_ERROR.USER_ALREADY_EXISTS,
   })
   @ApiInternalServerErrorResponse({
-    description:
-      'Failed to create user,\
-       Failed to create tokens,\
-       Failed to set refresh token to redis,\
-       Failed to set tokens to cookie,\
-       Internal server error',
+    description: `${USERS_ERROR.FAILED_TO_CREATE_USER}, \
+                  ${AUTH_ERROR.FAILED_TO_CREATE_TOKENS}, \
+                  ${AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN}, \
+                  ${AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE}, \
+                  Internal server error`,
   })
   async signup(
     @Body() signUpDto: SignUpDto,
@@ -98,17 +100,16 @@ export class AuthController {
     type: ConvertedUserResponseDto,
   })
   @ApiNotFoundResponse({
-    description: 'User not found',
+    description: USERS_ERROR.USER_NOT_FOUND,
   })
   @ApiUnauthorizedResponse({
-    description: 'Password do not match',
+    description: ENCRYPT_ERROR.PASSWORD_DO_NOT_MATCH,
   })
   @ApiInternalServerErrorResponse({
-    description:
-      'Failed to create tokens,\
-       Failed to set refresh token to redis,\
-       Failed to set tokens to cookie,\
-       Internal server error',
+    description: `${AUTH_ERROR.FAILED_TO_CREATE_TOKENS},\
+                  ${AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN},\
+                  ${AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE},\ 
+                  Internal server error`,
   })
   async signin(
     @Body() signInDto: SignInDto,
@@ -211,9 +212,8 @@ export class AuthController {
     type: SuccessResponseDto,
   })
   @ApiInternalServerErrorResponse({
-    description:
-      'Failed to delete refresh token from redis,\
-       Internal server error',
+    description: `${AUTH_ERROR.FAILED_TO_DELETE_REFRESH_TOKEN},\
+                  Internal server error`,
   })
   async logout(@GetTokenUserId() id: string): Promise<SuccessResponseDto> {
     const success = await this.authService.logout(id);
@@ -230,7 +230,7 @@ export class AuthController {
   })
   @ApiHeader({
     name: 'x-refresh-token',
-    description: 'The refresh token',
+    description: 'The refresh token is needed',
   })
   @ApiOkResponse({
     description:
@@ -238,15 +238,14 @@ export class AuthController {
     type: ConvertedUserResponseDto,
   })
   @ApiUnauthorizedResponse({
-    description: 'Refresh token do not match',
+    description: AUTH_ERROR.REFRESH_TOKEN_DO_NOT_MATCH,
   })
   @ApiInternalServerErrorResponse({
-    description:
-      'Failed to get refresh token from redis,\
-       Failed to create tokens,\
-       Failed to set refresh token to redis,\
-       Failed to set tokens to cookie,\
-       Internal server error',
+    description: `${AUTH_ERROR.FAILED_TO_GET_REFRESH_TOKEN},\
+                  ${AUTH_ERROR.FAILED_TO_CREATE_TOKENS},\
+                  ${AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN},\
+                  ${AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE},\
+                  Internal server error`,
   })
   async refreshTokens(
     @GetTokenUserId() id: string,
