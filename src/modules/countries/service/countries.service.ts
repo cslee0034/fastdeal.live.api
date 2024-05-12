@@ -32,7 +32,6 @@ export class CountriesService {
     try {
       return await this.countriesRepository.delete(id);
     } catch (error) {
-      console.error(error);
       throw new InternalServerErrorException(
         COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
       );
