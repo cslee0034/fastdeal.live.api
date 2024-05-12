@@ -241,6 +241,7 @@ describe('UsersService', () => {
       const user = new UserEntity({
         id: '1',
         email: 'test@email.com',
+        provider: 'local',
         password: 'test_password',
         firstName: 'test_first_name',
         lastName: 'test_last_name',
@@ -252,6 +253,7 @@ describe('UsersService', () => {
         success: true,
         id: '1',
         email: 'test@email.com',
+        provider: 'local',
         firstName: 'test_first_name',
         lastName: 'test_last_name',
       });
