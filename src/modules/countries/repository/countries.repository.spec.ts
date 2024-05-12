@@ -80,12 +80,14 @@ describe('CountriesRepository', () => {
         continent: Continent.asia,
       };
 
+      const { fromCountryId, ...newCountryInfo } = updateCountryDto;
+
       const result = await repository.update(updateCountryDto);
 
       expect(result).toBeInstanceOf(CountryEntity);
       expect(mockPrismaService.country.update).toHaveBeenCalledWith({
-        where: { id: updateCountryDto.fromCountryId },
-        data: updateCountryDto,
+        where: { id: fromCountryId },
+        data: newCountryInfo,
       });
     });
   });

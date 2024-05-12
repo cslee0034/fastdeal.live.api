@@ -12,9 +12,11 @@ export class CountriesRepository {
   }
 
   async update(updateCountryDto: UpdateCountryDto) {
+    const { fromCountryId, ...newCountryInfo } = updateCountryDto;
+
     return this.prisma.country.update({
-      where: { id: updateCountryDto.fromCountryId },
-      data: updateCountryDto,
+      where: { id: fromCountryId },
+      data: newCountryInfo,
     });
   }
 
