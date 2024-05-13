@@ -124,6 +124,6 @@ export class AuthService {
       return `${this.configService.get<string>('client.url')}/api/auth/google?error=${encodeURIComponent(error?.message)}`;
     }
 
-    return `${this.configService.get<string>('client.url')}/api/auth/google?id=${encodeURIComponent(user.id)}&email=${encodeURIComponent(user.email)}&&provider=${encodeURIComponent(user.provider)}firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
+    return `${this.configService.get<string>('client.url')}/api/auth/google?id=${encodeURIComponent(user.id)}&email=${encodeURIComponent(user.email)}&&provider=${encodeURIComponent(user.provider)}&firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}&expiresIn=${this.configService.get<number>('jwt.refresh.expiresIn')}`;
   }
 }
