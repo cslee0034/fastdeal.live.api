@@ -9,6 +9,7 @@ import { Tokens } from '../types/tokens.type';
 import { RedisService } from '../../cache/service/redis.service';
 import { Response, CookieOptions } from 'express';
 import { AUTH_ERROR } from '../error/auth.error';
+import { UserEntity } from '../../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -116,5 +117,13 @@ export class AuthService {
       );
     }
     return;
+  }
+
+  getRedirectUrl(user: UserEntity, error: { message: string }): string {
+    if (error) {
+      return `${this.configService.get<string>('client.url')}/api/auth/google?error=${encodeURIComponent(error?.message)}`;
+    }
+
+    return `${this.configService.get<string>('client.url')}/api/auth/google?id=${encodeURIComponent(user.id)}&email=${encodeURIComponent(user.email)}&&provider=${encodeURIComponent(user.provider)}firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}`;
   }
 }

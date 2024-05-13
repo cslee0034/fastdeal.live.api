@@ -157,6 +157,16 @@ describe('AuthController', () => {
           );
         }
       }),
+
+    getRedirectUrl: jest
+      .fn()
+      .mockImplementation((user: UserEntity, error: Error) => {
+        if (error) {
+          return 'client.url/api/auth/google?error';
+        }
+
+        return 'client.url/api/auth/google';
+      }),
   };
 
   const mockEncryptService = {
@@ -455,10 +465,10 @@ describe('AuthController', () => {
         'google',
       );
 
-      expect(mockRedirect).toHaveBeenCalledWith('client.url/api/google');
+      expect(mockRedirect).toHaveBeenCalledWith('client.url/api/auth/google');
     });
 
-    it('should throw InternalServerErrorException if provider is not oauth provider', async () => {
+    it('should redirect to error client url if provider is not oauth provider', async () => {
       const mockRedirect = jest.fn();
       mockResponse.redirect = mockRedirect;
 
@@ -472,7 +482,7 @@ describe('AuthController', () => {
       );
 
       expect(mockRedirect).toHaveBeenCalledWith(
-        'client.url/api/google?error=Internal Server Error',
+        'client.url/api/auth/google?error',
       );
     });
   });

@@ -29,7 +29,6 @@ import { RefreshTokenGuard } from '../../../common/guard/refresh-token.guard';
 import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
 import { Response } from 'express';
 import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
-import { ConfigService } from '@nestjs/config';
 import { SuccessResponseDto } from '../dto/response/success-response.dto';
 import { ConvertedUserResponseDto } from '../dto/response/user-response.dto';
 import { AUTH_ERROR } from '../error/auth.error';
@@ -42,7 +41,6 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly encryptService: EncryptService,
-    private readonly configService: ConfigService,
   ) {}
 
   @Public()
@@ -185,16 +183,15 @@ export class AuthController {
 
       await this.authService.setTokens(res, tokens);
 
-      res.redirect(
-        `${this.configService.get<string>('client.url')}/api/google`,
-      );
+      const redirectUrl = this.authService.getRedirectUrl(user, null);
+
+      res.redirect(redirectUrl);
 
       return;
     } catch (error) {
-      console.log(error);
-      res.redirect(
-        `${this.configService.get<string>('client.url')}/api/google?error=${error.message}`,
-      );
+      const redirectUrl = this.authService.getRedirectUrl(null, error);
+
+      res.redirect(redirectUrl);
 
       return;
     }

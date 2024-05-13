@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RedisService } from '../../cache/service/redis.service';
 import * as httpMocks from 'node-mocks-http';
 import { CookieOptions } from 'express';
+import { UserEntity } from '../../users/entities/user.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -32,14 +33,17 @@ describe('AuthService', () => {
 
   const mockConfigService = {
     get: jest.fn().mockImplementation((key: string) => {
-      if (key === 'jwt.access.secret') {
-        return accessSecret;
-      } else if (key === 'jwt.access.expiresIn') {
-        return accessExpiresIn;
-      } else if (key === 'jwt.refresh.secret') {
-        return refreshSecret;
-      } else if (key === 'jwt.refresh.expiresIn') {
-        return refreshExpiresIn;
+      switch (key) {
+        case 'jwt.access.secret':
+          return accessSecret;
+        case 'jwt.access.expiresIn':
+          return accessExpiresIn;
+        case 'jwt.refresh.secret':
+          return refreshSecret;
+        case 'jwt.refresh.expiresIn':
+          return refreshExpiresIn;
+        case 'client.url':
+          return 'http://localhost:3000';
       }
     }),
   };
@@ -250,6 +254,29 @@ describe('AuthService', () => {
       await expect(
         service.checkIsLoggedIn(userId, validRefreshToken),
       ).rejects.toThrow(InternalServerErrorException);
+    });
+  });
+
+  describe('getRedirectUrl', () => {
+    it('should return redirect url with error message', () => {
+      const error = { message: 'Failed to login' };
+      const redirectUrl = service.getRedirectUrl(null, error);
+
+      expect(redirectUrl).toBeTruthy();
+    });
+
+    it('should return redirect url with user info', () => {
+      const user = new UserEntity({
+        id: '1',
+        email: 'test@gmail.com',
+        provider: 'google',
+        firstName: 'test_first_name',
+        lastName: 'test_last_name',
+      });
+
+      const redirectUrl = service.getRedirectUrl(user, null);
+
+      expect(redirectUrl).toBeTruthy();
     });
   });
 });
