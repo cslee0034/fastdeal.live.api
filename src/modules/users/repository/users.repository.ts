@@ -12,20 +12,40 @@ export class UsersRepository {
     const {
       email,
       provider = 'local',
+      password = null,
       firstName = null,
       lastName = null,
     } = createUserDto;
-
-    let password = null;
-
-    if ('password' in createUserDto) {
-      password = createUserDto.password;
-    }
 
     const enumProvider = this.mapProvider(provider);
 
     return await this.prisma.user.create({
       data: {
+        email,
+        provider: enumProvider,
+        password,
+        firstName,
+        lastName,
+        role: Role.user,
+      },
+    });
+  }
+
+  async findOrCreate(createUserDto: CreateUserDto): Promise<User> {
+    const {
+      email,
+      provider,
+      password = null,
+      firstName = null,
+      lastName = null,
+    } = createUserDto;
+
+    const enumProvider = this.mapProvider(provider);
+
+    return await this.prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
         email,
         provider: enumProvider,
         password,

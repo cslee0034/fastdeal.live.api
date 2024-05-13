@@ -10,6 +10,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UsersManager } from '../manager/users.manager';
+import { ConfigService } from '@nestjs/config';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -38,6 +39,10 @@ describe('UsersService', () => {
     create: jest.fn((): Promise<User> => {
       return;
     }),
+
+    findOrCreate: jest.fn((): Promise<User> => {
+      return;
+    }),
   };
 
   const mockEncryptService = {
@@ -49,6 +54,16 @@ describe('UsersService', () => {
   const mockUserManager = {
     validateLocalUser: jest.fn(),
     validateOauthUser: jest.fn(),
+  };
+
+  const jwtRefreshExpiresIn = 1000;
+
+  const mockConfigService = {
+    get: jest.fn().mockImplementation((key: string) => {
+      if (key === 'jwt.refresh.expiresIn') {
+        return jwtRefreshExpiresIn;
+      }
+    }),
   };
 
   beforeEach(async () => {
@@ -66,6 +81,10 @@ describe('UsersService', () => {
         {
           provide: EncryptService,
           useValue: mockEncryptService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();
@@ -256,6 +275,7 @@ describe('UsersService', () => {
         provider: 'local',
         firstName: 'test_first_name',
         lastName: 'test_last_name',
+        expiresIn: jwtRefreshExpiresIn / 1000,
       });
     });
   });

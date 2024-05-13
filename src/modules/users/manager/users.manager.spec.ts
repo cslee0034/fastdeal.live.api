@@ -14,6 +14,8 @@ describe('UsersManager', () => {
     provider: Provider.local,
   } as UserEntity;
 
+  const mockGoogleProvider = 'google';
+
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [UsersManager],
@@ -65,26 +67,29 @@ describe('UsersManager', () => {
     it('should return undefined if user is not exists', () => {
       const existingUser = null;
 
-      const result = manager.validateOauthUser(existingUser);
+      const result = manager.validateOauthUser(
+        existingUser,
+        mockGoogleProvider,
+      );
 
       expect(result).toBeUndefined();
     });
 
     it('should throw ForbiddenException if user already exists with local provider', () => {
-      expect(() => manager.validateOauthUser(mockUser)).toThrow(
-        ForbiddenException,
-      );
+      expect(() =>
+        manager.validateOauthUser(mockUser, mockGoogleProvider),
+      ).toThrow(ForbiddenException);
     });
 
     it('should throw ForbiddenException if user already exists', () => {
       const googleUser = {
         ...mockUser,
-        provider: Provider.google,
+        provider: 'local',
       } as UserEntity;
 
-      expect(() => manager.validateOauthUser(googleUser)).toThrow(
-        ForbiddenException,
-      );
+      expect(() =>
+        manager.validateOauthUser(googleUser, mockGoogleProvider),
+      ).toThrow(ForbiddenException);
     });
   });
 });

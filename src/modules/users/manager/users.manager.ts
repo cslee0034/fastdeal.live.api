@@ -19,17 +19,13 @@ export class UsersManager {
     }
   }
 
-  validateOauthUser(existingUser: UserEntity) {
-    if (!existingUser) {
-      return;
-    }
-
-    if (existingUser.provider === Provider.local) {
+  validateOauthUser(existingUser: UserEntity, provider: string) {
+    if (!!existingUser && existingUser.provider !== provider) {
       throw new ForbiddenException(
         `${USERS_ERROR.USER_ALREADY_EXISTS} with ${existingUser.provider} account`,
       );
-    } else {
-      throw new ForbiddenException(USERS_ERROR.USER_ALREADY_EXISTS);
     }
+
+    return;
   }
 }

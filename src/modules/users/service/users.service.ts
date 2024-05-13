@@ -9,6 +9,7 @@ import { UserEntity } from '../entities/user.entity';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { UsersManager } from '../manager/users.manager';
 import { USERS_ERROR } from '../error/users.error';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,7 @@ export class UsersService {
     private readonly userRepository: UsersRepository,
     private readonly usersManager: UsersManager,
     private readonly encryptService: EncryptService,
+    private readonly configService: ConfigService,
   ) {}
 
   async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
@@ -63,9 +65,14 @@ export class UsersService {
       createOauthUserDto.email,
     );
 
-    this.usersManager.validateOauthUser(existingUser);
+    this.usersManager.validateOauthUser(
+      existingUser,
+      createOauthUserDto.provider,
+    );
 
-    return new UserEntity(await this.userRepository.create(createOauthUserDto));
+    return new UserEntity(
+      await this.userRepository.findOrCreate(createOauthUserDto),
+    );
   }
 
   /**
@@ -81,6 +88,8 @@ export class UsersService {
       provider: user?.provider || 'local',
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
+      // milliseconds가 기본 값이므로 초로 변환
+      expiresIn: this.configService.get('jwt.refresh.expiresIn') / 1000,
     };
   }
 }
