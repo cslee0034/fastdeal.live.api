@@ -410,7 +410,6 @@ describe('AuthController', () => {
     it('should call findOrCreateOauth', async () => {
       await controller.googleRedirect(
         mockResponse as any,
-        '1',
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
@@ -458,7 +457,6 @@ describe('AuthController', () => {
 
       await controller.googleRedirect(
         mockResponse as any,
-        '1',
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
@@ -474,7 +472,6 @@ describe('AuthController', () => {
 
       await controller.googleRedirect(
         mockResponse as any,
-        '1',
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,

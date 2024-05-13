@@ -163,7 +163,6 @@ export class AuthController {
   })
   async googleRedirect(
     @Res() res: Response,
-    @GetTokenUserId() id: string,
     @GetTokenUser('email') email: string,
     @GetTokenUser('firstName') firstName: string,
     @GetTokenUser('lastName') lastName: string,
@@ -179,7 +178,7 @@ export class AuthController {
 
       const tokens = await this.authService.generateTokens(user.id, user.email);
 
-      await this.authService.login(id, tokens.refreshToken);
+      await this.authService.login(user.id, tokens.refreshToken);
 
       await this.authService.setTokens(res, tokens);
 
