@@ -409,11 +409,11 @@ describe('AuthController', () => {
 
     it('should call findOrCreateOauth', async () => {
       await controller.googleRedirect(
-        mockResponse as any,
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
         'google',
+        mockResponse as any,
       );
 
       expect(usersService.findOrCreateOauth).toHaveBeenCalledWith({
@@ -456,11 +456,11 @@ describe('AuthController', () => {
       mockResponse.redirect = mockRedirect;
 
       await controller.googleRedirect(
-        mockResponse as any,
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
         'google',
+        mockResponse as any,
       );
 
       expect(mockRedirect).toHaveBeenCalledWith('client.url/api/auth/google');
@@ -471,11 +471,11 @@ describe('AuthController', () => {
       mockResponse.redirect = mockRedirect;
 
       await controller.googleRedirect(
-        mockResponse as any,
         mockSignUpDto.email as string,
         mockSignUpDto.firstName as string,
         mockSignUpDto.lastName as string,
         'local',
+        mockResponse as any,
       );
 
       expect(mockRedirect).toHaveBeenCalledWith(

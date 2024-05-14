@@ -66,7 +66,7 @@ export class AuthController {
   })
   async signup(
     @Body() signUpDto: SignUpDto,
-    @Res() res: Response,
+    @Res() response: Response,
   ): Promise<void> {
     const createdUser = await this.usersService.createLocal(signUpDto);
 
@@ -77,9 +77,9 @@ export class AuthController {
 
     await this.authService.login(createdUser.id, tokens.refreshToken);
 
-    await this.authService.setTokens(res, tokens);
+    await this.authService.setTokens(response, tokens);
 
-    res
+    response
       .status(HttpStatus.CREATED)
       .json(this.usersService.convertUserResponse(createdUser));
 
@@ -111,7 +111,7 @@ export class AuthController {
   })
   async signin(
     @Body() signInDto: SignInDto,
-    @Res() res: Response,
+    @Res() response: Response,
   ): Promise<void> {
     const user = await this.usersService.findOneByEmail(signInDto.email);
 
@@ -124,9 +124,11 @@ export class AuthController {
 
     await this.authService.login(user.id, tokens.refreshToken);
 
-    await this.authService.setTokens(res, tokens);
+    await this.authService.setTokens(response, tokens);
 
-    res.status(HttpStatus.OK).json(this.usersService.convertUserResponse(user));
+    response
+      .status(HttpStatus.OK)
+      .json(this.usersService.convertUserResponse(user));
 
     return;
   }
@@ -162,11 +164,11 @@ export class AuthController {
       'User will be redirected to {client-url}/api/google?error=${error.message}',
   })
   async googleRedirect(
-    @Res() res: Response,
     @GetTokenUser('email') email: string,
     @GetTokenUser('firstName') firstName: string,
     @GetTokenUser('lastName') lastName: string,
     @GetTokenUser('provider') provider: string,
+    @Res() response: Response,
   ): Promise<void> {
     try {
       const user = await this.usersService.findOrCreateOauth({
@@ -180,17 +182,17 @@ export class AuthController {
 
       await this.authService.login(user.id, tokens.refreshToken);
 
-      await this.authService.setTokens(res, tokens);
+      await this.authService.setTokens(response, tokens);
 
       const redirectUrl = this.authService.getRedirectUrl(user, null);
 
-      res.redirect(redirectUrl);
+      response.redirect(redirectUrl);
 
       return;
     } catch (error) {
       const redirectUrl = this.authService.getRedirectUrl(null, error);
 
-      res.redirect(redirectUrl);
+      response.redirect(redirectUrl);
 
       return;
     }
@@ -247,7 +249,7 @@ export class AuthController {
     @GetTokenUserId() id: string,
     @GetTokenUser('email') email: string,
     @GetTokenUser('refreshToken') refreshToken: string,
-    @Res() res: Response,
+    @Res() response: Response,
   ): Promise<void> {
     await this.authService.checkIsLoggedIn(id, refreshToken);
 
@@ -257,9 +259,11 @@ export class AuthController {
 
     await this.authService.login(id, tokens.refreshToken);
 
-    await this.authService.setTokens(res, tokens);
+    await this.authService.setTokens(response, tokens);
 
-    res.status(HttpStatus.OK).json(this.usersService.convertUserResponse(user));
+    response
+      .status(HttpStatus.OK)
+      .json(this.usersService.convertUserResponse(user));
 
     return;
   }
