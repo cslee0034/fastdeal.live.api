@@ -19,22 +19,7 @@ export class AuthService {
     private readonly redisService: RedisService,
   ) {}
 
-  async login(id: string, refreshToken: string): Promise<boolean> {
-    try {
-      await this.redisService.set(
-        `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
-        refreshToken,
-        this.configService.get<number>('jwt.refresh.expiresIn'),
-      );
-      return true;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN,
-      );
-    }
-  }
-
-  async logout(id: string): Promise<boolean> {
+  public async logout(id: string): Promise<boolean> {
     try {
       await this.redisService.del(
         `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
@@ -47,7 +32,13 @@ export class AuthService {
     }
   }
 
-  async generateTokens(id: string, email: string): Promise<Tokens> {
+  public async login(user: UserEntity, response: Response) {
+    const tokens = await this.generateTokens(user.id, user.email);
+    await this.setRefreshTokenToRedis(user.id, tokens.refreshToken);
+    await this.setTokensToResponse(response, tokens);
+  }
+
+  private async generateTokens(id: string, email: string): Promise<Tokens> {
     const payload = {
       id: id,
       email: email,
@@ -73,7 +64,25 @@ export class AuthService {
     }
   }
 
-  async setTokens(res: Response, tokens: Tokens) {
+  private async setRefreshTokenToRedis(
+    id: string,
+    refreshToken: string,
+  ): Promise<boolean> {
+    try {
+      await this.redisService.set(
+        `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
+        refreshToken,
+        this.configService.get<number>('jwt.refresh.expiresIn'),
+      );
+      return true;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN,
+      );
+    }
+  }
+
+  private async setTokensToResponse(res: Response, tokens: Tokens) {
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
@@ -98,7 +107,7 @@ export class AuthService {
     return;
   }
 
-  async checkIsLoggedIn(id: string, refreshToken: string) {
+  public async checkIsLoggedIn(id: string, refreshToken: string) {
     try {
       const savedRefreshToken = await this.redisService.get(
         `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
@@ -119,11 +128,21 @@ export class AuthService {
     return;
   }
 
-  getRedirectUrl(user: UserEntity, error: { message: string }): string {
-    if (error) {
-      return `${this.configService.get<string>('client.url')}/api/auth/google?error=${encodeURIComponent(error?.message)}`;
-    }
+  public redirectUser(response: Response, user: UserEntity) {
+    const redirectUrl = this.buildRedirectUrl(user);
+    response.redirect(redirectUrl);
+  }
 
+  public redirectUserWithError(response: Response, error: { message: string }) {
+    const redirectUrl = this.buildRedirectUrlWithError(error);
+    response.redirect(redirectUrl);
+  }
+
+  private buildRedirectUrl(user: UserEntity): string {
     return `${this.configService.get<string>('client.url')}/api/auth/google?id=${encodeURIComponent(user.id)}&email=${encodeURIComponent(user.email)}&&provider=${encodeURIComponent(user.provider)}&firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}&expiresIn=${this.configService.get<number>('jwt.refresh.expiresIn')}`;
+  }
+
+  private buildRedirectUrlWithError(error: { message: string }): string {
+    return `${this.configService.get<string>('client.url')}/api/auth/google?error=${encodeURIComponent(error?.message)}`;
   }
 }
