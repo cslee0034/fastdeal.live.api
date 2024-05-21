@@ -1,4 +1,4 @@
-export type Payload = {
+export interface Payload {
   id: string;
   email: string;
-};
+}

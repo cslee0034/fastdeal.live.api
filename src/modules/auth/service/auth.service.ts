@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Tokens } from '../types/tokens.type';
+import { Tokens } from '../interfaces/tokens.interface';
 import { RedisService } from '../../cache/service/redis.service';
 import { Response, CookieOptions } from 'express';
 import { AUTH_ERROR } from '../error/auth.error';
