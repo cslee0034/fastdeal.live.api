@@ -31,9 +31,9 @@ import { Response } from 'express';
 import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
 import { SuccessResponseDto } from '../dto/response/success-response.dto';
 import { ConvertedUserResponseDto } from '../dto/response/user-response.dto';
-import { AUTH_ERROR } from '../error/auth.error';
+import { AUTH_ERROR } from '../error/constant/auth.error.constant';
 import { USERS_ERROR } from '../../users/error/constant/users.error.constant';
-import { ENCRYPT_ERROR } from '../../encrypt/error/encrypt.error';
+import { ENCRYPT_ERROR } from '../../encrypt/error/constant/encrypt.error.constant';
 
 @Controller('auth')
 export class AuthController {

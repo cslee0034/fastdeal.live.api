@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Tokens } from '../interfaces/tokens.interface';
 import { RedisService } from '../../cache/service/redis.service';
 import { Response, CookieOptions } from 'express';
-import { AUTH_ERROR } from '../error/auth.error';
+import { AUTH_ERROR } from '../error/constant/auth.error.constant';
 import { UserEntity } from '../../users/entities/user.entity';
 
 @Injectable()

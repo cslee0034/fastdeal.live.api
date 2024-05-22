@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { ENCRYPT_ERROR } from '../error/encrypt.error';
+import { ENCRYPT_ERROR } from '../error/constant/encrypt.error.constant';
 
 @Injectable()
 export class EncryptService {
