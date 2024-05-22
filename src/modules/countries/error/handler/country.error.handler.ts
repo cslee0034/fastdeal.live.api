@@ -1,12 +1,12 @@
 import { Inject, InternalServerErrorException } from '@nestjs/common';
-import { PrismaErrorHandler } from '../../../../common/error/handler/prisma.error.handler';
+import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { COUNTRIES_ERROR } from '../constant/countries.error.constant';
 import { CreateCountryDto } from '../../dto/create-country.dto';
 import { CreateTravelAlertDto } from '../../dto/create-travel-alert.dto';
 
-export class CountriesErrorHandler extends PrismaErrorHandler {
+export class CountriesErrorHandler extends ThrownErrorHandler {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) protected readonly logger: Logger,
   ) {
@@ -21,7 +21,7 @@ export class CountriesErrorHandler extends PrismaErrorHandler {
     inputs: CreateCountryDto;
   }): void => {
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_CREATE_COUNTRY,
     );
@@ -35,7 +35,7 @@ export class CountriesErrorHandler extends PrismaErrorHandler {
     inputs: CreateCountryDto;
   }): void => {
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_UPDATE_COUNTRY,
     );
@@ -49,7 +49,7 @@ export class CountriesErrorHandler extends PrismaErrorHandler {
     inputs: CreateCountryDto;
   }): void => {
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
     );
@@ -63,7 +63,7 @@ export class CountriesErrorHandler extends PrismaErrorHandler {
     inputs: CreateTravelAlertDto;
   }): void => {
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_CREATE_TRAVEL_ALERT,
     );
@@ -77,7 +77,7 @@ export class CountriesErrorHandler extends PrismaErrorHandler {
     inputs: string;
   }): void => {
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_GET_TRAVEL_ALERTS,
     );

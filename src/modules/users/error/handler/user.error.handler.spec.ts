@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaErrorHandler } from '../../../../common/error/handler/prisma.error.handler';
+import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
 import { UsersErrorHandler } from './user.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
@@ -42,8 +42,8 @@ describe('UserErrorHandler', () => {
     expect(usersErrorHandler).toBeDefined();
   });
 
-  it('should be an instance of PrismaErrorHandler', () => {
-    expect(usersErrorHandler).toBeInstanceOf(PrismaErrorHandler);
+  it('should be an instance of ThrownErrorHandler', () => {
+    expect(usersErrorHandler).toBeInstanceOf(ThrownErrorHandler);
   });
 
   it('should be an instance of UserErrorHandler', () => {
@@ -72,20 +72,20 @@ describe('UserErrorHandler', () => {
       );
     });
 
-    it('should call handlePrismaError', () => {
+    it('should call handleThrownError', () => {
       const error = mockError;
       const inputs = mockCreateInputs;
 
-      const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+      const handleThrownErrorSpy = jest.spyOn(
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
         usersErrorHandler.createLocal({ error, inputs });
       } catch (error) {}
 
-      expect(handlePrismaErrorSpy).toHaveBeenCalled();
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -116,20 +116,20 @@ describe('UserErrorHandler', () => {
       );
     });
 
-    it('should call handlePrismaError', () => {
+    it('should call handleThrownError', () => {
       const error = mockError;
       const inputs = mockCreateInputs;
 
-      const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+      const handleThrownErrorSpy = jest.spyOn(
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
         usersErrorHandler.findOrCreateOauth({ error, inputs });
       } catch (error) {}
 
-      expect(handlePrismaErrorSpy).toHaveBeenCalled();
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
 

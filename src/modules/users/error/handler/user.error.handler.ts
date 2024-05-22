@@ -1,10 +1,10 @@
 import { Inject, InternalServerErrorException } from '@nestjs/common';
-import { PrismaErrorHandler } from '../../../../common/error/handler/prisma.error.handler';
+import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { USERS_ERROR } from '../constant/users.error.constant';
 
-export class UsersErrorHandler extends PrismaErrorHandler {
+export class UsersErrorHandler extends ThrownErrorHandler {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) protected readonly logger: Logger,
   ) {
@@ -20,7 +20,7 @@ export class UsersErrorHandler extends PrismaErrorHandler {
   }): void => {
     inputs.password = '';
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(USERS_ERROR.FAILED_TO_CREATE_USER);
   };
 
@@ -32,7 +32,7 @@ export class UsersErrorHandler extends PrismaErrorHandler {
     inputs: any;
   }): void => {
     this.logInputs(inputs);
-    this.handlePrismaError(error);
+    this.handleThrownError(error);
     throw new InternalServerErrorException(
       USERS_ERROR.FAILED_TO_FIND_OR_CREATE_OAUTH_USER,
     );

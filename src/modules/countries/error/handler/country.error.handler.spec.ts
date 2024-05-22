@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesErrorHandler } from './country.error.handler';
-import { PrismaErrorHandler } from '../../../../common/error/handler/prisma.error.handler';
+import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { CreateCountryDto } from '../../dto/create-country.dto';
@@ -62,8 +62,8 @@ describe('CountriesErrorHandler', () => {
     expect(countriesErrorHandler).toBeDefined();
   });
 
-  it('should be an instance of PrismaErrorHandler', () => {
-    expect(countriesErrorHandler).toBeInstanceOf(PrismaErrorHandler);
+  it('should be an instance of ThrownErrorHandler', () => {
+    expect(countriesErrorHandler).toBeInstanceOf(ThrownErrorHandler);
   });
 
   it('should be an instance of UserErrorHandler', () => {
@@ -93,20 +93,20 @@ describe('CountriesErrorHandler', () => {
       expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should call handlePrismaError', () => {
+    it('should call handleThrownError', () => {
       const error = mockError;
       const inputs = mockCreateCountryDto;
 
-      const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+      const handleThrownErrorSpy = jest.spyOn(
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
         countriesErrorHandler.create({ error, inputs });
       } catch (error) {}
 
-      expect(handlePrismaErrorSpy).toHaveBeenCalled();
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -134,8 +134,8 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockUpdateCountryDto;
 
       const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
@@ -165,20 +165,20 @@ describe('CountriesErrorHandler', () => {
       expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should call handlePrismaError', () => {
+    it('should call handleThrownError', () => {
       const error = mockError;
       const inputs = mockUpdateCountryDto;
 
-      const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+      const handleThrownErrorSpy = jest.spyOn(
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
         countriesErrorHandler.delete({ error, inputs });
       } catch (error) {}
 
-      expect(handlePrismaErrorSpy).toHaveBeenCalled();
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -201,20 +201,20 @@ describe('CountriesErrorHandler', () => {
       expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should call handlePrismaError', () => {
+    it('should call handleThrownError', () => {
       const error = mockError;
       const inputs = mockCreateTravelAlertDto;
 
-      const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+      const handleThrownErrorSpy = jest.spyOn(
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
         countriesErrorHandler.createTravelAlert({ error, inputs });
       } catch (error) {}
 
-      expect(handlePrismaErrorSpy).toHaveBeenCalled();
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
 
@@ -237,20 +237,20 @@ describe('CountriesErrorHandler', () => {
       expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should call handlePrismaError', () => {
+    it('should call handleThrownError', () => {
       const error = mockError;
       const inputs = mockGetTravelAlertsDto;
 
-      const handlePrismaErrorSpy = jest.spyOn(
-        PrismaErrorHandler.prototype as any,
-        'handlePrismaError',
+      const handleThrownErrorSpy = jest.spyOn(
+        ThrownErrorHandler.prototype as any,
+        'handleThrownError',
       );
 
       try {
         countriesErrorHandler.getTravelAlerts({ error, inputs });
       } catch (error) {}
 
-      expect(handlePrismaErrorSpy).toHaveBeenCalled();
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
 });
