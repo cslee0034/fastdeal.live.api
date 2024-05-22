@@ -18,13 +18,13 @@ export class UsersService {
   ) {}
 
   async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
-    const existingUser = await this.userRepository.findOneByEmail(
-      createUserDto.email,
-    );
-
-    this.usersManager.validateLocalUser(existingUser);
-
     try {
+      const existingUser = await this.userRepository.findOneByEmail(
+        createUserDto.email,
+      );
+
+      this.usersManager.validateLocalUser(existingUser);
+
       createUserDto.password = await this.encryptService.hash(
         createUserDto.password,
       );
@@ -58,16 +58,16 @@ export class UsersService {
   async findOrCreateOauth(
     createOauthUserDto: CreateUserDto,
   ): Promise<UserEntity> {
-    const existingUser = await this.userRepository.findOneByEmail(
-      createOauthUserDto.email,
-    );
-
-    this.usersManager.validateOauthUser(
-      existingUser,
-      createOauthUserDto.provider,
-    );
-
     try {
+      const existingUser = await this.userRepository.findOneByEmail(
+        createOauthUserDto.email,
+      );
+
+      this.usersManager.validateOauthUser(
+        existingUser,
+        createOauthUserDto.provider,
+      );
+
       return new UserEntity(
         await this.userRepository.findOrCreate(createOauthUserDto),
       );
