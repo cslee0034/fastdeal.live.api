@@ -54,12 +54,10 @@ export class PrismaClientExceptionFilter
         error instanceof Prisma.PrismaClientKnownRequestError
           ? HttpStatus.CONFLICT
           : HttpStatus.INTERNAL_SERVER_ERROR;
-      let errorCode;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        errorCode = error?.code || 'UNKNOWN_ERROR';
-      } else {
-        errorCode = 'UNKNOWN_ERROR';
-      }
+      const errorCode =
+        error instanceof Prisma.PrismaClientKnownRequestError
+          ? error.code
+          : 'UNKNOWN_ERROR';
       const KSTDate = new Date().toLocaleString('ko-KR', {
         timeZone: 'Asia/Seoul',
       });
@@ -73,6 +71,10 @@ export class PrismaClientExceptionFilter
       });
 
       this.logMessage(message);
+
+      message.statusCode === HttpStatus.INTERNAL_SERVER_ERROR;
+      message.message =
+        'An error occurred while processing your request. Please try again later';
 
       response.status(statusCode).json(message);
     }

@@ -3,7 +3,7 @@ import { PrismaClientExceptionFilter } from './prisma-client-exception.filter';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { Prisma } from '@prisma/client';
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, HttpStatus } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 
 describe('PrismaClientExceptionFilter', () => {
@@ -100,16 +100,71 @@ describe('PrismaClientExceptionFilter', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
+  it('should cover PrismaClientValidationError', () => {
+    const mockException = new Prisma.PrismaClientValidationError('', {
+      meta: {
+        target: [''],
+        value: '',
+      },
+    } as any);
+
+    prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
+
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('should cover PrismaClientInitializationError', () => {
+    const mockException = new Prisma.PrismaClientInitializationError('', {
+      meta: {
+        target: [''],
+        value: '',
+      },
+    } as any);
+
+    prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
+
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('should cover PrismaClientRustPanicError', () => {
+    const mockException = new Prisma.PrismaClientRustPanicError('', {
+      meta: {
+        target: [''],
+        value: '',
+      },
+    } as any);
+
+    prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
+
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('should return "Priam Client Error" if error.message is not provided', () => {
+    const mockException = new Prisma.PrismaClientKnownRequestError('', {
+      code: 'P2002',
+      meta: {
+        target: ['email'],
+        value: '',
+      },
+    } as any);
+
+    prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining('Priam Client Error'),
+    );
+  });
+
   it('should send proper response', () => {
     prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
-    const statusCode = 409;
 
     expect(mockResponse.status).toHaveBeenCalledWith(409);
     expect(mockResponse.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        statusCode: statusCode,
+        statusCode: HttpStatus.CONFLICT,
         errorCode: 'P2002',
-        message: 'Unique constraint failed on the email',
+        message:
+          'An error occurred while processing your request. Please try again later',
       }),
     );
   });
@@ -124,15 +179,15 @@ describe('PrismaClientExceptionFilter', () => {
         },
       } as any,
     );
-    const statusCode = 500;
 
     prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
 
     expect(mockResponse.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        statusCode: statusCode,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         errorCode: 'UNKNOWN_ERROR',
-        message: 'Unique constraint failed on the email',
+        message:
+          'An error occurred while processing your request. Please try again later',
       }),
     );
   });
