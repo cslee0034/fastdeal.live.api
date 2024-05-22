@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesController } from './countries.controller';
 import { CountriesService } from '../service/countries.service';
 import { CreateCountryDto } from '../dto/create-country.dto';
-import { Continent } from '@prisma/client';
+import { AlertStatus, Continent } from '@prisma/client';
 import { UpdateCountryDto } from '../dto/update-country.dto';
 
 describe('CountriesController', () => {
@@ -13,6 +13,8 @@ describe('CountriesController', () => {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    createTravelAlert: jest.fn(),
+    getTravelAlerts: jest.fn(),
   };
 
   const mockCreateCountryDto = {
@@ -26,6 +28,12 @@ describe('CountriesController', () => {
   const mockUpdateCountryDto = {
     fromCountryId: '1',
     ...mockCreateCountryDto,
+  };
+
+  const mockTravelAlertDto = {
+    nationalityCode: 'KR',
+    destinationCode: 'US',
+    alertStatus: AlertStatus.green,
   };
 
   beforeEach(async () => {
@@ -80,6 +88,30 @@ describe('CountriesController', () => {
       controller.delete('1');
 
       expect(service.delete).toHaveBeenCalled();
+    });
+  });
+
+  describe('createTravelAlert', () => {
+    it('should be defined', () => {
+      expect(controller.createTravelAlert).toBeDefined();
+    });
+
+    it('should call service.createTravelAlert', () => {
+      controller.createTravelAlert(mockTravelAlertDto);
+
+      expect(service.createTravelAlert).toHaveBeenCalled();
+    });
+  });
+
+  describe('getTravelAlerts', () => {
+    it('should be defined', () => {
+      expect(controller.getTravelAlerts).toBeDefined();
+    });
+
+    it('should call service.getTravelAlerts', () => {
+      controller.getTravelAlerts(mockTravelAlertDto.nationalityCode);
+
+      expect(service.getTravelAlerts).toHaveBeenCalled();
     });
   });
 });

@@ -1,40 +1,54 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CountriesRepository } from '../repository/countries.repository';
 import { CreateCountryDto } from '../dto/create-country.dto';
-import { COUNTRIES_ERROR } from '../error/countries.error';
 import { UpdateCountryDto } from '../dto/update-country.dto';
+import { CreateTravelAlertDto } from '../dto/create-travel-alert.dto';
+import { CountriesErrorHandler } from '../error/handler/country.error.handler';
 
 @Injectable()
 export class CountriesService {
-  constructor(private readonly countriesRepository: CountriesRepository) {}
+  constructor(
+    private readonly countriesRepository: CountriesRepository,
+    private readonly errorHandler: CountriesErrorHandler,
+  ) {}
 
-  async create(createCountryDto: CreateCountryDto) {
+  public async create(createCountryDto: CreateCountryDto) {
     try {
       return await this.countriesRepository.create(createCountryDto);
     } catch (error) {
-      throw new InternalServerErrorException(
-        COUNTRIES_ERROR.CANNOT_CREATE_COUNTRY,
-      );
+      this.errorHandler.create(error);
     }
   }
 
-  async update(updateCountryDto: UpdateCountryDto) {
+  public async update(updateCountryDto: UpdateCountryDto) {
     try {
       return await this.countriesRepository.update(updateCountryDto);
     } catch (error) {
-      throw new InternalServerErrorException(
-        COUNTRIES_ERROR.CANNOT_UPDATE_COUNTRY,
-      );
+      this.errorHandler.update(error);
     }
   }
 
-  async delete(id: string) {
+  public async delete(id: string) {
     try {
       return await this.countriesRepository.delete(id);
     } catch (error) {
-      throw new InternalServerErrorException(
-        COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
-      );
+      this.errorHandler.delete(error);
+    }
+  }
+
+  public async createTravelAlert(travelAlert: CreateTravelAlertDto) {
+    try {
+      return await this.countriesRepository.createTravelAlert(travelAlert);
+    } catch (error) {
+      this.errorHandler.createTravelAlert(error);
+    }
+  }
+
+  public async getTravelAlerts(countryCode: string) {
+    try {
+      return await this.countriesRepository.getTravelAlerts(countryCode);
+    } catch (error) {
+      this.errorHandler.getTravelAlerts(error);
     }
   }
 }

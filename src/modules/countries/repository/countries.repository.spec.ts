@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesRepository } from './countries.repository';
 import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
 import { CountryEntity } from '../entities/country.entity';
-import { Continent } from '@prisma/client';
+import { AlertStatus, Continent } from '@prisma/client';
+import { TravelAlertEntity } from '../entities/travel-alert.entity';
 
 describe('CountriesRepository', () => {
   let repository: CountriesRepository;
@@ -13,6 +14,10 @@ describe('CountriesRepository', () => {
         return Promise.resolve(new CountryEntity(createCountryDto));
       }),
 
+      findUnique: jest.fn().mockImplementation((countryCode: string) => {
+        return Promise.resolve(new CountryEntity({ countryCode }));
+      }),
+
       update: jest.fn().mockImplementation((updateCountryDto) => {
         return Promise.resolve(new CountryEntity(updateCountryDto));
       }),
@@ -21,6 +26,19 @@ describe('CountriesRepository', () => {
         return Promise.resolve({
           id: countryId,
         });
+      }),
+    },
+
+    travelAlert: {
+      create: jest.fn().mockImplementation((travelAlert) => {
+        return Promise.resolve(new TravelAlertEntity(travelAlert));
+      }),
+
+      findMany: jest.fn().mockImplementation((countryCode: string) => {
+        if (countryCode === 'KR') {
+          return Promise.resolve([new TravelAlertEntity({})]);
+        }
+        return Promise.resolve([]);
       }),
     },
   };
@@ -104,6 +122,36 @@ describe('CountriesRepository', () => {
       expect(mockPrismaService.country.delete).toHaveBeenCalledWith({
         where: { id: countryId },
       });
+    });
+  });
+
+  describe('createTravelAlert', () => {
+    it('should be defined', () => {
+      expect(repository.createTravelAlert).toBeDefined();
+    });
+
+    it('should create a travel alert', async () => {
+      const travelAlert = {
+        nationalityCode: 'KR',
+        destinationCode: 'US',
+        alertStatus: AlertStatus.green,
+      };
+      const result = await repository.createTravelAlert(travelAlert);
+
+      expect(result).toBeInstanceOf(TravelAlertEntity);
+    });
+  });
+
+  describe('getTravelAlerts', () => {
+    it('should be defined', () => {
+      expect(repository.getTravelAlerts).toBeDefined();
+    });
+
+    it('should get travel alerts', async () => {
+      const countryCode = 'KR';
+      await repository.getTravelAlerts(countryCode);
+
+      expect(mockPrismaService.travelAlert.findMany).toHaveBeenCalledWith;
     });
   });
 });
