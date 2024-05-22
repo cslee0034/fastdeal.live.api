@@ -115,6 +115,14 @@ describe('HttpExceptionFilter', () => {
     expect(logger.error).toHaveBeenCalled();
   });
 
+  it('should throw internal server error if there is no status code', () => {
+    const mockException = new HttpException('Internal Server Error', 500);
+    mockException.getStatus = () => null;
+    httpExceptionFilter.catch(mockException, mockExecutionContext);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(500);
+  });
+
   it('should send proper response', () => {
     httpExceptionFilter.catch(mockException, mockExecutionContext);
 
