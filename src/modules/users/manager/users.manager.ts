@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { Provider } from '@prisma/client';
-import { USERS_ERROR } from '../error/users.error';
+import { USERS_ERROR } from '../error/constant/users.error.constant';
 
 @Injectable()
 export class UsersManager {

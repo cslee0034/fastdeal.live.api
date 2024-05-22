@@ -32,7 +32,7 @@ import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
 import { SuccessResponseDto } from '../dto/response/success-response.dto';
 import { ConvertedUserResponseDto } from '../dto/response/user-response.dto';
 import { AUTH_ERROR } from '../error/auth.error';
-import { USERS_ERROR } from '../../users/error/users.error';
+import { USERS_ERROR } from '../../users/error/constant/users.error.constant';
 import { ENCRYPT_ERROR } from '../../encrypt/error/encrypt.error';
 
 @Controller('auth')

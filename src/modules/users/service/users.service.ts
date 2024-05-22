@@ -1,16 +1,12 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { UsersManager } from '../manager/users.manager';
-import { USERS_ERROR } from '../error/users.error';
+import { USERS_ERROR } from '../error/constant/users.error.constant';
 import { ConfigService } from '@nestjs/config';
-
+import { UsersErrorHandler } from '../error/handler/user.error.handler';
 @Injectable()
 export class UsersService {
   constructor(
@@ -18,9 +14,10 @@ export class UsersService {
     private readonly usersManager: UsersManager,
     private readonly encryptService: EncryptService,
     private readonly configService: ConfigService,
+    private readonly errorHandler: UsersErrorHandler,
   ) {}
 
-  public async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOneByEmail(
       createUserDto.email,
     );
@@ -34,11 +31,11 @@ export class UsersService {
 
       return new UserEntity(await this.userRepository.create(createUserDto));
     } catch (error) {
-      throw new InternalServerErrorException(USERS_ERROR.FAILED_TO_CREATE_USER);
+      this.errorHandler.createLocal({ error, inputs: createUserDto });
     }
   }
 
-  public async findOneById(id: string): Promise<UserEntity | null> {
+  async findOneById(id: string): Promise<UserEntity | null> {
     const existingUser = await this.userRepository.findOneById(id);
 
     if (!existingUser) {
@@ -48,7 +45,7 @@ export class UsersService {
     return new UserEntity(existingUser);
   }
 
-  public async findOneByEmail(email: string): Promise<UserEntity | null> {
+  async findOneByEmail(email: string): Promise<UserEntity | null> {
     const existingUser = await this.userRepository.findOneByEmail(email);
 
     if (!existingUser) {
@@ -58,7 +55,7 @@ export class UsersService {
     return new UserEntity(existingUser);
   }
 
-  public async findOrCreateOauth(
+  async findOrCreateOauth(
     createOauthUserDto: CreateUserDto,
   ): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOneByEmail(
@@ -70,9 +67,16 @@ export class UsersService {
       createOauthUserDto.provider,
     );
 
-    return new UserEntity(
-      await this.userRepository.findOrCreate(createOauthUserDto),
-    );
+    try {
+      return new UserEntity(
+        await this.userRepository.findOrCreate(createOauthUserDto),
+      );
+    } catch (error) {
+      this.errorHandler.findOrCreateOauth({
+        error,
+        inputs: createOauthUserDto,
+      });
+    }
   }
 
   /**
@@ -80,7 +84,7 @@ export class UsersService {
    * class-serializer와 transform-interceptor가 동작하지 않기 때문에
    * 별도의 사용자 응답 변환 메서드를 만들어 사용한다
    */
-  public convertUserResponse(user: UserEntity) {
+  convertUserResponse(user: UserEntity) {
     return {
       success: true,
       id: user?.id,

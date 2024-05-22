@@ -5,17 +5,16 @@ import { UserEntity } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '@prisma/client';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
-import {
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { UsersManager } from '../manager/users.manager';
 import { ConfigService } from '@nestjs/config';
+import { UsersErrorHandler } from '../error/handler/user.error.handler';
 
 describe('UsersService', () => {
   let service: UsersService;
   let repository: any;
   let manager: any;
+  let errorHandler: any;
 
   let mockCreateUserDto: CreateUserDto;
 
@@ -49,6 +48,11 @@ describe('UsersService', () => {
     hash: jest.fn((key: string) => {
       return 'hashed_' + key;
     }),
+  };
+
+  const mockUsersErrorHandler = {
+    createLocal: jest.fn(),
+    findOrCreateOauth: jest.fn(),
   };
 
   const mockUserManager = {
@@ -86,12 +90,17 @@ describe('UsersService', () => {
           provide: ConfigService,
           useValue: mockConfigService,
         },
+        {
+          provide: UsersErrorHandler,
+          useValue: mockUsersErrorHandler,
+        },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
     repository = module.get<UsersRepository>(UsersRepository);
     manager = module.get<UsersManager>(UsersManager);
+    errorHandler = module.get<UsersErrorHandler>(UsersErrorHandler);
 
     mockCreateUserDto = {
       email: 'test@email.com',
@@ -125,14 +134,14 @@ describe('UsersService', () => {
       expect(manager.validateLocalUser).toHaveBeenCalled();
     });
 
-    it('should throw error if it fails to create user', async () => {
+    it('should call errorHandler if it fails to create user', async () => {
       repository.create.mockRejectedValueOnce(
         new Error('Failed to create user'),
       );
 
-      await expect(service.createLocal(mockCreateUserDto)).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      await service.createLocal(mockCreateUserDto as CreateUserDto);
+
+      expect(errorHandler.createLocal).toHaveBeenCalled();
     });
 
     it('should called with encrypted password', async () => {
@@ -249,6 +258,16 @@ describe('UsersService', () => {
 
       expect(user).toBeInstanceOf(UserEntity);
     });
+
+    it('should call errorHandler if it fails to find or create oauth user', async () => {
+      repository.findOrCreate.mockRejectedValueOnce(
+        new Error('Failed to create user'),
+      );
+
+      await service.findOrCreateOauth(mockCreateUserDto as CreateUserDto);
+
+      expect(errorHandler.findOrCreateOauth).toHaveBeenCalled();
+    });
   });
 
   describe('convertUserResponse', () => {
@@ -277,6 +296,29 @@ describe('UsersService', () => {
         lastName: 'test_last_name',
         expiresIn: jwtRefreshExpiresIn / 1000,
       });
+    });
+  });
+
+  it('should return user response with default value', () => {
+    const user = new UserEntity({
+      id: '1',
+      email: 'test@email.com',
+      provider: null,
+      password: 'test_password',
+      firstName: null,
+      lastName: null,
+    });
+
+    const result = service.convertUserResponse(user);
+
+    expect(result).toEqual({
+      success: true,
+      id: '1',
+      email: 'test@email.com',
+      provider: 'local',
+      firstName: '',
+      lastName: '',
+      expiresIn: jwtRefreshExpiresIn / 1000,
     });
   });
 });
