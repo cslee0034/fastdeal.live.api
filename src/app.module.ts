@@ -9,8 +9,6 @@ import { env } from './config/env/env';
 import { validationSchema } from './config/env/validator';
 import { HttpModule } from '@nestjs/axios';
 import { getHttpConfig } from './config/http/http';
-import { WinstonModule } from 'nest-winston';
-import { winstonTransports } from './config/logger/logger';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
@@ -27,6 +25,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
+import { LoggerModule } from './common/module/logger.module';
 
 @Module({
   imports: [
@@ -45,13 +44,6 @@ import { RolesGuard } from './common/guard/role.guard';
         getHttpConfig(configService),
       inject: [ConfigService],
     }),
-    WinstonModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService): any => ({
-        transports: winstonTransports(configService),
-      }),
-      inject: [ConfigService],
-    }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): object =>
@@ -65,6 +57,7 @@ import { RolesGuard } from './common/guard/role.guard';
       }),
       inject: [ConfigService],
     }),
+    LoggerModule,
     PrismaModule,
     AuthModule,
     RedisModule,
