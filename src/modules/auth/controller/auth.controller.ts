@@ -70,14 +70,7 @@ export class AuthController {
   ): Promise<void> {
     const createdUser = await this.usersService.createLocal(signUpDto);
 
-    const tokens = await this.authService.generateTokens(
-      createdUser.id,
-      createdUser.email,
-    );
-
-    await this.authService.login(createdUser.id, tokens.refreshToken);
-
-    await this.authService.setTokens(response, tokens);
+    await this.authService.login(createdUser, response);
 
     response
       .status(HttpStatus.CREATED)
@@ -120,11 +113,7 @@ export class AuthController {
       user.password,
     );
 
-    const tokens = await this.authService.generateTokens(user.id, user.email);
-
-    await this.authService.login(user.id, tokens.refreshToken);
-
-    await this.authService.setTokens(response, tokens);
+    await this.authService.login(user, response);
 
     response
       .status(HttpStatus.OK)
@@ -178,21 +167,12 @@ export class AuthController {
         lastName,
       });
 
-      const tokens = await this.authService.generateTokens(user.id, user.email);
+      await this.authService.login(user, response);
 
-      await this.authService.login(user.id, tokens.refreshToken);
-
-      await this.authService.setTokens(response, tokens);
-
-      const redirectUrl = this.authService.getRedirectUrl(user, null);
-
-      response.redirect(redirectUrl);
-
+      this.authService.redirectUser(response, user);
       return;
     } catch (error) {
-      const redirectUrl = this.authService.getRedirectUrl(null, error);
-
-      response.redirect(redirectUrl);
+      this.authService.redirectUserWithError(response, error);
 
       return;
     }
@@ -255,11 +235,7 @@ export class AuthController {
 
     const user = await this.usersService.findOneById(id);
 
-    const tokens = await this.authService.generateTokens(id, email);
-
-    await this.authService.login(id, tokens.refreshToken);
-
-    await this.authService.setTokens(response, tokens);
+    await this.authService.login(user, response);
 
     response
       .status(HttpStatus.OK)

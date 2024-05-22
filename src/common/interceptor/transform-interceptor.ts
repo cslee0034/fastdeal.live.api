@@ -9,30 +9,36 @@ import { map } from 'rxjs/operators';
 
 type PossibleError = Error | null | undefined;
 
-interface ObjectWithSuccess {
+interface ObjectWithSuccess<T = any> {
   success: boolean;
+  data?: T;
   [key: string]: any;
 }
 
-type ApiResponseData = ObjectWithSuccess | Error | { success: false };
+type ApiResponseData<T = any> =
+  | ObjectWithSuccess<T>
+  | Error
+  | { success: false };
 
 @Injectable()
-export class TransformInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+export class TransformInterceptor<T = any> implements NestInterceptor {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<ApiResponseData<T>> {
     return next.handle().pipe(
-      map((data) => {
+      map((data: T) => {
         return this.transformResponse(data);
       }),
     );
   }
 
-  private transformResponse(data: any): ApiResponseData {
+  private transformResponse(data: T): ApiResponseData<T> {
     if (this.isErrorResponse(data)) {
       return this.handleError(data);
     }
     return this.handleSuccess(data);
   }
-
   /**
    * data is PossibleError:
    * 함수가 true를 반환하면 해당 스코프 내에서 data를 PossibleError으로 간주
@@ -49,11 +55,11 @@ export class TransformInterceptor implements NestInterceptor {
     return { success: false };
   }
 
-  private handleSuccess(data: any): ObjectWithSuccess {
+  private handleSuccess(data: T): ObjectWithSuccess<T> {
     if (typeof data !== 'object' || !('success' in data)) {
       return { success: true, data };
     }
-    const { success, ...resultData } = data;
+    const { success, ...resultData } = data as any;
     return { success, data: resultData };
   }
 }

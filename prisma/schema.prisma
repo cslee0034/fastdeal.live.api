@@ -50,7 +50,6 @@ model Country {
   updatedAt              DateTime          @updatedAt @db.Timestamp(0)
   UserNationality        UserNationality[]
   City                   City[]
-  CountryTag             CountryTag[]
   TravelAlretNationality TravelAlert[]     @relation("TravelAlertNationality")
   TravelAlretDestination TravelAlert[]     @relation("TravelAlertDestination")
 
@@ -113,7 +112,6 @@ model City {
   createdAt   DateTime    @default(now()) @db.Timestamp(0)
   updatedAt   DateTime    @updatedAt @db.Timestamp(0)
   CityScore   CityScore[]
-  CityTag     CityTag[]
 
   @@index([cityName])
 }
@@ -134,35 +132,4 @@ model CityScore {
 
   @@unique([cityId, voterId])
   @@index([cityId])
-}
-
-model Tag {
-  id         String       @id @default(uuid())
-  tagName    String       @unique @db.VarChar(50)
-  createdAt  DateTime     @default(now()) @db.Timestamp(0)
-  updatedAt  DateTime     @updatedAt @db.Timestamp(0)
-  CountryTag CountryTag[]
-  CityTag    CityTag[]
-
-  @@index([tagName])
-}
-
-model CountryTag {
-  id        String  @id @default(uuid())
-  countryId String
-  country   Country @relation(fields: [countryId], references: [id])
-  tagId     String
-  tag       Tag     @relation(fields: [tagId], references: [id])
-
-  @@index([countryId, tagId])
-}
-
-model CityTag {
-  id     String @id @default(uuid())
-  cityId String
-  city   City   @relation(fields: [cityId], references: [id])
-  tagId  String
-  tag    Tag    @relation(fields: [tagId], references: [id])
-
-  @@index([cityId, tagId])
 }

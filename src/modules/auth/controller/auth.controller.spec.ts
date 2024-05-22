@@ -15,6 +15,7 @@ import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { SignInDto } from '../dto/request/signin.dto';
 import * as httpMocks from 'node-mocks-http';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -42,8 +43,8 @@ describe('AuthController', () => {
       }),
 
     findOneByEmail: jest.fn((email: string): Promise<UserEntity> => {
-      if (email === 'test@email.com') {
-        return Promise.resolve(mockFindOneByEmailResult);
+      if (email === mockLoginDto.email) {
+        return Promise.resolve(mockFindOneResult);
       } else {
         return Promise.reject(new NotFoundException('User not found'));
       }
@@ -53,7 +54,7 @@ describe('AuthController', () => {
       .fn()
       .mockImplementation((id: string): Promise<UserEntity> => {
         if (id === '1') {
-          return Promise.resolve(mockFindOneByEmailResult);
+          return Promise.resolve(mockFindOneResult);
         } else {
           return Promise.reject(new NotFoundException('User not found'));
         }
@@ -79,7 +80,7 @@ describe('AuthController', () => {
             firstName === 'test_first_name' &&
             lastName === 'test_last_name'
           ) {
-            return Promise.resolve(mockCreateUserResult);
+            return Promise.resolve(mockOauthUserResult);
           } else {
             return Promise.reject(new InternalServerErrorException());
           }
@@ -101,8 +102,8 @@ describe('AuthController', () => {
     login: jest
       .fn()
       .mockImplementation(
-        (id: string, refreshToken: string): Promise<boolean> => {
-          if (id && refreshToken) {
+        (user: UserEntity, response: Response): Promise<boolean> => {
+          if (user && response) {
             return Promise.resolve(true);
           } else {
             return Promise.reject(
@@ -122,30 +123,6 @@ describe('AuthController', () => {
       }
     }),
 
-    generateTokens: jest
-      .fn()
-      .mockImplementation((id: number, email: string): Promise<Tokens> => {
-        if (id && email) {
-          return Promise.resolve(mockTokenResult);
-        } else {
-          return Promise.reject(
-            new InternalServerErrorException('Failed to create tokens'),
-          );
-        }
-      }),
-
-    setTokens: jest
-      .fn()
-      .mockImplementation((res: Response, tokens: Tokens): Promise<void> => {
-        if (res && tokens) {
-          return Promise.resolve();
-        } else {
-          return Promise.reject(
-            new InternalServerErrorException('Failed to set token'),
-          );
-        }
-      }),
-
     checkIsLoggedIn: jest
       .fn()
       .mockImplementation((id: number, email: string): Promise<Tokens> => {
@@ -158,14 +135,20 @@ describe('AuthController', () => {
         }
       }),
 
-    getRedirectUrl: jest
+    redirectUser: jest
       .fn()
-      .mockImplementation((user: UserEntity, error: Error) => {
-        if (error) {
-          return 'client.url/api/auth/google?error';
+      .mockImplementation((response: Response, user: UserEntity) => {
+        if (user) {
+          return response.redirect(mockRedirectUrl);
         }
+      }),
 
-        return 'client.url/api/auth/google';
+    redirectUserWithError: jest
+      .fn()
+      .mockImplementation((response: Response, error: Error) => {
+        if (error) {
+          return response.redirect(mockRedirectErorUrl);
+        }
       }),
   };
 
@@ -207,6 +190,13 @@ describe('AuthController', () => {
     password: 'test_password',
   };
 
+  const mockOauthUserDto = {
+    email: 'test@email.com',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
+    provider: 'google',
+  };
+
   const mockCreateUserResult: UserEntity = new UserEntity({
     id: '1',
     email: 'test@email.com',
@@ -216,10 +206,19 @@ describe('AuthController', () => {
     password: 'hashed_test_password',
   });
 
-  const mockFindOneByEmailResult: UserEntity = new UserEntity({
+  const mockFindOneResult: UserEntity = new UserEntity({
     id: '1',
     email: 'test@email.com',
     provider: 'local',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
+    password: 'hashed_test_password',
+  });
+
+  const mockOauthUserResult: UserEntity = new UserEntity({
+    id: '2',
+    email: 'test@email.com',
+    provider: 'google',
     firstName: 'test_first_name',
     lastName: 'test_last_name',
     password: 'hashed_test_password',
@@ -229,6 +228,10 @@ describe('AuthController', () => {
     accessToken: 'accessToken',
     refreshToken: 'refreshToken',
   };
+
+  const mockRedirectUrl = 'client.url/api/auth/google';
+
+  const mockRedirectErorUrl = 'client.url/api/auth/google?error';
 
   const mockResponse = httpMocks.createResponse();
 
@@ -266,30 +269,12 @@ describe('AuthController', () => {
       );
     });
 
-    it('should call generateToken with created user information', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(authService.generateTokens).toHaveBeenCalledWith(
-        mockCreateUserResult.id as string,
-        mockCreateUserResult.email as string,
-      );
-    });
-
-    it("should call login with user's id and refreshToken", async () => {
+    it("should call login with user's information and response", async () => {
       await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
-        mockCreateUserResult.id as string,
-        mockTokenResult.refreshToken as string,
-      );
-    });
-
-    it('should call setTokens with response and tokens', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(authService.setTokens).toHaveBeenCalledWith(
-        mockResponse as any,
-        mockTokenResult,
+        mockCreateUserResult as UserEntity,
+        mockResponse as Response,
       );
     });
 
@@ -335,34 +320,16 @@ describe('AuthController', () => {
 
       expect(encryptService.compareAndThrow).toHaveBeenCalledWith(
         mockLoginDto.password as string,
-        mockFindOneByEmailResult.password as string,
+        mockFindOneResult.password as string,
       );
     });
 
-    it("should call generateToken with found user's information", async () => {
-      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
-
-      expect(authService.generateTokens).toHaveBeenCalledWith(
-        mockFindOneByEmailResult.id as string,
-        mockFindOneByEmailResult.email as string,
-      );
-    });
-
-    it("should call login with user's id and refreshToken", async () => {
+    it("should call login with user's information and response", async () => {
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
-        mockFindOneByEmailResult.id as string,
-        mockTokenResult.refreshToken as string,
-      );
-    });
-
-    it('should call setTokens with response and tokens', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(authService.setTokens).toHaveBeenCalledWith(
-        mockResponse as any,
-        mockTokenResult,
+        mockFindOneResult as UserEntity,
+        mockResponse as Response,
       );
     });
 
@@ -381,11 +348,11 @@ describe('AuthController', () => {
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(mockJson).toHaveBeenCalledWith({
-        id: mockFindOneByEmailResult.id,
-        email: mockFindOneByEmailResult.email,
-        provider: mockFindOneByEmailResult.provider,
-        firstName: mockFindOneByEmailResult.firstName,
-        lastName: mockFindOneByEmailResult.lastName,
+        id: mockFindOneResult.id,
+        email: mockFindOneResult.email,
+        provider: mockFindOneResult.provider,
+        firstName: mockFindOneResult.firstName,
+        lastName: mockFindOneResult.lastName,
       });
     });
   });
@@ -407,80 +374,66 @@ describe('AuthController', () => {
       expect(controller.googleRedirect).toBeDefined();
     });
 
-    it('should call findOrCreateOauth', async () => {
+    it('should call userService.findOrCreateOauth with user information', async () => {
       await controller.googleRedirect(
-        mockSignUpDto.email as string,
-        mockSignUpDto.firstName as string,
-        mockSignUpDto.lastName as string,
-        'google',
+        mockOauthUserDto.email,
+        mockOauthUserDto.firstName,
+        mockOauthUserDto.lastName,
+        mockOauthUserDto.provider,
         mockResponse as any,
       );
 
       expect(usersService.findOrCreateOauth).toHaveBeenCalledWith({
-        email: mockSignUpDto.email as string,
-        provider: 'google',
-        firstName: mockSignUpDto.firstName as string,
-        lastName: mockSignUpDto.lastName as string,
+        email: mockOauthUserResult.email,
+        provider: mockOauthUserResult.provider,
+        firstName: mockOauthUserResult.firstName,
+        lastName: mockOauthUserResult.lastName,
       });
     });
 
-    it('should call generateToken with find or created user information', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(authService.generateTokens).toHaveBeenCalledWith(
-        mockCreateUserResult.id as string,
-        mockCreateUserResult.email as string,
+    it('should call authService.login with user and response', async () => {
+      await controller.googleRedirect(
+        mockOauthUserDto.email,
+        mockOauthUserDto.firstName,
+        mockOauthUserDto.lastName,
+        mockOauthUserDto.provider,
+        mockResponse as any,
       );
-    });
-
-    it("should call login with user's id and refreshToken", async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
 
       expect(authService.login).toHaveBeenCalledWith(
-        mockCreateUserResult.id as string,
-        mockTokenResult.refreshToken as string,
+        mockOauthUserResult as UserEntity,
+        mockResponse as Response,
       );
     });
 
-    it('should call setTokens with response and tokens', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(authService.setTokens).toHaveBeenCalledWith(
+    it('should call authService.redirectUser with user', async () => {
+      mockResponse.redirect = jest.fn();
+      await controller.googleRedirect(
+        mockOauthUserDto.email,
+        mockOauthUserDto.firstName,
+        mockOauthUserDto.lastName,
+        mockOauthUserDto.provider,
         mockResponse as any,
-        mockTokenResult,
       );
+
+      expect(authService.redirectUser).toHaveBeenCalled();
     });
 
-    it('should redirect to client url', async () => {
-      const mockRedirect = jest.fn();
-      mockResponse.redirect = mockRedirect;
+    it('should call authService.redirectUserWithError with error', async () => {
+      mockResponse.redirect = jest.fn();
+      mockUsersService.findOrCreateOauth.mockRejectedValueOnce(
+        new InternalServerErrorException(),
+      );
 
       await controller.googleRedirect(
-        mockSignUpDto.email as string,
-        mockSignUpDto.firstName as string,
-        mockSignUpDto.lastName as string,
-        'google',
+        mockOauthUserDto.email,
+        mockOauthUserDto.firstName,
+        mockOauthUserDto.lastName,
+        mockOauthUserDto.provider,
         mockResponse as any,
       );
 
-      expect(mockRedirect).toHaveBeenCalledWith('client.url/api/auth/google');
-    });
-
-    it('should redirect to error client url if provider is not oauth provider', async () => {
-      const mockRedirect = jest.fn();
-      mockResponse.redirect = mockRedirect;
-
-      await controller.googleRedirect(
-        mockSignUpDto.email as string,
-        mockSignUpDto.firstName as string,
-        mockSignUpDto.lastName as string,
-        'local',
-        mockResponse as any,
-      );
-
-      expect(mockRedirect).toHaveBeenCalledWith(
-        'client.url/api/auth/google?error',
-      );
+      expect(authService.redirectUserWithError).toHaveBeenCalled();
     });
   });
 
@@ -529,21 +482,7 @@ describe('AuthController', () => {
       );
     });
 
-    it("should call authService.generateTokens with user's id and email", async () => {
-      await controller.refreshTokens(
-        userId,
-        userEmail,
-        userRefreshToken,
-        mockResponse as any,
-      );
-
-      expect(authService.generateTokens).toHaveBeenCalledWith(
-        userId,
-        userEmail,
-      );
-    });
-
-    it("should call authService.login with user's id and new refreshToken", async () => {
+    it('should call authService.login with user and new refreshToken', async () => {
       await controller.refreshTokens(
         userId,
         userEmail,
@@ -552,8 +491,8 @@ describe('AuthController', () => {
       );
 
       expect(authService.login).toHaveBeenCalledWith(
-        userId,
-        mockTokenResult.refreshToken,
+        mockFindOneResult,
+        mockResponse as Response,
       );
     });
 
@@ -592,11 +531,11 @@ describe('AuthController', () => {
       );
 
       expect(mockJson).toHaveBeenCalledWith({
-        id: mockFindOneByEmailResult.id,
-        email: mockFindOneByEmailResult.email,
-        provider: mockFindOneByEmailResult.provider,
-        firstName: mockFindOneByEmailResult.firstName,
-        lastName: mockFindOneByEmailResult.lastName,
+        id: mockFindOneResult.id,
+        email: mockFindOneResult.email,
+        provider: mockFindOneResult.provider,
+        firstName: mockFindOneResult.firstName,
+        lastName: mockFindOneResult.lastName,
       });
     });
   });

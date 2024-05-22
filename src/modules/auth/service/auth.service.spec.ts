@@ -8,28 +8,31 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from '../../cache/service/redis.service';
 import * as httpMocks from 'node-mocks-http';
-import { CookieOptions } from 'express';
 import { UserEntity } from '../../users/entities/user.entity';
+import { Response } from 'express';
 
 describe('AuthService', () => {
   let service: AuthService;
 
   const mockId = '1';
-  const mockEmail = 'test@email.com';
 
   const accessSecret = 'jwt.access.secret';
   const accessExpiresIn = '3600';
+  const accessPrefix = 'access_';
 
   const refreshSecret = 'jwt.refresh.secret';
   const refreshExpiresIn = '3600';
+  const refreshPrefix = 'refresh_';
 
-  const mockAccessToken = 'mock_access_token';
-  const mockRefreshToken = 'mock_refresh_token';
+  const mockUser = new UserEntity({
+    id: '1',
+    email: 'test@email.com',
+    provider: 'local',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
+  });
 
-  const mockTokens = {
-    accessToken: mockAccessToken,
-    refreshToken: mockRefreshToken,
-  };
+  const mockRedirectError = { message: 'Failed to login' };
 
   const mockConfigService = {
     get: jest.fn().mockImplementation((key: string) => {
@@ -38,10 +41,14 @@ describe('AuthService', () => {
           return accessSecret;
         case 'jwt.access.expiresIn':
           return accessExpiresIn;
+        case 'mockAccessPrefix':
+          return accessPrefix;
         case 'jwt.refresh.secret':
           return refreshSecret;
         case 'jwt.refresh.expiresIn':
           return refreshExpiresIn;
+        case 'jwt.refresh.prefix':
+          return refreshPrefix;
         case 'client.url':
           return 'http://localhost:3000';
       }
@@ -66,23 +73,16 @@ describe('AuthService', () => {
   };
 
   const mockRedisService = {
-    set: jest.fn(async (): Promise<void> => {
-      return Promise.resolve();
-    }),
+    set: jest.fn(),
 
     del: jest.fn(),
 
     get: jest.fn(),
   };
 
-  type MockResponse = Response & {
-    cookie: jest.MockedFunction<
-      (name: string, val: string, options?: CookieOptions) => Response
-    >;
-  };
-
-  const mockResponse: MockResponse = httpMocks.createResponse() as any;
+  const mockResponse: Response = httpMocks.createResponse() as any;
   mockResponse.cookie = jest.fn();
+  mockResponse.redirect = jest.fn();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -115,115 +115,73 @@ describe('AuthService', () => {
       expect(service.login).toBeDefined();
     });
 
-    it('should call redis.set function', async () => {
-      await service.login(mockId, mockRefreshToken);
+    it('should call generateTokens function', async () => {
+      await service.login(mockUser, mockResponse);
+
+      expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw InternalServerErrorException error if generateTokens fails', async () => {
+      mockJwtService.signAsync.mockRejectedValueOnce(
+        new Error('Failed to create tokens'),
+      );
+
+      await expect(service.login(mockUser, mockResponse)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+
+    it('should call setRefreshTokenToRedis function', async () => {
+      await service.login(mockUser, mockResponse);
 
       expect(mockRedisService.set).toHaveBeenCalled();
     });
 
-    it('should throw InternalServerException if failed', async () => {
+    it('should throw InternalServerErrorException error if setRefreshTokenToRedis fails', async () => {
       mockRedisService.set.mockRejectedValueOnce(
         new Error('Failed to set token'),
       );
 
-      await expect(service.login(mockId, mockEmail)).rejects.toThrow(
+      await expect(service.login(mockUser, mockResponse)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+
+    it('should call setTokensToResponse function', async () => {
+      await service.login(mockUser, mockResponse);
+
+      expect(mockResponse.cookie).toHaveBeenCalled();
+    });
+
+    it('should throw InternalServerErrorException error if setTokensToResponse fails', async () => {
+      const mockResponse = httpMocks.createResponse() as any;
+      mockResponse.cookie = jest.fn().mockImplementationOnce(() => {
+        throw new InternalServerErrorException('Failed to set tokens');
+      });
+
+      await expect(service.login(mockUser, mockResponse)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
   });
 
   describe('logout', () => {
-    const userId = '0';
-
     it('should be defined', () => {
       expect(service.logout).toBeDefined();
     });
 
     it('should call redis.del function', async () => {
-      await service.logout(userId);
+      await service.logout(mockId);
 
-      expect(mockRedisService.del).toHaveBeenCalledWith(
-        `${mockConfigService.get('jwt.refresh.prefix')}${userId}`,
-      );
+      expect(mockRedisService.del).toHaveBeenCalledWith(`refresh_${mockId}`);
     });
 
     it('should throw error if del function fails', async () => {
       mockRedisService.del.mockRejectedValueOnce(new Error('Failed to logout'));
 
-      await expect(service.logout(userId)).rejects.toThrow(
+      await expect(service.logout(mockId)).rejects.toThrow(
         InternalServerErrorException,
       );
-    });
-  });
-
-  describe('generateTokens', () => {
-    it('should called with signAsync function', async () => {
-      await service.generateTokens(mockId, mockEmail);
-
-      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: mockId,
-          email: mockEmail,
-        }),
-        expect.objectContaining({
-          secret: accessSecret,
-          expiresIn: accessExpiresIn,
-        }),
-      );
-
-      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: mockId,
-          email: mockEmail,
-        }),
-        expect.objectContaining({
-          secret: refreshSecret,
-          expiresIn: refreshExpiresIn,
-        }),
-      );
-    });
-
-    it('should return token strings object', async () => {
-      const tokens = await service.generateTokens(mockId, mockEmail);
-
-      expect(tokens).toEqual(
-        expect.objectContaining({
-          accessToken: expect.any(String),
-          refreshToken: expect.any(String),
-        }),
-      );
-    });
-
-    it('should throw error if it fails to generate tokens', async () => {
-      mockJwtService.signAsync.mockRejectedValueOnce(
-        new Error('Failed to create tokens'),
-      );
-
-      await expect(service.generateTokens(mockId, mockEmail)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-    });
-  });
-
-  describe('setTokens', () => {
-    it('should be defined', () => {
-      expect(service.setTokens).toBeDefined();
-    });
-
-    it('should call response.cookie function', () => {
-      service.setTokens(mockResponse as any, mockTokens);
-
-      expect(mockResponse.cookie).toHaveBeenCalledTimes(2);
-    });
-
-    it('should throw error if it fails to set tokens', async () => {
-      mockResponse.cookie.mockImplementationOnce(() => {
-        throw new InternalServerErrorException('Failed to set tokens');
-      });
-
-      await expect(
-        service.setTokens(mockResponse as any, mockTokens),
-      ).rejects.toThrow(InternalServerErrorException);
     });
   });
 
@@ -257,26 +215,27 @@ describe('AuthService', () => {
     });
   });
 
-  describe('getRedirectUrl', () => {
-    it('should return redirect url with error message', () => {
-      const error = { message: 'Failed to login' };
-      const redirectUrl = service.getRedirectUrl(null, error);
-
-      expect(redirectUrl).toBeTruthy();
+  describe('redirectUser', () => {
+    it('should be defined', () => {
+      expect(service.redirectUser).toBeDefined();
     });
 
-    it('should return redirect url with user info', () => {
-      const user = new UserEntity({
-        id: '1',
-        email: 'test@gmail.com',
-        provider: 'google',
-        firstName: 'test_first_name',
-        lastName: 'test_last_name',
-      });
+    it('should call response.redirect function', () => {
+      service.redirectUser(mockResponse, mockUser);
 
-      const redirectUrl = service.getRedirectUrl(user, null);
+      expect(mockResponse.redirect).toHaveBeenCalled();
+    });
+  });
 
-      expect(redirectUrl).toBeTruthy();
+  describe('redirectUserWithError', () => {
+    it('should be defined', () => {
+      expect(service.redirectUserWithError).toBeDefined();
+    });
+
+    it('should call response.redirect function', () => {
+      service.redirectUserWithError(mockResponse, mockRedirectError);
+
+      expect(mockResponse.redirect).toHaveBeenCalled();
     });
   });
 });

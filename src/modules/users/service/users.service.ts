@@ -20,7 +20,7 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {}
 
-  async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
+  public async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOneByEmail(
       createUserDto.email,
     );
@@ -38,7 +38,7 @@ export class UsersService {
     }
   }
 
-  async findOneById(id: string): Promise<UserEntity | null> {
+  public async findOneById(id: string): Promise<UserEntity | null> {
     const existingUser = await this.userRepository.findOneById(id);
 
     if (!existingUser) {
@@ -48,7 +48,7 @@ export class UsersService {
     return new UserEntity(existingUser);
   }
 
-  async findOneByEmail(email: string): Promise<UserEntity | null> {
+  public async findOneByEmail(email: string): Promise<UserEntity | null> {
     const existingUser = await this.userRepository.findOneByEmail(email);
 
     if (!existingUser) {
@@ -58,7 +58,7 @@ export class UsersService {
     return new UserEntity(existingUser);
   }
 
-  async findOrCreateOauth(
+  public async findOrCreateOauth(
     createOauthUserDto: CreateUserDto,
   ): Promise<UserEntity> {
     const existingUser = await this.userRepository.findOneByEmail(
@@ -80,7 +80,7 @@ export class UsersService {
    * class-serializer와 transform-interceptor가 동작하지 않기 때문에
    * 별도의 사용자 응답 변환 메서드를 만들어 사용한다
    */
-  convertUserResponse(user: UserEntity) {
+  public convertUserResponse(user: UserEntity) {
     return {
       success: true,
       id: user?.id,
