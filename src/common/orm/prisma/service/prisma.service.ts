@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { isDevEnv } from '../../../util/is-dev-env';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor() {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isDevelopment = isDevEnv();
 
     super({
-      log: isProduction ? ['warn'] : ['info'],
+      log: isDevelopment
+        ? ['query', 'info', 'warn', 'error']
+        : ['warn', 'error'],
     });
   }
 }

@@ -9,7 +9,7 @@ import { Roles } from '../decorator/roles.decorator';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../modules/users/service/users.service';
-import { TokenPayload } from '../types/payload-token.type';
+import { TokenPayload } from '../interfaces/payload-token.interface';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

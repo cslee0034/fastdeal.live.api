@@ -2,13 +2,12 @@ import winston from 'winston';
 import { winstonTransports } from './logger';
 import { ConfigService } from '@nestjs/config';
 import winstonDaily from 'winston-daily-rotate-file';
+import * as isDevEnvUtil from '../../common/util/is-dev-env';
 
 jest.mock('@nestjs/config', () => ({
   ConfigService: jest.fn().mockImplementation(() => ({
     get: jest.fn((key) => {
       switch (key) {
-        case 'app.env':
-          return 'development';
         case 'app.serverName':
           return 'server';
         default:
@@ -17,6 +16,8 @@ jest.mock('@nestjs/config', () => ({
     }),
   })),
 }));
+
+jest.spyOn(isDevEnvUtil, 'isDevEnv').mockReturnValue(true);
 
 describe('winstonTransports', () => {
   let configService: ConfigService;
@@ -31,10 +32,15 @@ describe('winstonTransports', () => {
     expect(_winstonTransports).toEqual(expect.any(Array));
   });
 
+  it('should call isDevEnv', () => {
+    winstonTransports(configService);
+
+    expect(isDevEnvUtil.isDevEnv).toHaveBeenCalled();
+  });
+
   it('should call configService.get with the correct keys', () => {
     winstonTransports(configService);
 
-    expect(configService.get).toHaveBeenCalledWith('app.env');
     expect(configService.get).toHaveBeenCalledWith('app.serverName');
   });
 

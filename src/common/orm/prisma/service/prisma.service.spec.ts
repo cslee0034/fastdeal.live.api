@@ -1,12 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaService } from './prisma.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as isDevEnvUtil from '../../../util/is-dev-env';
 
 describe('PrismaService', () => {
   let prismaService: PrismaService;
   let prismaClient: PrismaClient;
 
   beforeEach(async () => {
+    jest.spyOn(isDevEnvUtil, 'isDevEnv').mockReturnValue(true);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PrismaService,
@@ -72,5 +75,9 @@ describe('PrismaService', () => {
 
   it('should define $transaction', () => {
     expect(prismaClient.$transaction).toBeDefined();
+  });
+
+  it('should call isDevEnv', () => {
+    expect(isDevEnvUtil.isDevEnv).toHaveBeenCalled();
   });
 });

@@ -11,12 +11,12 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filter/prisma-client-exception.filter';
 import { AccessTokenGuard } from './common/guard/access-token.guard';
 import { TransformInterceptor } from './common/interceptor/transform-interceptor';
+import { isDevEnv } from './common/util/is-dev-env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const environment = configService.get<string>('app.env');
   const serverName = configService.get<string>('app.serverName');
   const port = configService.get<number>('app.port');
   const reflector = app.get(Reflector);
@@ -38,7 +38,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);
 
-  if (environment === 'development') {
+  if (isDevEnv()) {
     SwaggerModule.setup('swagger', app, document);
   }
 

@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { utilities } from 'nest-winston';
 import * as winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
+import { isDevEnv } from '../../common/util/is-dev-env';
 
 const dailyOptions = (level: string, serverName: string) => {
   return {
@@ -23,8 +24,7 @@ const dailyOptions = (level: string, serverName: string) => {
 
 export const winstonTransports = (configService: ConfigService) => [
   new winston.transports.Console({
-    level:
-      configService.get<string>('app.env') === 'production' ? 'info' : 'debug',
+    level: isDevEnv() ? 'debug' : 'warn',
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.timestamp(),
