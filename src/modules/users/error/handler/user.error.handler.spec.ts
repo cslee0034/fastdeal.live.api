@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
+import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
 import { UsersErrorHandler } from './user.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
@@ -42,8 +42,8 @@ describe('UserErrorHandler', () => {
     expect(usersErrorHandler).toBeDefined();
   });
 
-  it('should be an instance of ThrownErrorHandler', () => {
-    expect(usersErrorHandler).toBeInstanceOf(ThrownErrorHandler);
+  it('should be an instance of BaseErrorHandler', () => {
+    expect(usersErrorHandler).toBeInstanceOf(BaseErrorHandler);
   });
 
   it('should be an instance of UserErrorHandler', () => {
@@ -77,7 +77,7 @@ describe('UserErrorHandler', () => {
       const inputs = mockCreateInputs;
 
       const handleThrownErrorSpy = jest.spyOn(
-        ThrownErrorHandler.prototype as any,
+        BaseErrorHandler.prototype as any,
         'handleThrownError',
       );
 
@@ -121,7 +121,7 @@ describe('UserErrorHandler', () => {
       const inputs = mockCreateInputs;
 
       const handleThrownErrorSpy = jest.spyOn(
-        ThrownErrorHandler.prototype as any,
+        BaseErrorHandler.prototype as any,
         'handleThrownError',
       );
 

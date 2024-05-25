@@ -1,10 +1,10 @@
 import { Inject, InternalServerErrorException } from '@nestjs/common';
-import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
+import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { USERS_ERROR } from '../constant/users.error.constant';
 
-export class UsersErrorHandler extends ThrownErrorHandler {
+export class UsersErrorHandler extends BaseErrorHandler {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) protected readonly logger: Logger,
   ) {

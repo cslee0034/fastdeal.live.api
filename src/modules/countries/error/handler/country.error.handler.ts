@@ -1,12 +1,12 @@
 import { Inject, InternalServerErrorException } from '@nestjs/common';
-import { ThrownErrorHandler } from '../../../../common/error/handler/thrown.error.handler';
+import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { COUNTRIES_ERROR } from '../constant/countries.error.constant';
 import { CreateCountryDto } from '../../dto/create-country.dto';
 import { CreateTravelAlertDto } from '../../dto/create-travel-alert.dto';
 
-export class CountriesErrorHandler extends ThrownErrorHandler {
+export class CountriesErrorHandler extends BaseErrorHandler {
   constructor(
     @Inject(WINSTON_MODULE_PROVIDER) protected readonly logger: Logger,
   ) {
