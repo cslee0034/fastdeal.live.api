@@ -155,21 +155,7 @@ describe('PrismaClientExceptionFilter', () => {
     );
   });
 
-  it('should send proper response', () => {
-    prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
-
-    expect(mockResponse.status).toHaveBeenCalledWith(409);
-    expect(mockResponse.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        statusCode: HttpStatus.CONFLICT,
-        errorCode: 'P2002',
-        message:
-          'An error occurred while processing your request. Please try again later',
-      }),
-    );
-  });
-
-  it('should return UNKNOWN_ERROR when error.code is not provided', () => {
+  it('should return formatted client message', () => {
     const mockException = new Prisma.PrismaClientValidationError(
       'Unique constraint failed on the email',
       {
@@ -182,10 +168,11 @@ describe('PrismaClientExceptionFilter', () => {
 
     prismaClientExceptionFilter.catch(mockException, mockExecutionContext);
 
+    expect(mockResponse.status).toHaveBeenCalledWith(500);
     expect(mockResponse.json).toHaveBeenCalledWith(
       expect.objectContaining({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        errorCode: 'UNKNOWN_ERROR',
+        error: '',
         message:
           'An error occurred while processing your request. Please try again later',
       }),

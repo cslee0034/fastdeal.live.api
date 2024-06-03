@@ -17,7 +17,7 @@ interface IMessage {
   timestamp: string;
   path: string;
   statusCode: number;
-  errorCode: string;
+  error: string;
   message?: string | string[];
 }
 
@@ -54,10 +54,6 @@ export class PrismaClientExceptionFilter
         error instanceof Prisma.PrismaClientKnownRequestError
           ? HttpStatus.CONFLICT
           : HttpStatus.INTERNAL_SERVER_ERROR;
-      const errorCode =
-        error instanceof Prisma.PrismaClientKnownRequestError
-          ? error.code
-          : 'UNKNOWN_ERROR';
       const KSTDate = new Date().toLocaleString('ko-KR', {
         timeZone: 'Asia/Seoul',
       });
@@ -66,17 +62,14 @@ export class PrismaClientExceptionFilter
         request,
         statusCode,
         KSTDate,
-        errorCode,
         error,
       });
 
       this.logMessage(message);
 
-      message.statusCode === HttpStatus.INTERNAL_SERVER_ERROR;
-      message.message =
-        'An error occurred while processing your request. Please try again later';
+      const clientMessage = this.formatClientMessage(message);
 
-      response.status(statusCode).json(message);
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(clientMessage);
     }
   }
 
@@ -84,13 +77,11 @@ export class PrismaClientExceptionFilter
     request,
     statusCode,
     KSTDate,
-    errorCode,
     error,
   }: {
     request: Request;
     statusCode: number;
     KSTDate: string;
-    errorCode: string;
     error: ErrorType;
   }): IMessage => {
     return {
@@ -99,7 +90,7 @@ export class PrismaClientExceptionFilter
       timestamp: KSTDate,
       path: request.url,
       statusCode: statusCode,
-      errorCode: errorCode,
+      error: JSON.stringify(error, null, 2),
       message: error?.message || 'Priam Client Error',
     };
   };
@@ -121,5 +112,15 @@ export class PrismaClientExceptionFilter
     }
 
     return logString;
+  };
+
+  private formatClientMessage = (message: IMessage): IMessage => {
+    return {
+      ...message,
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message:
+        'An error occurred while processing your request. Please try again later',
+      error: '',
+    };
   };
 }
