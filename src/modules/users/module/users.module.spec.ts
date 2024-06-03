@@ -6,7 +6,7 @@ import { UsersRepository } from '../repository/users.repository';
 import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { UsersManager } from '../manager/users.manager';
-import { UsersErrorHandler } from '../error/handler/user.error.handler';
+import { UsersErrorHandler } from '../error/handler/users.error.handler';
 
 describe('UsersModule', () => {
   let usersModule: UsersModule;

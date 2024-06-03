@@ -18,6 +18,6 @@ export class BaseErrorHandler {
   }
 
   public logInputs(inputs: any): void {
-    this.logger.error(`\ninputs: ${JSON.stringify(inputs, null, 2)}`);
+    this.logger.warn(`\ninputs: ${JSON.stringify(inputs, null, 2)}`);
   }
 }

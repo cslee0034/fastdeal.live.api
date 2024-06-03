@@ -7,7 +7,7 @@ import { AlertStatus, Continent } from '@prisma/client';
 import { UpdateCountryDto } from '../dto/update-country.dto';
 import { CreateTravelAlertDto } from '../dto/create-travel-alert.dto';
 import { TravelAlertEntity } from '../entities/travel-alert.entity';
-import { CountriesErrorHandler } from '../error/handler/country.error.handler';
+import { CountriesErrorHandler } from '../error/handler/countries.error.handler';
 
 describe('CountriesService', () => {
   let service: CountriesService;

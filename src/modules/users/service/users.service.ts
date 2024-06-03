@@ -6,7 +6,7 @@ import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { UsersManager } from '../manager/users.manager';
 import { USERS_ERROR } from '../error/constant/users.error.constant';
 import { ConfigService } from '@nestjs/config';
-import { UsersErrorHandler } from '../error/handler/user.error.handler';
+import { UsersErrorHandler } from '../error/handler/users.error.handler';
 @Injectable()
 export class UsersService {
   constructor(

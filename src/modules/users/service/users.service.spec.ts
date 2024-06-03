@@ -8,7 +8,7 @@ import { EncryptService } from '../../encrypt/service/encrypt.service';
 import { NotFoundException } from '@nestjs/common';
 import { UsersManager } from '../manager/users.manager';
 import { ConfigService } from '@nestjs/config';
-import { UsersErrorHandler } from '../error/handler/user.error.handler';
+import { UsersErrorHandler } from '../error/handler/users.error.handler';
 
 describe('UsersService', () => {
   let service: UsersService;

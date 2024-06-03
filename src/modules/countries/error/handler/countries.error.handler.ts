@@ -5,6 +5,7 @@ import { Logger } from 'winston';
 import { COUNTRIES_ERROR } from '../constant/countries.error.constant';
 import { CreateCountryDto } from '../../dto/create-country.dto';
 import { CreateTravelAlertDto } from '../../dto/create-travel-alert.dto';
+import { UpdateCountryDto } from '../../dto/update-country.dto';
 
 export class CountriesErrorHandler extends BaseErrorHandler {
   constructor(
@@ -13,73 +14,67 @@ export class CountriesErrorHandler extends BaseErrorHandler {
     super(logger);
   }
 
-  public create = ({
+  public create({
     error,
     inputs,
   }: {
     error: Error;
     inputs: CreateCountryDto;
-  }): void => {
+  }): void {
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_CREATE_COUNTRY,
     );
-  };
+  }
 
-  public update = ({
+  public update({
     error,
     inputs,
   }: {
     error: Error;
-    inputs: CreateCountryDto;
-  }): void => {
+    inputs: UpdateCountryDto;
+  }): void {
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_UPDATE_COUNTRY,
     );
-  };
+  }
 
-  public delete = ({
-    error,
-    inputs,
-  }: {
-    error: Error;
-    inputs: CreateCountryDto;
-  }): void => {
+  public delete({ error, inputs }: { error: Error; inputs: string }): void {
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
     );
-  };
+  }
 
-  public createTravelAlert = ({
+  public createTravelAlert({
     error,
     inputs,
   }: {
     error: Error;
     inputs: CreateTravelAlertDto;
-  }): void => {
+  }): void {
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_CREATE_TRAVEL_ALERT,
     );
-  };
+  }
 
-  public getTravelAlerts = ({
+  public getTravelAlerts({
     error,
     inputs,
   }: {
     error: Error;
     inputs: string;
-  }): void => {
+  }): void {
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_GET_TRAVEL_ALERTS,
     );
-  };
+  }
 }

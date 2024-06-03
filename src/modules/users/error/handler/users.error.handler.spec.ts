@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
-import { UsersErrorHandler } from './user.error.handler';
+import { UsersErrorHandler } from './users.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -42,7 +42,7 @@ describe('UserErrorHandler', () => {
     expect(usersErrorHandler).toBeDefined();
   });
 
-  it('should be an instance of BaseErrorHandler', () => {
+  it('should be an instance of ThrownErrorHandler', () => {
     expect(usersErrorHandler).toBeInstanceOf(BaseErrorHandler);
   });
 
@@ -67,7 +67,7 @@ describe('UserErrorHandler', () => {
         usersErrorHandler.createLocal({ error, inputs });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         `\ninputs: ${JSON.stringify(mockFormattedCreateInputs, null, 2)}`,
       );
     });
@@ -111,7 +111,7 @@ describe('UserErrorHandler', () => {
         usersErrorHandler.findOrCreateOauth({ error, inputs });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         `\ninputs: ${JSON.stringify(inputs, null, 2)}`,
       );
     });

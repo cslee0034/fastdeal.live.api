@@ -5,7 +5,7 @@ import { UsersRepository } from '../repository/users.repository';
 import { EncryptModule } from '../../encrypt/module/encrypt.module';
 import { PrismaModule } from '../../../common/orm/prisma/module/prisma.module';
 import { UsersManager } from '../manager/users.manager';
-import { UsersErrorHandler } from '../error/handler/user.error.handler';
+import { UsersErrorHandler } from '../error/handler/users.error.handler';
 import { LoggerModule } from '../../../common/module/logger.module';
 import { ConfigModule } from '@nestjs/config';
 

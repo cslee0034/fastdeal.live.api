@@ -3,7 +3,7 @@ import { CountriesRepository } from '../repository/countries.repository';
 import { CreateCountryDto } from '../dto/create-country.dto';
 import { UpdateCountryDto } from '../dto/update-country.dto';
 import { CreateTravelAlertDto } from '../dto/create-travel-alert.dto';
-import { CountriesErrorHandler } from '../error/handler/country.error.handler';
+import { CountriesErrorHandler } from '../error/handler/countries.error.handler';
 
 @Injectable()
 export class CountriesService {

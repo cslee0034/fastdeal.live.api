@@ -3,7 +3,7 @@ import { CountriesModule } from './countries.module';
 import { CountriesController } from '../controller/countries.controller';
 import { CountriesService } from '../service/countries.service';
 import { CountriesRepository } from '../repository/countries.repository';
-import { CountriesErrorHandler } from '../error/handler/country.error.handler';
+import { CountriesErrorHandler } from '../error/handler/countries.error.handler';
 import { PrismaModule } from '../../../common/orm/prisma/module/prisma.module';
 
 describe('CountriesModule', () => {

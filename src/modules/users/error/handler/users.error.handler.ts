@@ -11,30 +11,24 @@ export class UsersErrorHandler extends BaseErrorHandler {
     super(logger);
   }
 
-  public createLocal = ({
-    error,
-    inputs,
-  }: {
-    error: Error;
-    inputs: any;
-  }): void => {
+  public createLocal({ error, inputs }: { error: Error; inputs: any }): void {
     inputs.password = '';
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(USERS_ERROR.FAILED_TO_CREATE_USER);
-  };
+  }
 
-  public findOrCreateOauth = ({
+  public findOrCreateOauth({
     error,
     inputs,
   }: {
     error: Error;
     inputs: any;
-  }): void => {
+  }): void {
     this.logInputs(inputs);
     this.handleThrownError(error);
     throw new InternalServerErrorException(
       USERS_ERROR.FAILED_TO_FIND_OR_CREATE_OAUTH_USER,
     );
-  };
+  }
 }

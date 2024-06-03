@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CountriesErrorHandler } from './country.error.handler';
+import { CountriesErrorHandler } from './countries.error.handler';
 import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
@@ -20,7 +20,6 @@ describe('CountriesErrorHandler', () => {
   } as CreateCountryDto;
 
   const mockUpdateCountryDto = {
-    fromCountryId: '1',
     ...mockCreateCountryDto,
   } as UpdateCountryDto;
 
@@ -29,6 +28,8 @@ describe('CountriesErrorHandler', () => {
     destinationCode: 'US',
     alertStatus: AlertStatus.green,
   } as CreateTravelAlertDto;
+
+  const mockDeleteCountryDto = 'KR' as string;
 
   const mockGetTravelAlertsDto = 'KR' as string;
 
@@ -62,11 +63,11 @@ describe('CountriesErrorHandler', () => {
     expect(countriesErrorHandler).toBeDefined();
   });
 
-  it('should be an instance of BaseErrorHandler', () => {
+  it('should be an instance of ThrownErrorHandler', () => {
     expect(countriesErrorHandler).toBeInstanceOf(BaseErrorHandler);
   });
 
-  it('should be an instance of UserErrorHandler', () => {
+  it('should be an instance of CountriesErrorHandler', () => {
     expect(countriesErrorHandler).toBeInstanceOf(CountriesErrorHandler);
   });
 
@@ -90,7 +91,7 @@ describe('CountriesErrorHandler', () => {
         });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
 
     it('should call handleThrownError', () => {
@@ -126,7 +127,7 @@ describe('CountriesErrorHandler', () => {
         });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
 
     it('should call handlePrismaError', () => {
@@ -153,7 +154,7 @@ describe('CountriesErrorHandler', () => {
 
     it('should log inputs', () => {
       const error = mockError;
-      const inputs = mockUpdateCountryDto;
+      const inputs = mockDeleteCountryDto;
 
       try {
         countriesErrorHandler.delete({
@@ -162,12 +163,12 @@ describe('CountriesErrorHandler', () => {
         });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
 
     it('should call handleThrownError', () => {
       const error = mockError;
-      const inputs = mockUpdateCountryDto;
+      const inputs = mockDeleteCountryDto;
 
       const handleThrownErrorSpy = jest.spyOn(
         BaseErrorHandler.prototype as any,
@@ -198,7 +199,7 @@ describe('CountriesErrorHandler', () => {
         });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
 
     it('should call handleThrownError', () => {
@@ -234,7 +235,7 @@ describe('CountriesErrorHandler', () => {
         });
       } catch (error) {}
 
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
 
     it('should call handleThrownError', () => {

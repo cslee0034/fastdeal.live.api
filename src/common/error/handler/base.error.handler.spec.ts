@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { BaseErrorHandler } from './base.error.handler';
 import { Logger } from 'winston';
 
-describe('BaseErrorHandler', () => {
+describe('ThrownErrorHandler', () => {
   let baseErrorHandler: BaseErrorHandler;
   const logger = {
     query: jest.fn(),
@@ -111,7 +111,7 @@ describe('BaseErrorHandler', () => {
 
       baseErrorHandler.logInputs(inputs);
 
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
         `\ninputs: ${JSON.stringify(inputs, null, 2)}`,
       );
     });
