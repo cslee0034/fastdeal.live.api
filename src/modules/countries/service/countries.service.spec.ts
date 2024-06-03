@@ -22,7 +22,6 @@ describe('CountriesService', () => {
   } as CreateCountryDto;
 
   const mockUpdateCountryDto = {
-    fromCountryId: '1',
     ...mockCreateCountryDto,
   } as UpdateCountryDto;
 
@@ -56,7 +55,7 @@ describe('CountriesService', () => {
     update: jest
       .fn()
       .mockImplementation((updateCountryDto: UpdateCountryDto) => {
-        if (updateCountryDto.fromCountryId === 'NOT_EXISTING_COUNTRY_ID') {
+        if (updateCountryDto.countryCode === 'NOT_EXISTING_COUNTRY_CODE') {
           return Promise.reject(new Error());
         }
 
@@ -173,8 +172,7 @@ describe('CountriesService', () => {
 
   it('should call errorHandler when repository.update throws an error', async () => {
     const mockUpdateCountryDto = {
-      fromCountryId: 'NOT_EXISTING_COUNTRY_ID',
-      countryCode: 'KR',
+      countryCode: 'NOT_EXISTING_COUNTRY_CODE',
       countryName: 'Korea',
       currency: 'KRW',
       exchangeRate: 1200,

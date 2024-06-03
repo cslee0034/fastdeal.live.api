@@ -26,7 +26,6 @@ describe('CountriesController', () => {
   };
 
   const mockUpdateCountryDto = {
-    fromCountryId: '1',
     ...mockCreateCountryDto,
   };
 
@@ -85,7 +84,7 @@ describe('CountriesController', () => {
     });
 
     it('should call service.delete', () => {
-      controller.delete('1');
+      controller.delete('KR');
 
       expect(service.delete).toHaveBeenCalled();
     });

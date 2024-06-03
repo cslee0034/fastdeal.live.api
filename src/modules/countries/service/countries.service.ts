@@ -28,9 +28,9 @@ export class CountriesService {
     }
   }
 
-  public async delete(id: string) {
+  public async delete(code: string) {
     try {
-      return await this.countriesRepository.delete(id);
+      return await this.countriesRepository.delete(code);
     } catch (error) {
       this.errorHandler.delete(error);
     }

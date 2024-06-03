@@ -90,7 +90,6 @@ describe('CountriesRepository', () => {
 
     it('should update a country', async () => {
       const updateCountryDto = {
-        fromCountryId: '1',
         countryCode: 'KR',
         countryName: 'Korea',
         currency: 'KRW',
@@ -98,14 +97,12 @@ describe('CountriesRepository', () => {
         continent: Continent.asia,
       };
 
-      const { fromCountryId, ...newCountryInfo } = updateCountryDto;
-
       const result = await repository.update(updateCountryDto);
 
       expect(result).toBeInstanceOf(CountryEntity);
       expect(mockPrismaService.country.update).toHaveBeenCalledWith({
-        where: { id: fromCountryId },
-        data: newCountryInfo,
+        where: { countryCode: updateCountryDto.countryCode },
+        data: updateCountryDto,
       });
     });
   });
@@ -116,11 +113,11 @@ describe('CountriesRepository', () => {
     });
 
     it('should delete a country', async () => {
-      const countryId = '1';
-      await repository.delete(countryId);
+      const countryCode = 'KR';
+      await repository.delete(countryCode);
 
       expect(mockPrismaService.country.delete).toHaveBeenCalledWith({
-        where: { id: countryId },
+        where: { countryCode },
       });
     });
   });

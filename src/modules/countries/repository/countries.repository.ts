@@ -13,16 +13,14 @@ export class CountriesRepository {
   }
 
   async update(updateCountryDto: UpdateCountryDto) {
-    const { fromCountryId, ...newCountryInfo } = updateCountryDto;
-
     return this.prisma.country.update({
-      where: { id: fromCountryId },
-      data: newCountryInfo,
+      where: { countryCode: updateCountryDto.countryCode },
+      data: updateCountryDto,
     });
   }
 
-  async delete(id: string) {
-    return this.prisma.country.delete({ where: { id } });
+  async delete(code: string) {
+    return this.prisma.country.delete({ where: { countryCode: code } });
   }
 
   async createTravelAlert(travelAlert: CreateTravelAlertDto) {
