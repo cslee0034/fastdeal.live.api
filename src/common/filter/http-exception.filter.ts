@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { IncomingWebhook } from '@slack/webhook';
+import { isDevEnv } from '../util/is-dev-env';
 
 interface IMessage {
   environment: string;
@@ -122,7 +123,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     /**
      * production 환경에서만 slack으로 에러 메시지를 전송한다.
      */
-    if (process.env.NODE_ENV === 'production') {
+    if (!isDevEnv()) {
       this.slack.send(stringifiedMessage);
     }
 

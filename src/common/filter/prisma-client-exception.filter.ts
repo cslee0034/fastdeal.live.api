@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { IncomingWebhook } from '@slack/webhook';
+import { isDevEnv } from '../util/is-dev-env';
 
 interface IMessage {
   environment: string;
@@ -98,7 +99,7 @@ export class PrismaClientExceptionFilter
   private logMessage = (message: object): void => {
     this.logger.error(this.messageToString(message));
 
-    if (process.env.NODE_ENV === 'production') {
+    if (!isDevEnv()) {
       this.slack.send(this.messageToString(message));
     }
 
