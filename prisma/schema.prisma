@@ -44,7 +44,7 @@ model Country {
   countryCode            String            @unique @db.Char(2)
   countryName            String            @unique @db.VarChar(100)
   currency               String            @db.VarChar(3)
-  exchangeRate           Float
+  exchangeRate           Float?
   continent              Continent
   createdAt              DateTime          @default(now()) @db.Timestamp(0)
   updatedAt              DateTime          @updatedAt @db.Timestamp(0)
@@ -109,6 +109,7 @@ model City {
   temperature Float?
   humidity    Float?
   windSpeed   Float?
+  isAvailable Boolean     @default(true)
   createdAt   DateTime    @default(now()) @db.Timestamp(0)
   updatedAt   DateTime    @updatedAt @db.Timestamp(0)
   CityScore   CityScore[]
