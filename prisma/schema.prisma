@@ -69,9 +69,9 @@ enum Continent {
 model UserNationality {
   id            String   @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   nationalityId String
-  nationality   Country  @relation(fields: [nationalityId], references: [id])
+  nationality   Country  @relation(fields: [nationalityId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now()) @db.Timestamp(0)
   updatedAt     DateTime @updatedAt @db.Timestamp(0)
 
@@ -81,9 +81,9 @@ model UserNationality {
 model TravelAlert {
   id            String      @id @default(uuid())
   nationalityId String
-  nationality   Country     @relation("TravelAlertNationality", fields: [nationalityId], references: [id])
+  nationality   Country     @relation("TravelAlertNationality", fields: [nationalityId], references: [id], onDelete: Cascade)
   destinationId String
-  destination   Country     @relation("TravelAlertDestination", fields: [destinationId], references: [id])
+  destination   Country     @relation("TravelAlertDestination", fields: [destinationId], references: [id], onDelete: Cascade)
   alertStatus   AlertStatus
   createdAt     DateTime    @default(now()) @db.Timestamp(0)
   updatedAt     DateTime    @updatedAt @db.Timestamp(0)
@@ -101,36 +101,50 @@ enum AlertStatus {
 }
 
 model City {
-  id          String      @id @default(uuid())
-  cityName    String      @unique @db.VarChar(50)
+  id          String       @id @default(uuid())
   countryId   String
-  country     Country     @relation(fields: [countryId], references: [id])
-  weather     String?     @db.VarChar(20)
-  temperature Float?
-  humidity    Float?
-  windSpeed   Float?
-  isAvailable Boolean     @default(true)
-  createdAt   DateTime    @default(now()) @db.Timestamp(0)
-  updatedAt   DateTime    @updatedAt @db.Timestamp(0)
+  country     Country      @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  cityName    String       @unique @db.VarChar(50)
+  isAvailable Boolean      @default(true)
+  createdAt   DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime     @updatedAt @db.Timestamp(0)
   CityScore   CityScore[]
+  CityWeather CityWeather?
 
   @@index([cityName])
+  @@index([countryId])
+}
+
+model CityWeather {
+  id          String   @id @default(uuid())
+  cityId      String   @unique
+  city        City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  weather     String   @db.VarChar(20)
+  temperature Float
+  humidity    Float
+  windSpeed   Float
+  createdAt   DateTime @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @db.Timestamp(0)
+
+  @@index([cityId])
 }
 
 model CityScore {
-  id                  String   @id @default(uuid())
-  cityId              String
-  city                City     @relation(fields: [cityId], references: [id])
-  voterId             String
-  user                User     @relation(fields: [voterId], references: [id])
-  internetSpeed       Float
-  costOfLiving        Float
-  touristFriendliness Float
-  safety              Float
-  recommendScore      Float
-  createdAt           DateTime @default(now()) @db.Timestamp(0)
-  updatedAt           DateTime @updatedAt @db.Timestamp(0)
+  id            String   @id @default(uuid())
+  cityId        String
+  city          City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  voterId       String?
+  user          User?    @relation(fields: [voterId], references: [id], onDelete: SetNull)
+  totalScore    Float
+  internetSpeed Float
+  costOfLiving  Float
+  tourism       Float
+  safety        Float
+  createdAt     DateTime @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime @updatedAt @db.Timestamp(0)
 
   @@unique([cityId, voterId])
   @@index([cityId])
+  @@index([voterId])
+  @@index([createdAt])
 }
