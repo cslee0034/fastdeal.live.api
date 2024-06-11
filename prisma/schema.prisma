@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id              String            @id @default(uuid())
-  email           String            @unique
+  email           String
   provider        Provider          @default(local)
   password        String?           @db.VarChar(255)
   firstName       String?           @db.VarChar(30)
@@ -26,6 +26,7 @@ model User {
   UserNationality UserNationality[]
   CityScore       CityScore[]
 
+  @@unique([email])
   @@index([email])
 }
 
@@ -41,8 +42,8 @@ enum Role {
 
 model Country {
   id                     String            @id @default(uuid())
-  countryCode            String            @unique @db.Char(2)
-  countryName            String            @unique @db.VarChar(100)
+  countryCode            String            @db.Char(2)
+  countryName            String            @db.VarChar(100)
   currency               String            @db.VarChar(3)
   exchangeRate           Float?
   continent              Continent
@@ -53,6 +54,7 @@ model Country {
   TravelAlretNationality TravelAlert[]     @relation("TravelAlertNationality")
   TravelAlretDestination TravelAlert[]     @relation("TravelAlertDestination")
 
+  @@unique([countryCode])
   @@index([countryCode])
 }
 
@@ -104,13 +106,14 @@ model City {
   id          String       @id @default(uuid())
   countryId   String
   country     Country      @relation(fields: [countryId], references: [id], onDelete: Restrict)
-  cityName    String       @unique @db.VarChar(50)
+  cityName    String       @db.VarChar(50)
   isAvailable Boolean      @default(true)
   createdAt   DateTime     @default(now()) @db.Timestamp(0)
   updatedAt   DateTime     @updatedAt @db.Timestamp(0)
   CityScore   CityScore[]
   CityWeather CityWeather?
 
+  @@unique([countryId, cityName])
   @@index([cityName])
   @@index([countryId])
 }
