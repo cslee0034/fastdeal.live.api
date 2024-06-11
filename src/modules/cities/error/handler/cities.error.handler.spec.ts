@@ -8,6 +8,13 @@ describe('CountriesErrorHandler', () => {
   let citiesErrorHandler: CitiesErrorHandler;
   let logger: Logger;
 
+  const mockCreateCityDto = {
+    cityName: 'test_city_name',
+    countryCode: 'test_country_code',
+  };
+
+  const mockError = new Error('Test error');
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -44,5 +51,77 @@ describe('CountriesErrorHandler', () => {
 
   it('should have a logger instance', () => {
     expect(logger).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('should be defined', () => {
+      expect(citiesErrorHandler.create).toBeDefined();
+    });
+
+    it('should log inputs', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      try {
+        citiesErrorHandler.create({
+          error,
+          inputs,
+        });
+      } catch (error) {}
+
+      expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it('should call handleThrownError', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      const handleThrownErrorSpy = jest.spyOn(
+        BaseErrorHandler.prototype as any,
+        'handleThrownError',
+      );
+
+      try {
+        citiesErrorHandler.create({ error, inputs });
+      } catch (error) {}
+
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('update', () => {
+    it('should be defined', () => {
+      expect(citiesErrorHandler.update).toBeDefined();
+    });
+
+    it('should log inputs', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      try {
+        citiesErrorHandler.update({
+          error,
+          inputs,
+        });
+      } catch (error) {}
+
+      expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it('should call handleThrownError', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      const handleThrownErrorSpy = jest.spyOn(
+        BaseErrorHandler.prototype as any,
+        'handleThrownError',
+      );
+
+      try {
+        citiesErrorHandler.update({ error, inputs });
+      } catch (error) {}
+
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
+    });
   });
 });

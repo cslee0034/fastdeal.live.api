@@ -16,4 +16,10 @@ export class CitiesErrorHandler extends BaseErrorHandler {
     this.handleThrownError(error);
     throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_CREATE_CITY);
   }
+
+  public update({ error, inputs }: { error: Error; inputs: any }): void {
+    this.logInputs(inputs);
+    this.handleThrownError(error);
+    throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_UPDATE_CITY);
+  }
 }

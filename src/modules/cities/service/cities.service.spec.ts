@@ -3,6 +3,8 @@ import { CitiesService } from '../service/cities.service';
 import { CitiesRepository } from '../repository/cities.repository';
 import { CreateCityDto } from '../dto/create-city.dto';
 import { CitiesErrorHandler } from '../error/handler/cities.error.handler';
+import { UpdateCityDto } from '../dto/update-city.dto';
+import { CityEntity } from '../entities/city.entity';
 
 describe('CitiesService', () => {
   let service: CitiesService;
@@ -11,13 +13,20 @@ describe('CitiesService', () => {
 
   const mockCitiesRepository = {
     create: jest.fn(),
+    update: jest.fn(),
   };
 
   const mockCitiesErrorHandler = {
     create: jest.fn(),
+    update: jest.fn(),
   };
 
   const mockCreateCityDto = {
+    cityName: 'test_city_name',
+    countryCode: 'test_country_code',
+  };
+
+  const mockUpdateCityDto = {
     cityName: 'test_city_name',
     countryCode: 'test_country_code',
   };
@@ -60,6 +69,12 @@ describe('CitiesService', () => {
       expect(repository.create).toHaveBeenCalled();
     });
 
+    it('should return a city instance', async () => {
+      const result = await service.create(mockCreateCityDto as CreateCityDto);
+
+      expect(result).toBeInstanceOf(CityEntity);
+    });
+
     it('should call errorHandler if it fails to create city', async () => {
       repository.create.mockRejectedValueOnce(
         new Error('Failed to create city'),
@@ -68,6 +83,33 @@ describe('CitiesService', () => {
       await service.create(mockCreateCityDto as CreateCityDto);
 
       expect(errorHandler.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('update', () => {
+    it('should be defined', () => {
+      expect(service.update).toBeDefined();
+    });
+
+    it('should call repository update', async () => {
+      await service.update(mockUpdateCityDto as UpdateCityDto);
+      expect(repository.update).toHaveBeenCalled();
+    });
+
+    it('should return a city instance', async () => {
+      const result = await service.update(mockUpdateCityDto as UpdateCityDto);
+
+      expect(result).toBeInstanceOf(CityEntity);
+    });
+
+    it('should call errorHandler if it fails to create city', async () => {
+      repository.update.mockRejectedValueOnce(
+        new Error('Failed to create city'),
+      );
+
+      await service.update(mockUpdateCityDto as UpdateCityDto);
+
+      expect(errorHandler.update).toHaveBeenCalled();
     });
   });
 });

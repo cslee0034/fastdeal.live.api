@@ -8,6 +8,7 @@ describe('CitiesRepository', () => {
   const mockPrismaService = {
     city: {
       create: jest.fn(),
+      update: jest.fn(),
     },
   };
 
@@ -53,6 +54,37 @@ describe('CitiesRepository', () => {
           }),
         }),
       );
+    });
+
+    describe('update', () => {
+      it('should be defined', () => {
+        expect(repository.update).toBeDefined();
+      });
+
+      it('should update a city', async () => {
+        const updateCityDto = {
+          cityName: 'test_city_name',
+          countryCode: 'test_country_code',
+          isAvailable: true,
+        };
+        const expectedCity = { id: 1, ...updateCityDto };
+
+        mockPrismaService.city.update.mockResolvedValue(expectedCity);
+
+        const result = await repository.update(updateCityDto);
+
+        expect(result).toEqual(expectedCity);
+        expect(mockPrismaService.city.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              cityName: updateCityDto.cityName,
+            }),
+            data: expect.objectContaining({
+              isAvailable: updateCityDto.isAvailable,
+            }),
+          }),
+        );
+      });
     });
   });
 });

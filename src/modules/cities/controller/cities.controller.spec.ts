@@ -3,6 +3,7 @@ import { CitiesController } from './cities.controller';
 import { CitiesService } from '../service/cities.service';
 import { CitiesRepository } from '../repository/cities.repository';
 import { CreateCityDto } from '../dto/create-city.dto';
+import { UpdateCityDto } from '../dto/update-city.dto';
 
 describe('CitiesController', () => {
   let controller: CitiesController;
@@ -10,11 +11,17 @@ describe('CitiesController', () => {
 
   const mockCitiesService = {
     create: jest.fn(),
+    update: jest.fn(),
   };
 
   const mockUserRepository = {};
 
   const mockCreateCityDto = {
+    cityName: 'test_city_name',
+    countryCode: 'test_country_code',
+  };
+
+  const mockUpdateCityDto = {
     cityName: 'test_city_name',
     countryCode: 'test_country_code',
   };
@@ -55,6 +62,18 @@ describe('CitiesController', () => {
       controller.create(mockCreateCityDto as CreateCityDto);
 
       expect(service.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('update', () => {
+    it('should be defined', () => {
+      expect(controller.update).toBeDefined();
+    });
+
+    it('should call service.update', () => {
+      controller.update(mockUpdateCityDto as UpdateCityDto);
+
+      expect(service.update).toHaveBeenCalled();
     });
   });
 });
