@@ -24,7 +24,7 @@ export class CitiesRepository {
   async update(updateCityDto: UpdateCityDto) {
     return await this.prisma.city.update({
       where: {
-        cityName: updateCityDto.cityName,
+        id: updateCityDto.id,
       },
       data: {
         cityName: updateCityDto.cityName,

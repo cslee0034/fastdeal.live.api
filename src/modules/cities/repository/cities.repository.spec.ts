@@ -37,10 +37,12 @@ describe('CitiesRepository', () => {
 
     it('should create a new city', async () => {
       const createCityDto = {
+        id: 'test_city_id',
         cityName: 'test_city_name',
         countryCode: 'test_country_code',
+        isAvailable: true,
       };
-      const expectedCity = { id: 1, ...createCityDto };
+      const expectedCity = { ...createCityDto };
 
       mockPrismaService.city.create.mockResolvedValue(expectedCity);
 
@@ -63,11 +65,12 @@ describe('CitiesRepository', () => {
 
       it('should update a city', async () => {
         const updateCityDto = {
+          id: 'test_city_id',
           cityName: 'test_city_name',
           countryCode: 'test_country_code',
           isAvailable: true,
         };
-        const expectedCity = { id: 1, ...updateCityDto };
+        const expectedCity = { ...updateCityDto };
 
         mockPrismaService.city.update.mockResolvedValue(expectedCity);
 
@@ -77,7 +80,7 @@ describe('CitiesRepository', () => {
         expect(mockPrismaService.city.update).toHaveBeenCalledWith(
           expect.objectContaining({
             where: expect.objectContaining({
-              cityName: updateCityDto.cityName,
+              id: updateCityDto.id,
             }),
             data: expect.objectContaining({
               isAvailable: updateCityDto.isAvailable,

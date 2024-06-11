@@ -22,8 +22,10 @@ describe('CitiesController', () => {
   };
 
   const mockUpdateCityDto = {
+    id: 'test_city_id',
     cityName: 'test_city_name',
     countryCode: 'test_country_code',
+    isAvailable: true,
   };
 
   beforeEach(async () => {

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { CitiesService } from '../service/cities.service';
 import { CreateCityDto } from '../dto/create-city.dto';
 import { Roles } from '../../../common/decorator/roles.decorator';
@@ -15,7 +15,7 @@ export class CitiesController {
   }
 
   @Roles(['admin'])
-  @Post()
+  @Patch()
   update(@Body() updateCityDto: UpdateCityDto) {
     return this.citiesService.update(updateCityDto);
   }
