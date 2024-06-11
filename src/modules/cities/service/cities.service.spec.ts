@@ -14,11 +14,13 @@ describe('CitiesService', () => {
   const mockCitiesRepository = {
     create: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
   };
 
   const mockCitiesErrorHandler = {
     create: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
   };
 
   const mockCreateCityDto = {
@@ -110,6 +112,33 @@ describe('CitiesService', () => {
       await service.update(mockUpdateCityDto as UpdateCityDto);
 
       expect(errorHandler.update).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(service.delete).toBeDefined();
+    });
+
+    it('should call repository delete', async () => {
+      await service.delete('test_city_name');
+      expect(repository.delete).toHaveBeenCalled();
+    });
+
+    it('should return a city instance', async () => {
+      const result = await service.delete('test_city_name');
+
+      expect(result).toBeInstanceOf(CityEntity);
+    });
+
+    it('should call errorHandler if it fails to create city', async () => {
+      repository.delete.mockRejectedValueOnce(
+        new Error('Failed to create city'),
+      );
+
+      await service.delete('test_city_name');
+
+      expect(errorHandler.delete).toHaveBeenCalled();
     });
   });
 });

@@ -9,6 +9,7 @@ describe('CitiesRepository', () => {
     city: {
       create: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
   };
 
@@ -88,6 +89,30 @@ describe('CitiesRepository', () => {
           }),
         );
       });
+    });
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(repository.delete).toBeDefined();
+    });
+
+    it('should delete a city', async () => {
+      const mockDeleteCityId = 'test_city_id';
+      const expectedCity = { mockDeleteCityId };
+
+      mockPrismaService.city.delete.mockResolvedValue(expectedCity);
+
+      const result = await repository.delete(mockDeleteCityId);
+
+      expect(result).toEqual(expectedCity);
+      expect(mockPrismaService.city.delete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            id: mockDeleteCityId,
+          }),
+        }),
+      );
     });
   });
 });

@@ -37,4 +37,12 @@ export class CitiesRepository {
       },
     });
   }
+
+  async delete(id: string) {
+    return await this.prisma.city.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

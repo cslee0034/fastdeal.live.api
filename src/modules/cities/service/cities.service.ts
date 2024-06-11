@@ -12,7 +12,7 @@ export class CitiesService {
     private readonly errorHandler: CitiesErrorHandler,
   ) {}
 
-  async create(createCityDto: CreateCityDto) {
+  public async create(createCityDto: CreateCityDto) {
     try {
       return new CityEntity(await this.citiesRepository.create(createCityDto));
     } catch (error) {
@@ -20,11 +20,19 @@ export class CitiesService {
     }
   }
 
-  async update(updateCityDto: UpdateCityDto) {
+  public async update(updateCityDto: UpdateCityDto) {
     try {
       return new CityEntity(await this.citiesRepository.update(updateCityDto));
     } catch (error) {
       this.errorHandler.update({ error, inputs: updateCityDto });
+    }
+  }
+
+  public async delete(id: string) {
+    try {
+      return new CityEntity(await this.citiesRepository.delete(id));
+    } catch (error) {
+      this.errorHandler.delete({ error, inputs: id });
     }
   }
 }

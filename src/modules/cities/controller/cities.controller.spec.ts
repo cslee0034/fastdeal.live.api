@@ -12,6 +12,7 @@ describe('CitiesController', () => {
   const mockCitiesService = {
     create: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
   };
 
   const mockUserRepository = {};
@@ -27,6 +28,8 @@ describe('CitiesController', () => {
     countryCode: 'test_country_code',
     isAvailable: true,
   };
+
+  const mockDeleteCityId = 'test_city_id';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -76,6 +79,18 @@ describe('CitiesController', () => {
       controller.update(mockUpdateCityDto as UpdateCityDto);
 
       expect(service.update).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(controller.delete).toBeDefined();
+    });
+
+    it('should call service.delete', () => {
+      controller.delete(mockDeleteCityId);
+
+      expect(service.delete).toHaveBeenCalled();
     });
   });
 });
