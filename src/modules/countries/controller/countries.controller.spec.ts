@@ -84,7 +84,7 @@ describe('CountriesController', () => {
     });
 
     it('should call service.delete', () => {
-      controller.delete('KR');
+      controller.delete('test_country_id');
 
       expect(service.delete).toHaveBeenCalled();
     });

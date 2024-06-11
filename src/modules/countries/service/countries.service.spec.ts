@@ -55,7 +55,7 @@ describe('CountriesService', () => {
     update: jest
       .fn()
       .mockImplementation((updateCountryDto: UpdateCountryDto) => {
-        if (updateCountryDto.countryCode === 'NOT_EXISTING_COUNTRY_CODE') {
+        if (updateCountryDto.id === 'NOT_EXISTING_COUNTRY_ID') {
           return Promise.reject(new Error());
         }
 
@@ -172,7 +172,8 @@ describe('CountriesService', () => {
 
   it('should call errorHandler when repository.update throws an error', async () => {
     const mockUpdateCountryDto = {
-      countryCode: 'NOT_EXISTING_COUNTRY_CODE',
+      id: 'NOT_EXISTING_COUNTRY_ID',
+      countryCode: 'KR',
       countryName: 'Korea',
       currency: 'KRW',
       exchangeRate: 1200,
@@ -193,6 +194,12 @@ describe('CountriesService', () => {
       await service.delete('1');
 
       expect(repository.delete).toHaveBeenCalledWith('1');
+    });
+
+    it('should return deleted country', async () => {
+      const result = await service.delete('1');
+
+      expect(result).toBeInstanceOf(CountryEntity);
     });
 
     it('should call errorHandler when repository.delete throws an error', async () => {

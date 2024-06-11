@@ -65,8 +65,8 @@ export class CountriesController {
   @ApiInternalServerErrorResponse({
     description: COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
   })
-  delete(@Param('code') code: string) {
-    return this.countriesService.delete(code);
+  delete(@Param('id') id: string) {
+    return this.countriesService.delete(id);
   }
 
   @Roles(['admin'])

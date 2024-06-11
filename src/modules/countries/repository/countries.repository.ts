@@ -9,22 +9,22 @@ export class CountriesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createCountryDto: CreateCountryDto) {
-    return this.prisma.country.create({ data: createCountryDto });
+    return await this.prisma.country.create({ data: createCountryDto });
   }
 
   async update(updateCountryDto: UpdateCountryDto) {
-    return this.prisma.country.update({
-      where: { countryCode: updateCountryDto.countryCode },
+    return await this.prisma.country.update({
+      where: { id: updateCountryDto.id },
       data: updateCountryDto,
     });
   }
 
-  async delete(code: string) {
-    return this.prisma.country.delete({ where: { countryCode: code } });
+  async delete(id: string) {
+    return await this.prisma.country.delete({ where: { id } });
   }
 
   async createTravelAlert(travelAlert: CreateTravelAlertDto) {
-    return this.prisma.travelAlert.create({
+    return await this.prisma.travelAlert.create({
       data: {
         nationality: {
           connect: {
@@ -42,7 +42,7 @@ export class CountriesRepository {
   }
 
   async getTravelAlerts(countryCode: string) {
-    return this.prisma.travelAlert.findMany({
+    return await this.prisma.travelAlert.findMany({
       where: { nationality: { countryCode } },
     });
   }
