@@ -21,6 +21,7 @@ import { CountryEntity } from '../entities/country.entity';
 import { COUNTRIES_ERROR } from '../error/constant/countries.error.constant';
 import { TravelAlertEntity } from '../entities/travel-alert.entity';
 import { CreateTravelAlertDto } from '../dto/create-travel-alert.dto';
+import { Public } from '../../../common/decorator/public.decorator';
 
 @Controller('countries')
 export class CountriesController {
@@ -82,6 +83,7 @@ export class CountriesController {
     return this.countriesService.createTravelAlert(travelAlert);
   }
 
+  @Public()
   @Get('travel-alert')
   @ApiOperation({ summary: 'Get travel alerts by country code' })
   @ApiOkResponse({
