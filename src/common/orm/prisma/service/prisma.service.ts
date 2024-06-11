@@ -8,9 +8,7 @@ export class PrismaService extends PrismaClient {
     const isDevelopment = isDevEnv();
 
     super({
-      log: isDevelopment
-        ? ['query', 'info', 'warn', 'error']
-        : ['warn', 'error'],
+      log: isDevelopment ? ['info', 'warn', 'error'] : ['warn', 'error'],
     });
   }
 }
