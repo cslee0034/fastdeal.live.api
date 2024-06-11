@@ -1,9 +1,9 @@
 import { Prisma } from '@prisma/client';
-import { BaseErrorHandler } from './base.error.handler';
+import { CommonErrorHandler } from './common.error.handler';
 import { Logger } from 'winston';
 
 describe('ThrownErrorHandler', () => {
-  let baseErrorHandler: BaseErrorHandler;
+  let commonErrorHandler: CommonErrorHandler;
   const logger = {
     query: jest.fn(),
     info: jest.fn(),
@@ -12,7 +12,7 @@ describe('ThrownErrorHandler', () => {
   } as unknown as Logger;
 
   beforeEach(() => {
-    baseErrorHandler = new BaseErrorHandler(logger);
+    commonErrorHandler = new CommonErrorHandler(logger);
   });
 
   describe('handleThrownError', () => {
@@ -28,7 +28,7 @@ describe('ThrownErrorHandler', () => {
         } as any,
       );
 
-      expect(() => baseErrorHandler.handleThrownError(error)).toThrow(error);
+      expect(() => commonErrorHandler.handleThrownError(error)).toThrow(error);
     });
 
     it('should throw Prisma.PrismaClientValidationError', () => {
@@ -39,7 +39,7 @@ describe('ThrownErrorHandler', () => {
         },
       } as any);
 
-      expect(() => baseErrorHandler.handleThrownError(error)).toThrow(error);
+      expect(() => commonErrorHandler.handleThrownError(error)).toThrow(error);
     });
 
     it('should throw Prisma.PrismaClientInitializationError', () => {
@@ -50,7 +50,7 @@ describe('ThrownErrorHandler', () => {
         },
       } as any);
 
-      expect(() => baseErrorHandler.handleThrownError(error)).toThrow(error);
+      expect(() => commonErrorHandler.handleThrownError(error)).toThrow(error);
     });
 
     it('should throw Prisma.PrismaClientRustPanicError', () => {
@@ -61,55 +61,55 @@ describe('ThrownErrorHandler', () => {
         },
       } as any);
 
-      expect(() => baseErrorHandler.handleThrownError(error)).toThrow(error);
+      expect(() => commonErrorHandler.handleThrownError(error)).toThrow(error);
     });
 
     it('should throw HttpException', () => {
       const error = new Error('Unexpected error');
 
-      expect(() => baseErrorHandler.handleThrownError(error)).not.toThrow();
+      expect(() => commonErrorHandler.handleThrownError(error)).not.toThrow();
     });
 
     it('should throw BadRequestException', () => {
       const error = new Error('Unexpected error');
 
-      expect(() => baseErrorHandler.handleThrownError(error)).not.toThrow();
+      expect(() => commonErrorHandler.handleThrownError(error)).not.toThrow();
     });
 
     it('should throw UnauthorizedException', () => {
       const error = new Error('Unexpected error');
 
-      expect(() => baseErrorHandler.handleThrownError(error)).not.toThrow();
+      expect(() => commonErrorHandler.handleThrownError(error)).not.toThrow();
     });
 
     it('should throw NotFoundException', () => {
       const error = new Error('Unexpected error');
 
-      expect(() => baseErrorHandler.handleThrownError(error)).not.toThrow();
+      expect(() => commonErrorHandler.handleThrownError(error)).not.toThrow();
     });
 
     it('should throw InternalServerErrorException', () => {
       const error = new Error('Unexpected error');
 
-      expect(() => baseErrorHandler.handleThrownError(error)).not.toThrow();
+      expect(() => commonErrorHandler.handleThrownError(error)).not.toThrow();
     });
 
     it('should not throw error', () => {
       const error = new Error('Unexpected error');
 
-      expect(() => baseErrorHandler.handleThrownError(error)).not.toThrow();
+      expect(() => commonErrorHandler.handleThrownError(error)).not.toThrow();
     });
   });
 
   describe('logInputs', () => {
     it('should be defined', () => {
-      expect(baseErrorHandler.logInputs).toBeDefined();
+      expect(commonErrorHandler.logInputs).toBeDefined();
     });
 
     it('should log inputs', () => {
       const inputs = '';
 
-      baseErrorHandler.logInputs(inputs);
+      commonErrorHandler.logInputs(inputs);
 
       expect(logger.warn).toHaveBeenCalledWith(
         `\ninputs: ${JSON.stringify(inputs, null, 2)}`,

@@ -2,7 +2,7 @@ import { HttpException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Logger } from 'winston';
 
-export class BaseErrorHandler {
+export class CommonErrorHandler {
   constructor(protected readonly logger: Logger) {}
 
   public handleThrownError(error: Error): void {

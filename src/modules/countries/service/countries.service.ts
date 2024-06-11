@@ -19,6 +19,7 @@ export class CountriesService {
         await this.countriesRepository.create(createCountryDto),
       );
     } catch (error) {
+      console.log(error);
       this.errorHandler.create({ error, inputs: createCountryDto });
     }
   }

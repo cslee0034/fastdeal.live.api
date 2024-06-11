@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesErrorHandler } from './countries.error.handler';
-import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
+import { CommonErrorHandler } from '../../../../common/error/handler/common.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { CreateCountryDto } from '../../dto/create-country.dto';
 import { UpdateCountryDto } from '../../dto/update-country.dto';
 import { AlertStatus } from '@prisma/client';
 import { CreateTravelAlertDto } from '../../dto/create-travel-alert.dto';
+import { InternalServerErrorException } from '@nestjs/common';
 
 describe('CountriesErrorHandler', () => {
   let countriesErrorHandler: CountriesErrorHandler;
@@ -64,7 +65,7 @@ describe('CountriesErrorHandler', () => {
   });
 
   it('should be an instance of ThrownErrorHandler', () => {
-    expect(countriesErrorHandler).toBeInstanceOf(BaseErrorHandler);
+    expect(countriesErrorHandler).toBeInstanceOf(CommonErrorHandler);
   });
 
   it('should be an instance of CountriesErrorHandler', () => {
@@ -84,12 +85,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockCreateCountryDto;
 
-      try {
-        countriesErrorHandler.create({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        countriesErrorHandler.create({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -99,13 +97,13 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockCreateCountryDto;
 
       const handleThrownErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         countriesErrorHandler.create({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
@@ -120,12 +118,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockUpdateCountryDto;
 
-      try {
-        countriesErrorHandler.update({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        countriesErrorHandler.update({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -135,13 +130,13 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockUpdateCountryDto;
 
       const handlePrismaErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         countriesErrorHandler.update({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
 
       expect(handlePrismaErrorSpy).toHaveBeenCalled();
     });
@@ -156,12 +151,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockDeleteCountryDto;
 
-      try {
-        countriesErrorHandler.delete({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        countriesErrorHandler.delete({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -171,13 +163,13 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockDeleteCountryDto;
 
       const handleThrownErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         countriesErrorHandler.delete({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
@@ -192,12 +184,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockCreateTravelAlertDto;
 
-      try {
-        countriesErrorHandler.createTravelAlert({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        countriesErrorHandler.createTravelAlert({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -207,13 +196,13 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockCreateTravelAlertDto;
 
       const handleThrownErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         countriesErrorHandler.createTravelAlert({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
@@ -228,12 +217,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockGetTravelAlertsDto;
 
-      try {
-        countriesErrorHandler.getTravelAlerts({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        countriesErrorHandler.getTravelAlerts({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -243,13 +229,13 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockGetTravelAlertsDto;
 
       const handleThrownErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         countriesErrorHandler.getTravelAlerts({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });

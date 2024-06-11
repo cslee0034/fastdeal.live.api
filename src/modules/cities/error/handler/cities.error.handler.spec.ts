@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseErrorHandler } from '../../../../common/error/handler/base.error.handler';
+import { CommonErrorHandler } from '../../../../common/error/handler/common.error.handler';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { CitiesErrorHandler } from './cities.error.handler';
@@ -42,7 +42,7 @@ describe('CountriesErrorHandler', () => {
   });
 
   it('should be an instance of ThrownErrorHandler', () => {
-    expect(citiesErrorHandler).toBeInstanceOf(BaseErrorHandler);
+    expect(citiesErrorHandler).toBeInstanceOf(CommonErrorHandler);
   });
 
   it('should be an instance of CitiesErrorHandler', () => {
@@ -77,7 +77,7 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockCreateCityDto;
 
       const handleThrownErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
@@ -113,7 +113,7 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockCreateCityDto;
 
       const handleThrownErrorSpy = jest.spyOn(
-        BaseErrorHandler.prototype as any,
+        CommonErrorHandler.prototype as any,
         'handleThrownError',
       );
 
