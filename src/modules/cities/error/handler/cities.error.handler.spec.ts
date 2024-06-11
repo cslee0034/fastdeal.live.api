@@ -3,6 +3,7 @@ import { CommonErrorHandler } from '../../../../common/error/handler/common.erro
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { CitiesErrorHandler } from './cities.error.handler';
+import { InternalServerErrorException } from '@nestjs/common';
 
 describe('CountriesErrorHandler', () => {
   let citiesErrorHandler: CitiesErrorHandler;
@@ -62,12 +63,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockCreateCityDto;
 
-      try {
-        citiesErrorHandler.create({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        citiesErrorHandler.create({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -81,9 +79,9 @@ describe('CountriesErrorHandler', () => {
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         citiesErrorHandler.create({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
@@ -98,12 +96,9 @@ describe('CountriesErrorHandler', () => {
       const error = mockError;
       const inputs = mockCreateCityDto;
 
-      try {
-        citiesErrorHandler.update({
-          error,
-          inputs,
-        });
-      } catch (error) {}
+      expect(() => {
+        citiesErrorHandler.update({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
     });
@@ -117,9 +112,42 @@ describe('CountriesErrorHandler', () => {
         'handleThrownError',
       );
 
-      try {
+      expect(() => {
         citiesErrorHandler.update({ error, inputs });
-      } catch (error) {}
+      }).toThrow(InternalServerErrorException);
+
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('should be defined', () => {
+      expect(citiesErrorHandler.delete).toBeDefined();
+    });
+
+    it('should log inputs', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      expect(() => {
+        citiesErrorHandler.delete({ error, inputs });
+      }).toThrow(InternalServerErrorException);
+
+      expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it('should call handleThrownError', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      const handleThrownErrorSpy = jest.spyOn(
+        CommonErrorHandler.prototype as any,
+        'handleThrownError',
+      );
+
+      expect(() => {
+        citiesErrorHandler.delete({ error, inputs });
+      }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
