@@ -289,7 +289,6 @@ describe('UsersService', () => {
 
       expect(result).toEqual({
         success: true,
-        id: '1',
         email: 'test@email.com',
         provider: 'local',
         firstName: 'test_first_name',
@@ -313,7 +312,6 @@ describe('UsersService', () => {
 
     expect(result).toEqual({
       success: true,
-      id: '1',
       email: 'test@email.com',
       provider: 'local',
       firstName: '',

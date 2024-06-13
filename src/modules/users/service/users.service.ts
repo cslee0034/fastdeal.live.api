@@ -87,7 +87,6 @@ export class UsersService {
   convertUserResponse(user: UserEntity) {
     return {
       success: true,
-      id: user?.id,
       email: user?.email,
       provider: user?.provider || 'local',
       firstName: user?.firstName || '',
