@@ -89,11 +89,12 @@ describe('AuthController', () => {
 
     convertUserResponse: jest.fn().mockImplementation((user: UserEntity) => {
       return {
-        id: user.id,
+        success: true,
         email: user.email,
         provider: user.provider,
         firstName: user.firstName,
         lastName: user.lastName,
+        expiresIn: mockExpiresIn,
       };
     }),
   };
@@ -229,6 +230,8 @@ describe('AuthController', () => {
     refreshToken: 'refreshToken',
   };
 
+  const mockExpiresIn = 3600;
+
   const mockRedirectUrl = 'client.url/api/auth/google';
 
   const mockRedirectErorUrl = 'client.url/api/auth/google?error';
@@ -293,11 +296,12 @@ describe('AuthController', () => {
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(mockJson).toHaveBeenCalledWith({
-        id: mockCreateUserResult.id,
+        success: true,
         email: mockCreateUserResult.email,
         provider: mockCreateUserResult.provider,
         firstName: mockCreateUserResult.firstName,
         lastName: mockCreateUserResult.lastName,
+        expiresIn: mockExpiresIn,
       });
     });
   });
@@ -348,11 +352,12 @@ describe('AuthController', () => {
       await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
 
       expect(mockJson).toHaveBeenCalledWith({
-        id: mockFindOneResult.id,
+        success: true,
         email: mockFindOneResult.email,
         provider: mockFindOneResult.provider,
         firstName: mockFindOneResult.firstName,
         lastName: mockFindOneResult.lastName,
+        expiresIn: mockExpiresIn,
       });
     });
   });
@@ -531,11 +536,12 @@ describe('AuthController', () => {
       );
 
       expect(mockJson).toHaveBeenCalledWith({
-        id: mockFindOneResult.id,
+        success: true,
         email: mockFindOneResult.email,
         provider: mockFindOneResult.provider,
         firstName: mockFindOneResult.firstName,
         lastName: mockFindOneResult.lastName,
+        expiresIn: mockExpiresIn,
       });
     });
   });

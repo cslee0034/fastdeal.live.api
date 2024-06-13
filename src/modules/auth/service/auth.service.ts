@@ -36,6 +36,7 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.email);
     await this.setRefreshTokenToRedis(user.id, tokens.refreshToken);
     await this.setTokensToResponse(response, tokens);
+    return;
   }
 
   private async generateTokens(id: string, email: string): Promise<Tokens> {
@@ -125,6 +126,7 @@ export class AuthService {
         AUTH_ERROR.FAILED_TO_GET_REFRESH_TOKEN,
       );
     }
+
     return;
   }
 
