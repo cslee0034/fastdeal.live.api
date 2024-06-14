@@ -210,7 +210,7 @@ describe('CountriesErrorHandler', () => {
 
   describe('getTravelAlerts', () => {
     it('should be defined', () => {
-      expect(countriesErrorHandler.getTravelAlerts).toBeDefined();
+      expect(countriesErrorHandler.findManyTravelAlerts).toBeDefined();
     });
 
     it('should log inputs', () => {
@@ -218,7 +218,7 @@ describe('CountriesErrorHandler', () => {
       const inputs = mockGetTravelAlertsDto;
 
       expect(() => {
-        countriesErrorHandler.getTravelAlerts({ error, inputs });
+        countriesErrorHandler.findManyTravelAlerts({ error, inputs });
       }).toThrow(InternalServerErrorException);
 
       expect(logger.warn).toHaveBeenCalled();
@@ -234,7 +234,7 @@ describe('CountriesErrorHandler', () => {
       );
 
       expect(() => {
-        countriesErrorHandler.getTravelAlerts({ error, inputs });
+        countriesErrorHandler.findManyTravelAlerts({ error, inputs });
       }).toThrow(InternalServerErrorException);
 
       expect(handleThrownErrorSpy).toHaveBeenCalled();

@@ -64,7 +64,7 @@ export class CountriesErrorHandler extends CommonErrorHandler {
     );
   }
 
-  public getTravelAlerts({
+  public findManyTravelAlerts({
     error,
     inputs,
   }: {

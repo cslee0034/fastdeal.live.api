@@ -5,6 +5,7 @@ import { UpdateCountryDto } from '../dto/update-country.dto';
 import { CreateTravelAlertDto } from '../dto/create-travel-alert.dto';
 import { CountriesErrorHandler } from '../error/handler/countries.error.handler';
 import { CountryEntity } from '../entities/country.entity';
+import { TravelAlertEntity } from '../entities/travel-alert.entity';
 
 @Injectable()
 export class CountriesService {
@@ -13,7 +14,9 @@ export class CountriesService {
     private readonly errorHandler: CountriesErrorHandler,
   ) {}
 
-  public async create(createCountryDto: CreateCountryDto) {
+  public async create(
+    createCountryDto: CreateCountryDto,
+  ): Promise<CountryEntity> {
     try {
       return new CountryEntity(
         await this.countriesRepository.create(createCountryDto),
@@ -24,7 +27,9 @@ export class CountriesService {
     }
   }
 
-  public async update(updateCountryDto: UpdateCountryDto) {
+  public async update(
+    updateCountryDto: UpdateCountryDto,
+  ): Promise<CountryEntity> {
     try {
       return new CountryEntity(
         await this.countriesRepository.update(updateCountryDto),
@@ -34,7 +39,7 @@ export class CountriesService {
     }
   }
 
-  public async delete(id: string) {
+  public async delete(id: string): Promise<CountryEntity> {
     try {
       return new CountryEntity(await this.countriesRepository.delete(id));
     } catch (error) {
@@ -42,19 +47,27 @@ export class CountriesService {
     }
   }
 
-  public async createTravelAlert(travelAlert: CreateTravelAlertDto) {
+  public async createTravelAlert(
+    travelAlert: CreateTravelAlertDto,
+  ): Promise<TravelAlertEntity> {
     try {
-      return await this.countriesRepository.createTravelAlert(travelAlert);
+      return new TravelAlertEntity(
+        await this.countriesRepository.createTravelAlert(travelAlert),
+      );
     } catch (error) {
       this.errorHandler.createTravelAlert({ error, inputs: travelAlert });
     }
   }
 
-  public async getTravelAlerts(countryCode: string) {
+  public async findManyTravelAlerts(
+    countryCode: string,
+  ): Promise<TravelAlertEntity[]> {
     try {
-      return await this.countriesRepository.getTravelAlerts(countryCode);
+      const alerts =
+        await this.countriesRepository.findManyTravelAlerts(countryCode);
+      return alerts.map((alert) => new TravelAlertEntity(alert));
     } catch (error) {
-      this.errorHandler.getTravelAlerts({ error, inputs: countryCode });
+      this.errorHandler.findManyTravelAlerts({ error, inputs: countryCode });
     }
   }
 }

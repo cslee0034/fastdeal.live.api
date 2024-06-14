@@ -37,7 +37,7 @@ export class CountriesController {
   @ApiInternalServerErrorResponse({
     description: COUNTRIES_ERROR.CANNOT_CREATE_COUNTRY,
   })
-  create(@Body() createCountryDto: CreateCountryDto) {
+  create(@Body() createCountryDto: CreateCountryDto): Promise<CountryEntity> {
     return this.countriesService.create(createCountryDto);
   }
 
@@ -51,7 +51,7 @@ export class CountriesController {
   @ApiInternalServerErrorResponse({
     description: COUNTRIES_ERROR.CANNOT_UPDATE_COUNTRY,
   })
-  update(@Body() updateCountryDto: UpdateCountryDto) {
+  update(@Body() updateCountryDto: UpdateCountryDto): Promise<CountryEntity> {
     return this.countriesService.update(updateCountryDto);
   }
 
@@ -65,7 +65,7 @@ export class CountriesController {
   @ApiInternalServerErrorResponse({
     description: COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
   })
-  delete(@Param('id') id: string) {
+  delete(@Param('id') id: string): Promise<CountryEntity> {
     return this.countriesService.delete(id);
   }
 
@@ -79,7 +79,9 @@ export class CountriesController {
   @ApiInternalServerErrorResponse({
     description: COUNTRIES_ERROR.CANNOT_CREATE_TRAVEL_ALERT,
   })
-  createTravelAlert(@Body() travelAlert: CreateTravelAlertDto) {
+  createTravelAlert(
+    @Body() travelAlert: CreateTravelAlertDto,
+  ): Promise<TravelAlertEntity> {
     return this.countriesService.createTravelAlert(travelAlert);
   }
 
@@ -93,7 +95,7 @@ export class CountriesController {
   @ApiInternalServerErrorResponse({
     description: COUNTRIES_ERROR.CANNOT_GET_TRAVEL_ALERTS,
   })
-  getTravelAlerts(countryCode: string) {
-    return this.countriesService.getTravelAlerts(countryCode);
+  findManyTravelAlerts(countryCode: string): Promise<TravelAlertEntity[]> {
+    return this.countriesService.findManyTravelAlerts(countryCode);
   }
 }

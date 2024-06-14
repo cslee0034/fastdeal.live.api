@@ -77,19 +77,23 @@ describe('CountriesService', () => {
       return Promise.resolve(new TravelAlertEntity(travelAlert));
     }),
 
-    getTravelAlerts: jest.fn().mockImplementation((countryCode: string) => {
-      if (countryCode === 'NOT_EXISTING_COUNTRY_CODE') {
-        return Promise.reject(new Error());
-      }
-      return Promise.resolve([new TravelAlertEntity(mockCreateTravelAlertDto)]);
-    }),
+    findManyTravelAlerts: jest
+      .fn()
+      .mockImplementation((countryCode: string) => {
+        if (countryCode === 'NOT_EXISTING_COUNTRY_CODE') {
+          return Promise.reject(new Error());
+        }
+        return Promise.resolve([
+          new TravelAlertEntity(mockCreateTravelAlertDto),
+        ]);
+      }),
   };
   const mockCountriesErrorHandler = {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
     createTravelAlert: jest.fn(),
-    getTravelAlerts: jest.fn(),
+    findManyTravelAlerts: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -243,19 +247,19 @@ describe('CountriesService', () => {
     expect(errorHandler.createTravelAlert).toHaveBeenCalled();
   });
 
-  describe('getTravelAlerts', () => {
+  describe('findManyTravelAlerts', () => {
     it('should be defined', () => {
-      expect(service.getTravelAlerts).toBeDefined();
+      expect(service.findManyTravelAlerts).toBeDefined();
     });
 
     it('should call repository.getTravelAlerts', async () => {
-      await service.getTravelAlerts('KR');
+      await service.findManyTravelAlerts('KR');
 
-      expect(repository.getTravelAlerts).toHaveBeenCalledWith('KR');
+      expect(repository.findManyTravelAlerts).toHaveBeenCalledWith('KR');
     });
 
     it('should return travel alerts', async () => {
-      const result = await service.getTravelAlerts('KR');
+      const result = await service.findManyTravelAlerts('KR');
 
       expect(result).toEqual([new TravelAlertEntity(mockCreateTravelAlertDto)]);
     });
@@ -263,9 +267,9 @@ describe('CountriesService', () => {
     it('should call errorHandler when repository.getTravelAlerts throws an error', async () => {
       const mockCountryCode = 'NOT_EXISTING_COUNTRY_CODE';
 
-      await service.getTravelAlerts(mockCountryCode);
+      await service.findManyTravelAlerts(mockCountryCode);
 
-      expect(errorHandler.getTravelAlerts).toHaveBeenCalled();
+      expect(errorHandler.findManyTravelAlerts).toHaveBeenCalled();
     });
   });
 });

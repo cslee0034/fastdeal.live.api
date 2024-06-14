@@ -142,12 +142,12 @@ describe('CountriesRepository', () => {
 
   describe('getTravelAlerts', () => {
     it('should be defined', () => {
-      expect(repository.getTravelAlerts).toBeDefined();
+      expect(repository.findManyTravelAlerts).toBeDefined();
     });
 
     it('should get travel alerts', async () => {
       const countryCode = 'KR';
-      await repository.getTravelAlerts(countryCode);
+      await repository.findManyTravelAlerts(countryCode);
 
       expect(mockPrismaService.travelAlert.findMany).toHaveBeenCalledWith;
     });

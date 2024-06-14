@@ -12,5 +12,7 @@ export class CreateTravelAlertDto {
   @Length(2, 2)
   destinationCode: string;
 
+  @IsNotEmpty()
+  @IsString()
   alertStatus: AlertStatus;
 }

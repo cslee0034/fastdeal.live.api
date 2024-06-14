@@ -14,7 +14,7 @@ describe('CountriesController', () => {
     update: jest.fn(),
     delete: jest.fn(),
     createTravelAlert: jest.fn(),
-    getTravelAlerts: jest.fn(),
+    findManyTravelAlerts: jest.fn(),
   };
 
   const mockCreateCountryDto = {
@@ -104,13 +104,13 @@ describe('CountriesController', () => {
 
   describe('getTravelAlerts', () => {
     it('should be defined', () => {
-      expect(controller.getTravelAlerts).toBeDefined();
+      expect(controller.findManyTravelAlerts).toBeDefined();
     });
 
     it('should call service.getTravelAlerts', () => {
-      controller.getTravelAlerts(mockTravelAlertDto.nationalityCode);
+      controller.findManyTravelAlerts(mockTravelAlertDto.nationalityCode);
 
-      expect(service.getTravelAlerts).toHaveBeenCalled();
+      expect(service.findManyTravelAlerts).toHaveBeenCalled();
     });
   });
 });
