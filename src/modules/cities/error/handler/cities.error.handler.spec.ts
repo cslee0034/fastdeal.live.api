@@ -185,4 +185,37 @@ describe('CountriesErrorHandler', () => {
       expect(handleThrownErrorSpy).toHaveBeenCalled();
     });
   });
+
+  describe('createScore', () => {
+    it('should be defined', () => {
+      expect(citiesErrorHandler.createScore).toBeDefined();
+    });
+
+    it('should log inputs', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      expect(() => {
+        citiesErrorHandler.createScore({ error, inputs });
+      }).toThrow(InternalServerErrorException);
+
+      expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it('should call handleThrownError', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      const handleThrownErrorSpy = jest.spyOn(
+        CommonErrorHandler.prototype as any,
+        'handleThrownError',
+      );
+
+      expect(() => {
+        citiesErrorHandler.createScore({ error, inputs });
+      }).toThrow(InternalServerErrorException);
+
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
+    });
+  });
 });

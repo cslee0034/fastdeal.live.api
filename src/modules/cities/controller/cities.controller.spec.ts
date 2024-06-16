@@ -14,6 +14,7 @@ describe('CitiesController', () => {
     findMany: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    createScore: jest.fn(),
   };
 
   const mockUserRepository = {};
@@ -31,6 +32,16 @@ describe('CitiesController', () => {
   };
 
   const mockDeleteCityId = 'test_city_id';
+
+  const mockScoreCityDto = {
+    cityId: 'test_city_id',
+    voterId: 'test_voter_id',
+    totalScore: 5,
+    internetSpeed: 5,
+    costOfLiving: 5,
+    tourism: 5,
+    safety: 5,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -104,6 +115,18 @@ describe('CitiesController', () => {
       controller.delete(mockDeleteCityId);
 
       expect(service.delete).toHaveBeenCalled();
+    });
+  });
+
+  describe('createScore', () => {
+    it('should be defined', () => {
+      expect(controller.createScore).toBeDefined();
+    });
+
+    it('should call service.score', () => {
+      controller.createScore(mockScoreCityDto);
+
+      expect(service.createScore).toHaveBeenCalled();
     });
   });
 });

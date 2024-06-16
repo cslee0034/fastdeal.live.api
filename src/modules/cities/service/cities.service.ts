@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CitiesRepository } from '../repository/cities.repository';
 import { CreateCityDto } from '../dto/create-city.dto';
 import { CitiesErrorHandler } from '../error/handler/cities.error.handler';
 import { UpdateCityDto } from '../dto/update-city.dto';
 import { CityEntity } from '../entities/city.entity';
+import { ScoreCityDto } from '../dto/score-city.dto';
+import { CITIES_ERROR } from '../error/constant/cities.error';
 
 @Injectable()
 export class CitiesService {
@@ -43,5 +45,34 @@ export class CitiesService {
     } catch (error) {
       this.errorHandler.delete({ error, inputs: id });
     }
+  }
+
+  public async createScore(scoreCityDto: ScoreCityDto) {
+    try {
+      await this.findCityScoreByVoterIdAndThrow(
+        scoreCityDto.voterId,
+        scoreCityDto.cityId,
+      );
+
+      return await this.citiesRepository.createScore(scoreCityDto);
+    } catch (error) {
+      this.errorHandler.createScore({ error, inputs: scoreCityDto });
+    }
+  }
+
+  private async findCityScoreByVoterIdAndThrow(
+    voterId: string,
+    cityId: string,
+  ) {
+    const cityScore = await this.citiesRepository.findCityScoreByVoterId(
+      voterId,
+      cityId,
+    );
+
+    if (cityScore) {
+      throw new BadRequestException(CITIES_ERROR.CITY_SCORE_ALREADY_EXISTS);
+    }
+
+    return;
   }
 }

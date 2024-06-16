@@ -12,6 +12,7 @@ import { CreateCityDto } from '../dto/create-city.dto';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { UpdateCityDto } from '../dto/update-city.dto';
 import { Public } from '../../../common/decorator/public.decorator';
+import { ScoreCityDto } from '../dto/score-city.dto';
 
 @Controller('cities')
 export class CitiesController {
@@ -39,5 +40,10 @@ export class CitiesController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.citiesService.delete(id);
+  }
+
+  @Post('score')
+  createScore(@Body() scoreCityDto: ScoreCityDto) {
+    return this.citiesService.createScore(scoreCityDto);
   }
 }

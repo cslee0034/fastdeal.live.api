@@ -7,7 +7,7 @@ export class CityEntity implements City {
     Object.assign(this, partial);
   }
 
-  @Exclude()
+  @Expose()
   @ApiProperty({
     description: 'The id of the city',
     example: '1af07b9b-0b1b-4b3d-8e1b-4f4b9b7b1b1b',

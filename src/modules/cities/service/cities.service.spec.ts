@@ -5,6 +5,7 @@ import { CreateCityDto } from '../dto/create-city.dto';
 import { CitiesErrorHandler } from '../error/handler/cities.error.handler';
 import { UpdateCityDto } from '../dto/update-city.dto';
 import { CityEntity } from '../entities/city.entity';
+import { CITIES_ERROR } from '../error/constant/cities.error';
 
 describe('CitiesService', () => {
   let service: CitiesService;
@@ -12,17 +13,67 @@ describe('CitiesService', () => {
   let errorHandler: any;
 
   const mockCitiesRepository = {
-    create: jest.fn(),
-    findMany: jest.fn().mockImplementation((cityName: string) => {
+    create: jest.fn().mockImplementation((createCityDto) => {
+      if (
+        createCityDto.cityName === 'EXISTING_CITY' &&
+        createCityDto.countryCode === 'EXISTING_COUNTRY_CODE'
+      ) {
+        throw new Error(CITIES_ERROR.FAILED_TO_CREATE_CITY);
+      }
+
+      return {
+        ...createCityDto,
+      };
+    }),
+
+    findMany: jest.fn().mockImplementation((cityName) => {
+      if (cityName !== 'EXISTING_CITY') {
+        throw new Error(CITIES_ERROR.FAILED_TO_FIND_CITY);
+      }
+
       return [
         {
-          cityName,
+          cityName: 'test_city_name',
           countryCode: 'test_country_code',
         },
       ];
     }),
-    update: jest.fn(),
-    delete: jest.fn(),
+
+    update: jest.fn().mockImplementation((updateCityDto) => {
+      if (
+        updateCityDto.cityName !== 'EXISTING_CITY' ||
+        updateCityDto.countryCode !== 'EXISTING_COUNTRY_CODE'
+      ) {
+        throw new Error(CITIES_ERROR.FAILED_TO_UPDATE_CITY);
+      }
+
+      return {
+        ...updateCityDto,
+      };
+    }),
+
+    delete: jest.fn().mockImplementation((cityName) => {
+      if (cityName !== 'EXISTING_CITY') {
+        throw new Error(CITIES_ERROR.FAILED_TO_DELETE_CITY);
+      }
+
+      return {
+        ...mockCreateCityDto,
+      };
+    }),
+
+    createScore: jest.fn(),
+
+    findCityScoreByVoterId: jest.fn().mockImplementation((voterId, cityId) => {
+      if (voterId === 'test_voter_id' && cityId === 'test_city_id') {
+        return {
+          voterId: 'test_voter_id',
+          cityId: 'test_city_id',
+        };
+      }
+
+      return null;
+    }),
   };
 
   const mockCitiesErrorHandler = {
@@ -30,6 +81,7 @@ describe('CitiesService', () => {
     findMany: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    createScore: jest.fn(),
   };
 
   const mockCreateCityDto = {
@@ -40,6 +92,16 @@ describe('CitiesService', () => {
   const mockUpdateCityDto = {
     cityName: 'test_city_name',
     countryCode: 'test_country_code',
+  };
+
+  const mockScoreCityDto = {
+    cityId: 'test_city_id',
+    voterId: 'test_voter_id',
+    totalScore: 5,
+    internetSpeed: 5,
+    costOfLiving: 5,
+    tourism: 5,
+    safety: 5,
   };
 
   beforeEach(async () => {
@@ -77,6 +139,7 @@ describe('CitiesService', () => {
 
     it('should call repository create', async () => {
       await service.create(mockCreateCityDto);
+
       expect(repository.create).toHaveBeenCalled();
     });
 
@@ -87,9 +150,10 @@ describe('CitiesService', () => {
     });
 
     it('should call errorHandler if it fails to create city', async () => {
-      repository.create.mockRejectedValueOnce(
-        new Error('Failed to create city'),
-      );
+      const mockCreateCityDto = {
+        cityName: 'EXISTING_CITY',
+        countryCode: 'EXISTING_COUNTRY_CODE',
+      };
 
       await service.create(mockCreateCityDto as CreateCityDto);
 
@@ -104,20 +168,17 @@ describe('CitiesService', () => {
 
     it('should call repository findOne', async () => {
       await service.findMany('test_city_name');
+
       expect(repository.findMany).toHaveBeenCalled();
     });
 
     it('should return a city instance list', async () => {
-      const result = await service.findMany('test_city_name');
+      const result = await service.findMany('EXISTING_CITY');
 
-      expect(result).toBeInstanceOf(Array);
+      expect(result).toEqual([expect.any(CityEntity)]);
     });
 
     it('should call errorHandler if it fails to create city', async () => {
-      repository.findMany.mockRejectedValueOnce(
-        new Error('Failed to create city'),
-      );
-
       await service.findMany('test_city_name');
 
       expect(errorHandler.findMany).toHaveBeenCalled();
@@ -131,19 +192,26 @@ describe('CitiesService', () => {
 
     it('should call repository update', async () => {
       await service.update(mockUpdateCityDto as UpdateCityDto);
+
       expect(repository.update).toHaveBeenCalled();
     });
 
     it('should return a city instance', async () => {
+      const mockUpdateCityDto = {
+        cityName: 'EXISTING_CITY',
+        countryCode: 'EXISTING_COUNTRY_CODE',
+      };
+
       const result = await service.update(mockUpdateCityDto as UpdateCityDto);
 
       expect(result).toBeInstanceOf(CityEntity);
     });
 
     it('should call errorHandler if it fails to create city', async () => {
-      repository.update.mockRejectedValueOnce(
-        new Error('Failed to create city'),
-      );
+      const mockUpdateCityDto = {
+        cityName: 'NON_EXISTING_CITY',
+        countryCode: 'NON_EXISTING_COUNTRY_CODE',
+      };
 
       await service.update(mockUpdateCityDto as UpdateCityDto);
 
@@ -158,23 +226,60 @@ describe('CitiesService', () => {
 
     it('should call repository delete', async () => {
       await service.delete('test_city_name');
+
       expect(repository.delete).toHaveBeenCalled();
     });
 
     it('should return a city instance', async () => {
-      const result = await service.delete('test_city_name');
+      const result = await service.delete('EXISTING_CITY');
 
       expect(result).toBeInstanceOf(CityEntity);
     });
 
     it('should call errorHandler if it fails to create city', async () => {
-      repository.delete.mockRejectedValueOnce(
-        new Error('Failed to create city'),
-      );
-
-      await service.delete('test_city_name');
+      await service.delete('NOT_EXISTING_CITY');
 
       expect(errorHandler.delete).toHaveBeenCalled();
+    });
+  });
+
+  describe('createScore', () => {
+    it('should be defined', () => {
+      expect(service.createScore).toBeDefined();
+    });
+
+    it('should call repository findCityScoreByVoterIdAndThrow', async () => {
+      await service.createScore(mockScoreCityDto);
+
+      expect(repository.findCityScoreByVoterId).toHaveBeenCalledWith(
+        mockScoreCityDto.voterId,
+        mockScoreCityDto.cityId,
+      );
+    });
+
+    it('should call repository createScore', async () => {
+      const mockScoreCityDto = {
+        cityId: 'not_test_city_id',
+        voterId: 'not_test_voter_id',
+        totalScore: 5,
+        internetSpeed: 5,
+        costOfLiving: 5,
+        tourism: 5,
+        safety: 5,
+      };
+
+      await service.createScore(mockScoreCityDto);
+
+      expect(repository.createScore).toHaveBeenCalledWith(mockScoreCityDto);
+    });
+
+    it('should call errorHandler if an error occurs', async () => {
+      await service.createScore(mockScoreCityDto);
+
+      expect(errorHandler.createScore).toHaveBeenCalledWith({
+        error: expect.any(Error),
+        inputs: mockScoreCityDto,
+      });
     });
   });
 });

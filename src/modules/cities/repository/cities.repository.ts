@@ -55,4 +55,35 @@ export class CitiesRepository {
       },
     });
   }
+
+  async createScore(scoreCityDto: any) {
+    return await this.prisma.cityScore.create({
+      data: {
+        city: {
+          connect: {
+            id: scoreCityDto.cityId,
+          },
+        },
+        voter: {
+          connect: {
+            id: scoreCityDto.voterId,
+          },
+        },
+        totalScore: scoreCityDto.totalScore,
+        internetSpeed: scoreCityDto.internetSpeed,
+        costOfLiving: scoreCityDto.costOfLiving,
+        tourism: scoreCityDto.tourism,
+        safety: scoreCityDto.safety,
+      },
+    });
+  }
+
+  async findCityScoreByVoterId(voterId: string, cityId: string) {
+    return await this.prisma.cityScore.findFirst({
+      where: {
+        voterId,
+        cityId,
+      },
+    });
+  }
 }

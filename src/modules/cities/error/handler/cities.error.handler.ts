@@ -34,4 +34,10 @@ export class CitiesErrorHandler extends CommonErrorHandler {
     super.handleThrownError(error);
     throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_DELETE_CITY);
   }
+
+  public createScore({ error, inputs }: { error: Error; inputs: any }): void {
+    super.logInputs(inputs);
+    super.handleThrownError(error);
+    throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_SCORE_CITY);
+  }
 }

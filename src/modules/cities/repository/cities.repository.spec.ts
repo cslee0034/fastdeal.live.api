@@ -12,6 +12,10 @@ describe('CitiesRepository', () => {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    cityScore: {
+      create: jest.fn(),
+      findFirst: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -137,6 +141,81 @@ describe('CitiesRepository', () => {
         expect.objectContaining({
           where: expect.objectContaining({
             id: mockDeleteCityId,
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('createScore', () => {
+    it('should be defined', () => {
+      expect(repository.createScore).toBeDefined();
+    });
+
+    it('should score a city', async () => {
+      const scoreCityDto = {
+        cityId: 'test_city_id',
+        voterId: 'test_voter_id',
+        totalScore: 5,
+        internetSpeed: 5,
+        costOfLiving: 5,
+        tourism: 5,
+        safety: 5,
+      };
+      const expectedCity = { ...scoreCityDto };
+
+      mockPrismaService.cityScore.create.mockResolvedValue(expectedCity);
+
+      const result = await repository.createScore(scoreCityDto);
+
+      expect(result).toEqual(expectedCity);
+      expect(mockPrismaService.cityScore.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            city: expect.objectContaining({
+              connect: expect.objectContaining({
+                id: scoreCityDto.cityId,
+              }),
+            }),
+            voter: expect.objectContaining({
+              connect: expect.objectContaining({
+                id: scoreCityDto.voterId,
+              }),
+            }),
+            totalScore: scoreCityDto.totalScore,
+            internetSpeed: scoreCityDto.internetSpeed,
+            costOfLiving: scoreCityDto.costOfLiving,
+            tourism: scoreCityDto.tourism,
+            safety: scoreCityDto.safety,
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('findCityScoreByVoterId', () => {
+    it('should be defined', () => {
+      expect(repository.findCityScoreByVoterId).toBeDefined();
+    });
+
+    it('should find city score by voter id', async () => {
+      const mockVoterId = 'test_voter_id';
+      const mockCityId = 'test_city_id';
+      const expectedCity = { voterId: mockVoterId, cityId: mockCityId };
+
+      mockPrismaService.cityScore.findFirst.mockResolvedValue(expectedCity);
+
+      const result = await repository.findCityScoreByVoterId(
+        mockVoterId,
+        mockCityId,
+      );
+
+      expect(result).toEqual(expectedCity);
+      expect(mockPrismaService.cityScore.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            voterId: mockVoterId,
+            cityId: mockCityId,
           }),
         }),
       );
