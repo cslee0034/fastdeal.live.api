@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-// import request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
@@ -13,9 +13,20 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-  }, 10000);
+  });
 
   it('should pass the e2e test', () => {
     expect(true).toBe(true);
+  });
+
+  describe('app', () => {
+    describe('GET /', () => {
+      it('should return "Hello World! from nomad-io"', () => {
+        return request(app.getHttpServer())
+          .get('/')
+          .expect(200)
+          .expect('Hello World! from nomad-io');
+      });
+    });
   });
 });
