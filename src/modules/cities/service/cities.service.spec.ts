@@ -13,12 +13,21 @@ describe('CitiesService', () => {
 
   const mockCitiesRepository = {
     create: jest.fn(),
+    findMany: jest.fn().mockImplementation((cityName: string) => {
+      return [
+        {
+          cityName,
+          countryCode: 'test_country_code',
+        },
+      ];
+    }),
     update: jest.fn(),
     delete: jest.fn(),
   };
 
   const mockCitiesErrorHandler = {
     create: jest.fn(),
+    findMany: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
   };
@@ -85,6 +94,33 @@ describe('CitiesService', () => {
       await service.create(mockCreateCityDto as CreateCityDto);
 
       expect(errorHandler.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('findMany', () => {
+    it('should be defined', () => {
+      expect(service.findMany).toBeDefined();
+    });
+
+    it('should call repository findOne', async () => {
+      await service.findMany('test_city_name');
+      expect(repository.findMany).toHaveBeenCalled();
+    });
+
+    it('should return a city instance list', async () => {
+      const result = await service.findMany('test_city_name');
+
+      expect(result).toBeInstanceOf(Array);
+    });
+
+    it('should call errorHandler if it fails to create city', async () => {
+      repository.findMany.mockRejectedValueOnce(
+        new Error('Failed to create city'),
+      );
+
+      await service.findMany('test_city_name');
+
+      expect(errorHandler.findMany).toHaveBeenCalled();
     });
   });
 

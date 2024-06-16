@@ -21,6 +21,16 @@ export class CitiesRepository {
     });
   }
 
+  async findMany(cityName: string) {
+    return await this.prisma.city.findMany({
+      where: {
+        cityName: {
+          startsWith: cityName,
+        },
+      },
+    });
+  }
+
   async update(updateCityDto: UpdateCityDto) {
     return await this.prisma.city.update({
       where: {

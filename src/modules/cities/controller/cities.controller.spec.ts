@@ -11,6 +11,7 @@ describe('CitiesController', () => {
 
   const mockCitiesService = {
     create: jest.fn(),
+    findMany: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
   };
@@ -67,6 +68,18 @@ describe('CitiesController', () => {
       controller.create(mockCreateCityDto as CreateCityDto);
 
       expect(service.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('findMany', () => {
+    it('should be defined', () => {
+      expect(controller.findMany).toBeDefined();
+    });
+
+    it('should call service.findOne', () => {
+      controller.findMany(mockCreateCityDto.cityName);
+
+      expect(service.findMany).toHaveBeenCalled();
     });
   });
 

@@ -8,6 +8,7 @@ describe('CitiesRepository', () => {
   const mockPrismaService = {
     city: {
       create: jest.fn(),
+      findMany: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
@@ -57,6 +58,32 @@ describe('CitiesRepository', () => {
           }),
         }),
       );
+    });
+
+    describe('findMany', () => {
+      it('should be defined', () => {
+        expect(repository.findMany).toBeDefined();
+      });
+
+      it('should find many cities', async () => {
+        const mockCityName = 'test_city_name';
+        const expectedCities = [{ cityName: mockCityName }];
+
+        mockPrismaService.city.findMany.mockResolvedValue(expectedCities);
+
+        const result = await repository.findMany(mockCityName);
+
+        expect(result).toEqual(expectedCities);
+        expect(mockPrismaService.city.findMany).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              cityName: expect.objectContaining({
+                startsWith: mockCityName,
+              }),
+            }),
+          }),
+        );
+      });
     });
 
     describe('update', () => {

@@ -87,6 +87,39 @@ describe('CountriesErrorHandler', () => {
     });
   });
 
+  describe('findMany', () => {
+    it('should be defined', () => {
+      expect(citiesErrorHandler.findMany).toBeDefined();
+    });
+
+    it('should log inputs', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      expect(() => {
+        citiesErrorHandler.findMany({ error, inputs });
+      }).toThrow(InternalServerErrorException);
+
+      expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it('should call handleThrownError', () => {
+      const error = mockError;
+      const inputs = mockCreateCityDto;
+
+      const handleThrownErrorSpy = jest.spyOn(
+        CommonErrorHandler.prototype as any,
+        'handleThrownError',
+      );
+
+      expect(() => {
+        citiesErrorHandler.findMany({ error, inputs });
+      }).toThrow(InternalServerErrorException);
+
+      expect(handleThrownErrorSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('update', () => {
     it('should be defined', () => {
       expect(citiesErrorHandler.update).toBeDefined();

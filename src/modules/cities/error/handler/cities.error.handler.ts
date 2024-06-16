@@ -17,6 +17,12 @@ export class CitiesErrorHandler extends CommonErrorHandler {
     throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_CREATE_CITY);
   }
 
+  public findMany({ error, inputs }: { error: Error; inputs: any }): void {
+    super.logInputs(inputs);
+    super.handleThrownError(error);
+    throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_FIND_CITY);
+  }
+
   public update({ error, inputs }: { error: Error; inputs: any }): void {
     super.logInputs(inputs);
     super.handleThrownError(error);

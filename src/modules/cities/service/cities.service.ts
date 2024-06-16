@@ -20,6 +20,15 @@ export class CitiesService {
     }
   }
 
+  public async findMany(cityName: string) {
+    try {
+      const cities = await this.citiesRepository.findMany(cityName);
+      return cities.map((city) => new CityEntity(city));
+    } catch (error) {
+      this.errorHandler.findMany({ error, inputs: cityName });
+    }
+  }
+
   public async update(updateCityDto: UpdateCityDto) {
     try {
       return new CityEntity(await this.citiesRepository.update(updateCityDto));
