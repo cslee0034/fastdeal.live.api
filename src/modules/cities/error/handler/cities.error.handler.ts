@@ -12,20 +12,20 @@ export class CitiesErrorHandler extends CommonErrorHandler {
   }
 
   public create({ error, inputs }: { error: Error; inputs: any }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_CREATE_CITY);
   }
 
   public update({ error, inputs }: { error: Error; inputs: any }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_UPDATE_CITY);
   }
 
   public delete({ error, inputs }: { error: Error; inputs: any }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(CITIES_ERROR.FAILED_TO_DELETE_CITY);
   }
 }

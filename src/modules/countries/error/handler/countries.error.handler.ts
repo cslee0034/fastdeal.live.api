@@ -21,8 +21,8 @@ export class CountriesErrorHandler extends CommonErrorHandler {
     error: Error;
     inputs: CreateCountryDto;
   }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_CREATE_COUNTRY,
     );
@@ -35,16 +35,16 @@ export class CountriesErrorHandler extends CommonErrorHandler {
     error: Error;
     inputs: UpdateCountryDto;
   }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_UPDATE_COUNTRY,
     );
   }
 
   public delete({ error, inputs }: { error: Error; inputs: string }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_DELETE_COUNTRY,
     );
@@ -57,8 +57,8 @@ export class CountriesErrorHandler extends CommonErrorHandler {
     error: Error;
     inputs: CreateTravelAlertDto;
   }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_CREATE_TRAVEL_ALERT,
     );
@@ -71,8 +71,8 @@ export class CountriesErrorHandler extends CommonErrorHandler {
     error: Error;
     inputs: string;
   }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(
       COUNTRIES_ERROR.CANNOT_GET_TRAVEL_ALERTS,
     );

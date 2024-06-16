@@ -13,8 +13,8 @@ export class UsersErrorHandler extends CommonErrorHandler {
 
   public createLocal({ error, inputs }: { error: Error; inputs: any }): void {
     inputs.password = '';
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(USERS_ERROR.FAILED_TO_CREATE_USER);
   }
 
@@ -25,8 +25,8 @@ export class UsersErrorHandler extends CommonErrorHandler {
     error: Error;
     inputs: any;
   }): void {
-    this.logInputs(inputs);
-    this.handleThrownError(error);
+    super.logInputs(inputs);
+    super.handleThrownError(error);
     throw new InternalServerErrorException(
       USERS_ERROR.FAILED_TO_FIND_OR_CREATE_OAUTH_USER,
     );
