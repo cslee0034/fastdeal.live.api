@@ -137,7 +137,7 @@ model CityScore {
   cityId        String
   city          City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
   voterId       String?
-  user          User?    @relation(fields: [voterId], references: [id], onDelete: SetNull)
+  voter         User?    @relation(fields: [voterId], references: [id], onDelete: SetNull)
   totalScore    Float
   internetSpeed Float
   costOfLiving  Float
@@ -148,6 +148,6 @@ model CityScore {
 
   @@unique([cityId, voterId])
   @@index([cityId])
-  @@index([voterId])
+  @@index([cityId, voterId])
   @@index([createdAt])
 }
