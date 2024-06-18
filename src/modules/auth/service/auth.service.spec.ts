@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import {
+  HttpStatus,
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,29 +11,24 @@ import { RedisService } from '../../cache/service/redis.service';
 import * as httpMocks from 'node-mocks-http';
 import { UserEntity } from '../../users/entities/user.entity';
 import { Response } from 'express';
+import { UsersService } from '../../users/service/users.service';
+import { Tokens } from '../interfaces/tokens.interface';
 
 describe('AuthService', () => {
   let service: AuthService;
 
-  const mockId = '1';
-
-  const accessSecret = 'jwt.access.secret';
-  const accessExpiresIn = '3600';
-  const accessPrefix = 'access_';
-
-  const refreshSecret = 'jwt.refresh.secret';
-  const refreshExpiresIn = '3600';
-  const refreshPrefix = 'refresh_';
-
-  const mockUser = new UserEntity({
-    id: '1',
-    email: 'test@email.com',
-    provider: 'local',
-    firstName: 'test_first_name',
-    lastName: 'test_last_name',
-  });
-
-  const mockRedirectError = { message: 'Failed to login' };
+  const mockUsersService = {
+    convertUserResponse: jest.fn().mockImplementation((user: UserEntity) => {
+      return {
+        success: true,
+        email: user?.email,
+        provider: user?.provider || 'local',
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        expiresIn: mockExpiresIn / 1000,
+      };
+    }),
+  };
 
   const mockConfigService = {
     get: jest.fn().mockImplementation((key: string) => {
@@ -51,6 +47,8 @@ describe('AuthService', () => {
           return refreshPrefix;
         case 'client.url':
           return 'http://localhost:3000';
+        case 'jwt.refresh.expiresIn':
+          return mockExpiresIn;
       }
     }),
   };
@@ -80,6 +78,40 @@ describe('AuthService', () => {
     get: jest.fn(),
   };
 
+  const mockRedirectError = { message: 'Failed to login' };
+
+  const mockId = '1';
+
+  const accessSecret = 'jwt.access.secret';
+  const accessExpiresIn = '3600';
+  const accessPrefix = 'access_';
+
+  const refreshSecret = 'jwt.refresh.secret';
+  const refreshExpiresIn = '3600';
+  const refreshPrefix = 'refresh_';
+
+  const mockUser = new UserEntity({
+    id: '1',
+    email: 'test@email.com',
+    provider: 'local',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
+  });
+
+  const mockTokens = {
+    accessToken: 'access_token',
+    refreshToken: 'refresh_token',
+  } as Tokens;
+
+  const mockTokenOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 3600,
+  };
+
+  const mockExpiresIn = 3600;
+
   const mockResponse: Response = httpMocks.createResponse() as any;
   mockResponse.cookie = jest.fn();
   mockResponse.redirect = jest.fn();
@@ -88,6 +120,10 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
+        },
         {
           provide: ConfigService,
           useValue: mockConfigService,
@@ -116,7 +152,7 @@ describe('AuthService', () => {
     });
 
     it('should call generateTokens function', async () => {
-      await service.login(mockUser, mockResponse);
+      await service.login(mockUser);
 
       expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
     });
@@ -126,13 +162,13 @@ describe('AuthService', () => {
         new Error('Failed to create tokens'),
       );
 
-      await expect(service.login(mockUser, mockResponse)).rejects.toThrow(
+      await expect(service.login(mockUser)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
 
     it('should call setRefreshTokenToRedis function', async () => {
-      await service.login(mockUser, mockResponse);
+      await service.login(mockUser);
 
       expect(mockRedisService.set).toHaveBeenCalled();
     });
@@ -142,24 +178,7 @@ describe('AuthService', () => {
         new Error('Failed to set token'),
       );
 
-      await expect(service.login(mockUser, mockResponse)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-    });
-
-    it('should call setTokensToResponse function', async () => {
-      await service.login(mockUser, mockResponse);
-
-      expect(mockResponse.cookie).toHaveBeenCalled();
-    });
-
-    it('should throw InternalServerErrorException error if setTokensToResponse fails', async () => {
-      const mockResponse = httpMocks.createResponse() as any;
-      mockResponse.cookie = jest.fn().mockImplementationOnce(() => {
-        throw new InternalServerErrorException('Failed to set tokens');
-      });
-
-      await expect(service.login(mockUser, mockResponse)).rejects.toThrow(
+      await expect(service.login(mockUser)).rejects.toThrow(
         InternalServerErrorException,
       );
     });
@@ -237,5 +256,70 @@ describe('AuthService', () => {
 
       expect(mockResponse.redirect).toHaveBeenCalled();
     });
+  });
+
+  describe('response', () => {
+    it('should be defined', () => {
+      expect(service.response).toBeDefined();
+    });
+
+    it('should set tokens to response', async () => {
+      await service.response({
+        user: mockUser,
+        tokens: mockTokens,
+        response: mockResponse,
+        status: 200,
+      });
+
+      expect(mockResponse.cookie).toHaveBeenCalledTimes(2);
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'x-access-token',
+        'access_token',
+        mockTokenOptions,
+      );
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'x-refresh-token',
+        'refresh_token',
+        mockTokenOptions,
+      );
+    });
+  });
+
+  it('should return response with user data', async () => {
+    // 메서드 체이닝을 위해 mockReturnThis() 사용
+    mockResponse.status = jest.fn().mockReturnThis();
+    mockResponse.json = jest.fn();
+
+    await service.response({
+      user: mockUser,
+      tokens: mockTokens,
+      response: mockResponse,
+      status: HttpStatus.OK,
+    });
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      success: true,
+      email: mockUser.email,
+      provider: mockUser.provider,
+      firstName: mockUser.firstName,
+      lastName: mockUser.lastName,
+      expiresIn: mockExpiresIn / 1000,
+    });
+  });
+
+  it('should throw InternalServerErrorException error if setTokensToResponse fails', async () => {
+    mockResponse.cookie = jest.fn().mockImplementationOnce(() => {
+      throw new Error('Failed to set tokens');
+    });
+
+    await expect(
+      service.response({
+        user: mockUser,
+        tokens: mockTokens,
+        response: mockResponse,
+        status: HttpStatus.OK,
+      }),
+    ).rejects.toThrow(InternalServerErrorException);
   });
 });

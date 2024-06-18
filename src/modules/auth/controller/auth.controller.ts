@@ -70,11 +70,14 @@ export class AuthController {
   ): Promise<void> {
     const createdUser = await this.usersService.createLocal(signUpDto);
 
-    await this.authService.login(createdUser, response);
+    const tokens = await this.authService.login(createdUser);
 
-    response
-      .status(HttpStatus.CREATED)
-      .json(this.usersService.convertUserResponse(createdUser));
+    this.authService.response({
+      user: createdUser,
+      tokens: tokens,
+      response: response,
+      status: HttpStatus.CREATED,
+    });
 
     return;
   }
@@ -113,11 +116,14 @@ export class AuthController {
       user.password,
     );
 
-    await this.authService.login(user, response);
+    const tokens = await this.authService.login(user);
 
-    response
-      .status(HttpStatus.OK)
-      .json(this.usersService.convertUserResponse(user));
+    this.authService.response({
+      user: user,
+      tokens: tokens,
+      response: response,
+      status: HttpStatus.OK,
+    });
 
     return;
   }
@@ -167,9 +173,10 @@ export class AuthController {
         lastName,
       });
 
-      await this.authService.login(user, response);
+      await this.authService.login(user);
 
       this.authService.redirectUser(response, user);
+
       return;
     } catch (error) {
       this.authService.redirectUserWithError(response, error);
@@ -178,7 +185,8 @@ export class AuthController {
     }
   }
 
-  @Get('logout')
+  @Post('logout')
+  @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Logout a user',
@@ -227,7 +235,6 @@ export class AuthController {
   })
   async refreshTokens(
     @GetTokenUserId() id: string,
-    @GetTokenUser('email') email: string,
     @GetTokenUser('refreshToken') refreshToken: string,
     @Res() response: Response,
   ): Promise<void> {
@@ -235,11 +242,14 @@ export class AuthController {
 
     const user = await this.usersService.findOneById(id);
 
-    await this.authService.login(user, response);
+    const tokens = await this.authService.login(user);
 
-    response
-      .status(HttpStatus.OK)
-      .json(this.usersService.convertUserResponse(user));
+    this.authService.response({
+      user,
+      tokens,
+      response,
+      status: HttpStatus.OK,
+    });
 
     return;
   }
