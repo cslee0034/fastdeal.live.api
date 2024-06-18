@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { UsersManager } from './users.manager';
-import { ForbiddenException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { Provider } from '@prisma/client';
 
@@ -43,7 +43,7 @@ describe('UsersManager', () => {
 
     it('should throw ForbiddenException if user already exists with local provider', () => {
       expect(() => manager.validateLocalUser(mockUser)).toThrow(
-        ForbiddenException,
+        ConflictException,
       );
     });
 
@@ -54,7 +54,7 @@ describe('UsersManager', () => {
       } as UserEntity;
 
       expect(() => manager.validateLocalUser(googleUser)).toThrow(
-        ForbiddenException,
+        ConflictException,
       );
     });
   });
@@ -78,7 +78,7 @@ describe('UsersManager', () => {
     it('should throw ForbiddenException if user already exists with local provider', () => {
       expect(() =>
         manager.validateOauthUser(mockUser, mockGoogleProvider),
-      ).toThrow(ForbiddenException);
+      ).toThrow(ConflictException);
     });
 
     it('should throw ForbiddenException if user already exists', () => {
@@ -89,7 +89,7 @@ describe('UsersManager', () => {
 
       expect(() =>
         manager.validateOauthUser(googleUser, mockGoogleProvider),
-      ).toThrow(ForbiddenException);
+      ).toThrow(ConflictException);
     });
   });
 });
