@@ -185,6 +185,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
