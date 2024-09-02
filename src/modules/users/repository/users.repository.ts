@@ -1,7 +1,7 @@
 import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { Continent, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Provider, Role } from '@prisma/client';
 
 @Injectable()
@@ -27,24 +27,6 @@ export class UsersRepository {
         firstName,
         lastName,
         role: Role.user,
-        UserNationality: {
-          create: {
-            nationality: {
-              connectOrCreate: {
-                where: {
-                  countryCode: 'KR',
-                },
-                create: {
-                  countryCode: 'KR',
-                  countryName: 'Korea',
-                  currency: 'KRW',
-                  exchangeRate: 0.00075,
-                  continent: Continent.asia,
-                },
-              },
-            },
-          },
-        },
       },
     });
   }
@@ -70,24 +52,6 @@ export class UsersRepository {
         firstName,
         lastName,
         role: Role.user,
-        UserNationality: {
-          create: {
-            nationality: {
-              connectOrCreate: {
-                where: {
-                  countryCode: 'KR',
-                },
-                create: {
-                  countryCode: 'KR',
-                  countryName: 'Korea',
-                  currency: 'KRW',
-                  exchangeRate: 0.00075,
-                  continent: Continent.asia,
-                },
-              },
-            },
-          },
-        },
       },
     });
   }

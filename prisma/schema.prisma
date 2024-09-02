@@ -14,17 +14,15 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  email           String
-  provider        Provider          @default(local)
-  password        String?           @db.VarChar(255)
-  firstName       String?           @db.VarChar(30)
-  lastName        String?           @db.VarChar(30)
-  role            Role              @default(user)
-  createdAt       DateTime          @default(now()) @db.Timestamp(0)
-  updatedAt       DateTime          @updatedAt @db.Timestamp(0)
-  UserNationality UserNationality[]
-  CityScore       CityScore[]
+  id        String   @id @default(uuid())
+  email     String
+  provider  Provider @default(local)
+  password  String?  @db.VarChar(255)
+  firstName String?  @db.VarChar(30)
+  lastName  String?  @db.VarChar(30)
+  role      Role     @default(user)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @db.Timestamp(0)
 
   @@unique([email])
   @@index([email])
@@ -38,116 +36,4 @@ enum Provider {
 enum Role {
   user
   admin
-}
-
-model Country {
-  id                     String            @id @default(uuid())
-  countryCode            String            @db.Char(2)
-  countryName            String            @db.VarChar(100)
-  currency               String            @db.VarChar(3)
-  exchangeRate           Float?
-  continent              Continent
-  createdAt              DateTime          @default(now()) @db.Timestamp(0)
-  updatedAt              DateTime          @updatedAt @db.Timestamp(0)
-  UserNationality        UserNationality[]
-  City                   City[]
-  TravelAlretNationality TravelAlert[]     @relation("TravelAlertNationality")
-  TravelAlretDestination TravelAlert[]     @relation("TravelAlertDestination")
-
-  @@unique([countryCode])
-  @@index([countryCode])
-}
-
-enum Continent {
-  africa
-  antarctica
-  asia
-  europe
-  northAmerica
-  southAmerica
-  oceania
-}
-
-model UserNationality {
-  id            String   @id @default(uuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  nationalityId String
-  nationality   Country  @relation(fields: [nationalityId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now()) @db.Timestamp(0)
-  updatedAt     DateTime @updatedAt @db.Timestamp(0)
-
-  @@index([userId, nationalityId])
-}
-
-model TravelAlert {
-  id            String      @id @default(uuid())
-  nationalityId String
-  nationality   Country     @relation("TravelAlertNationality", fields: [nationalityId], references: [id], onDelete: Cascade)
-  destinationId String
-  destination   Country     @relation("TravelAlertDestination", fields: [destinationId], references: [id], onDelete: Cascade)
-  alertStatus   AlertStatus
-  createdAt     DateTime    @default(now()) @db.Timestamp(0)
-  updatedAt     DateTime    @updatedAt @db.Timestamp(0)
-
-  @@index([nationalityId])
-  @@index([nationalityId, alertStatus])
-}
-
-enum AlertStatus {
-  green
-  indigo
-  yellow
-  red
-  black
-}
-
-model City {
-  id          String       @id @default(uuid())
-  countryId   String
-  country     Country      @relation(fields: [countryId], references: [id], onDelete: Restrict)
-  cityName    String       @db.VarChar(50)
-  isAvailable Boolean      @default(true)
-  createdAt   DateTime     @default(now()) @db.Timestamp(0)
-  updatedAt   DateTime     @updatedAt @db.Timestamp(0)
-  CityScore   CityScore[]
-  CityWeather CityWeather?
-
-  @@unique([countryId, cityName])
-  @@index([cityName])
-  @@index([countryId])
-}
-
-model CityWeather {
-  id          String   @id @default(uuid())
-  cityId      String   @unique
-  city        City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  weather     String   @db.VarChar(20)
-  temperature Float
-  humidity    Float
-  windSpeed   Float
-  createdAt   DateTime @default(now()) @db.Timestamp(0)
-  updatedAt   DateTime @updatedAt @db.Timestamp(0)
-
-  @@index([cityId])
-}
-
-model CityScore {
-  id            String   @id @default(uuid())
-  cityId        String
-  city          City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  voterId       String?
-  voter         User?    @relation(fields: [voterId], references: [id], onDelete: SetNull)
-  totalScore    Float
-  internetSpeed Float
-  costOfLiving  Float
-  tourism       Float
-  safety        Float
-  createdAt     DateTime @default(now()) @db.Timestamp(0)
-  updatedAt     DateTime @updatedAt @db.Timestamp(0)
-
-  @@unique([cityId, voterId])
-  @@index([cityId])
-  @@index([cityId, voterId])
-  @@index([createdAt])
 }

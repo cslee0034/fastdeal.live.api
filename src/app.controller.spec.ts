@@ -7,7 +7,7 @@ describe('AppController', () => {
   let appService: AppService;
 
   const mockService: AppService = {
-    getHello: jest.fn(() => 'Hello World! from nomad-io'),
+    getHello: jest.fn(() => 'Hello World!'),
   };
 
   beforeEach(async () => {
@@ -36,7 +36,7 @@ describe('AppController', () => {
     });
 
     it('should return "Hello World!"', () => {
-      expect(controller.getHello()).toBe('Hello World! from nomad-io');
+      expect(controller.getHello()).toBe('Hello World!');
     });
   });
 });

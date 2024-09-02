@@ -21,9 +21,6 @@ export const validationSchema = Joi.object({
   AWS_REGION: Joi.string().required(),
   AWS_ACCESS_KEY_ID: Joi.string().required(),
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
-  AWS_SQS_EMAIL_NAME: Joi.string().required(),
-  AWS_SQS_EMAIL_QUEUE_URL: Joi.string().required(),
-  AWS_SQS_EMAIL_REGION: Joi.string().required(),
   GOOGLE_CLIENT_ID: Joi.string().required(),
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
 });

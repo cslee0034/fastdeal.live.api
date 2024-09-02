@@ -17,6 +17,6 @@ describe('AppService', () => {
   });
 
   it('should return "Hello World!"', () => {
-    expect(service.getHello()).toBe('Hello World! from nomad-io');
+    expect(service.getHello()).toBe('Hello World!');
   });
 });
