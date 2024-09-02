@@ -26,7 +26,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
-import { LoggerModule } from './common/module/logger.module';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [

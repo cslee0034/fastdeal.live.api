@@ -4,7 +4,7 @@ import { CountriesController } from '../controller/countries.controller';
 import { PrismaModule } from '../../../common/orm/prisma/module/prisma.module';
 import { CountriesRepository } from '../repository/countries.repository';
 import { CountriesErrorHandler } from '../error/handler/countries.error.handler';
-import { LoggerModule } from '../../../common/module/logger.module';
+import { LoggerModule } from '../../../common/logger/logger.module';
 
 @Module({
   imports: [PrismaModule, LoggerModule],
