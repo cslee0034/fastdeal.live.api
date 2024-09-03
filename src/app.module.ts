@@ -13,9 +13,10 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './config/jwt/jwt';
 import { SlackModule } from 'nestjs-slack-webhook';
-import { PrismaModule } from './common/orm/prisma/module/prisma.module';
+import { LoggerModule } from './infrastructure/logger/logger.module';
+import { PrismaModule } from './infrastructure/orm/prisma/module/prisma.module';
 import { AuthModule } from './modules/auth/module/auth.module';
-import { RedisModule } from './modules/cache/module/redis.module';
+import { RedisModule } from './infrastructure/cache/module/redis.module';
 import { EncryptModule } from './modules/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
 import * as AWS from 'aws-sdk';
@@ -23,7 +24,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
-import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [

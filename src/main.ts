@@ -65,10 +65,21 @@ async function bootstrap() {
   );
   app.useGlobalGuards(new AccessTokenGuard(reflector));
   app.useGlobalInterceptors(
-    new TransformInterceptor(),
+    /**
+     * 순서: serialize -> transform
+     * 1. 응답 직렬화
+     * 2. 응답 변환 (success)
+     */
     new ClassSerializerInterceptor(reflector),
+    new TransformInterceptor(),
   );
   app.useGlobalFilters(
+    /**
+     * 순서: prisma -> http
+     * 1. prisma client 예외 처리
+     * 2. http exception 예외 처리
+     * 3. 그 이외 기본 exception filter에서 처리
+     */
     new PrismaClientExceptionFilter(logger, slack),
     new HttpExceptionFilter(logger, slack),
   );

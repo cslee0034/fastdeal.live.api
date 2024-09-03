@@ -6,14 +6,9 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ObjectWithSuccess } from '../interface/object-with-success';
 
 type PossibleError = Error | null | undefined;
-
-interface ObjectWithSuccess<T = any> {
-  success: boolean;
-  data?: T;
-  [key: string]: any;
-}
 
 type ApiResponseData<T = any> =
   | ObjectWithSuccess<T>

@@ -23,4 +23,5 @@ export const validationSchema = Joi.object({
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
   GOOGLE_CLIENT_ID: Joi.string().required(),
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  SLACK_WEBHOOK_URL: Joi.string().required(),
 });

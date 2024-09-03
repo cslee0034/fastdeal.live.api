@@ -16,11 +16,11 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   email     String
-  provider  Provider @default(local)
+  provider  String   @default("local")
   password  String?  @db.VarChar(255)
   firstName String?  @db.VarChar(30)
   lastName  String?  @db.VarChar(30)
-  role      Role     @default(user)
+  role      Role     @default(customer)
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @db.Timestamp(0)
 
@@ -28,12 +28,8 @@ model User {
   @@index([email])
 }
 
-enum Provider {
-  local
-  google
-}
-
 enum Role {
-  user
+  customer
+  seller
   admin
 }

@@ -2,56 +2,54 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../service/auth.service';
 import { AuthController } from './auth.controller';
 import {
-  ForbiddenException,
-  HttpStatus,
-  InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UserEntity } from '../../users/entities/user.entity';
-import { SignUpDto } from '../dto/request/signup.dto';
 import { UsersService } from '../../users/service/users.service';
-import { Tokens } from '../interfaces/tokens.interface';
-import { EncryptService } from '../../encrypt/service/encrypt.service';
-import { SignInDto } from '../dto/request/signin.dto';
-import * as httpMocks from 'node-mocks-http';
-import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { Tokens } from '../interface/tokens.interface';
+import { SignInDto } from '../dto/signin.dto';
+import { SignUpDto } from '../dto/signup.dto';
+import { UserAlreadyExistsError } from '../../users/error/user-already-exists';
+import { PasswordDoesNotMatch } from '../../encrypt/error/password-does-not-match';
+import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
+import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
 
 describe('AuthController', () => {
   let controller: AuthController;
   let authService: AuthService;
   let usersService: UsersService;
-  let encryptService: EncryptService;
-
-  const oauthProviders = ['google'];
 
   const mockUsersService = {
-    createLocal: jest
+    createUser: jest
       .fn()
       .mockImplementation((mockSignUpDto: SignUpDto): Promise<UserEntity> => {
         if (
           mockSignUpDto.email === 'test@email.com' &&
-          mockSignUpDto.provider === 'local' &&
           mockSignUpDto.password === 'test_password' &&
           mockSignUpDto.firstName === 'test_first_name' &&
           mockSignUpDto.lastName === 'test_last_name'
         ) {
           return Promise.resolve(mockCreateUserResult);
         } else {
-          return Promise.reject(new ForbiddenException('User already exists'));
+          return Promise.reject(new UserAlreadyExistsError());
         }
       }),
 
-    findOneByEmail: jest.fn((email: string): Promise<UserEntity> => {
-      if (email === mockLoginDto.email) {
-        return Promise.resolve(mockFindOneResult);
-      } else {
-        return Promise.reject(new NotFoundException('User not found'));
-      }
-    }),
+    validateUserPassword: jest
+      .fn()
+      .mockImplementation((mockSignInDto: SignInDto): Promise<UserEntity> => {
+        if (
+          mockSignInDto.email === 'test@email.com' &&
+          mockSignInDto.password === 'test_password'
+        ) {
+          return Promise.resolve(mockFindOneResult);
+        } else {
+          return Promise.reject(new PasswordDoesNotMatch());
+        }
+      }),
 
-    findOneById: jest
+    findOneByIdAndThrow: jest
       .fn()
       .mockImplementation((id: string): Promise<UserEntity> => {
         if (id === '1') {
@@ -60,45 +58,6 @@ describe('AuthController', () => {
           return Promise.reject(new NotFoundException('User not found'));
         }
       }),
-
-    findOrCreateOauth: jest
-      .fn()
-      .mockImplementation(
-        ({
-          email,
-          provider,
-          firstName,
-          lastName,
-        }: {
-          email: string;
-          provider: string;
-          firstName: string;
-          lastName: string;
-        }): Promise<UserEntity> => {
-          if (
-            email === 'test@email.com' &&
-            oauthProviders.includes(provider) &&
-            firstName === 'test_first_name' &&
-            lastName === 'test_last_name'
-          ) {
-            return Promise.resolve(mockOauthUserResult);
-          } else {
-            return Promise.reject(new InternalServerErrorException());
-          }
-        },
-      ),
-
-    convertUserResponse: jest.fn().mockImplementation((user: UserEntity) => {
-      return {
-        success: true,
-        email: user?.email,
-        provider: user?.provider || 'local',
-        firstName: user?.firstName || '',
-        lastName: user?.lastName || '',
-        // milliseconds가 기본 값이므로 초로 변환
-        expiresIn: mockExpiresIn / 1000,
-      };
-    }),
   };
 
   const mockAuthService = {
@@ -107,7 +66,7 @@ describe('AuthController', () => {
         return Promise.resolve(mockTokenResult);
       } else {
         return Promise.reject(
-          new InternalServerErrorException('Failed to set refresh token'),
+          new InternalServerErrorException('Failed to generate tokens'),
         );
       }
     }),
@@ -116,96 +75,25 @@ describe('AuthController', () => {
       if (id) {
         return Promise.resolve(true);
       } else {
-        return Promise.reject(
-          new InternalServerErrorException('Failed to delete refresh token'),
-        );
+        return Promise.reject(new FailedToDeleteRefreshTokenError());
       }
     }),
 
     checkIsLoggedIn: jest
       .fn()
-      .mockImplementation((id: number, email: string): Promise<Tokens> => {
-        if (id && email) {
-          return Promise.resolve(mockTokenResult);
-        } else {
-          return Promise.reject(
-            new InternalServerErrorException('Failed to get refresh token'),
-          );
-        }
-      }),
-
-    redirectUser: jest
-      .fn()
-      .mockImplementation((response: Response, user: UserEntity) => {
-        if (user) {
-          return response.redirect(mockRedirectUrl);
-        }
-      }),
-
-    redirectUserWithError: jest
-      .fn()
-      .mockImplementation((response: Response, error: Error) => {
-        if (error) {
-          return response.redirect(mockRedirectErorUrl);
-        }
-      }),
-
-    response: jest
-      .fn()
       .mockImplementation(
-        (
-          user: UserEntity,
-          tokens: Tokens,
-          response: Response,
-          status: number,
-        ) => {
-          if (user && tokens && response && status) {
-            return response.json({
-              success: true,
-              email: user.email,
-              provider: user.provider,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              expiresIn: mockExpiresIn,
-            });
+        (id: string, refreshToken: string): Promise<boolean> => {
+          if (id && refreshToken) {
+            return Promise.resolve(true);
+          } else {
+            return Promise.reject(new FailedToGetRefreshTokenError());
           }
         },
       ),
   };
 
-  const mockEncryptService = {
-    compare: jest.fn((key: string, hashedKey: string): Promise<boolean> => {
-      if (hashedKey === 'hashed_' + key) {
-        return Promise.resolve(true);
-      }
-      return Promise.resolve(false);
-    }),
-
-    compareAndThrow: jest
-      .fn()
-      .mockImplementation((key: string, hashedKey: string): Promise<void> => {
-        if (mockEncryptService.compare(key, hashedKey)) {
-          return Promise.resolve();
-        } else {
-          Promise.reject(new UnauthorizedException('Key does not match'));
-        }
-      }),
-  };
-
-  const mockConfigService = {
-    get: jest.fn((key: string) => {
-      switch (key) {
-        case 'jwt.refresh.expiresIn':
-          return mockExpiresIn;
-        default:
-          return key;
-      }
-    }),
-  };
-
   const mockSignUpDto: SignUpDto = {
     email: 'test@email.com',
-    provider: 'local',
     firstName: 'test_first_name',
     lastName: 'test_last_name',
     password: 'test_password',
@@ -214,13 +102,6 @@ describe('AuthController', () => {
   const mockLoginDto: SignInDto = {
     email: 'test@email.com',
     password: 'test_password',
-  };
-
-  const mockOauthUserDto = {
-    email: 'test@email.com',
-    firstName: 'test_first_name',
-    lastName: 'test_last_name',
-    provider: 'google',
   };
 
   const mockCreateUserResult: UserEntity = new UserEntity({
@@ -241,27 +122,10 @@ describe('AuthController', () => {
     password: 'hashed_test_password',
   });
 
-  const mockOauthUserResult: UserEntity = new UserEntity({
-    id: '2',
-    email: 'test@email.com',
-    provider: 'google',
-    firstName: 'test_first_name',
-    lastName: 'test_last_name',
-    password: 'hashed_test_password',
-  });
-
   const mockTokenResult: Tokens = {
     accessToken: 'accessToken',
     refreshToken: 'refreshToken',
   };
-
-  const mockExpiresIn = 3600;
-
-  const mockRedirectUrl = 'client.url/api/auth/google';
-
-  const mockRedirectErorUrl = 'client.url/api/auth/google?error';
-
-  const mockResponse = httpMocks.createResponse();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -269,264 +133,105 @@ describe('AuthController', () => {
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: UsersService, useValue: mockUsersService },
-        { provide: EncryptService, useValue: mockEncryptService },
-        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
-    encryptService = module.get<EncryptService>(EncryptService);
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('sign-up', () => {
-    it('should be defined', () => {
-      expect(controller.signup).toBeDefined();
-    });
+  describe('signup', () => {
+    it('회원가입을 하고 토큰을 발행한다', async () => {
+      const result = await controller.signup(mockSignUpDto);
 
-    it('should call userService.create with SignUpDto', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(usersService.createLocal).toHaveBeenCalledWith(
-        mockSignUpDto as SignUpDto,
-      );
-    });
-
-    it("should call login with user's information", async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
+      expect(result).toEqual(mockTokenResult);
+      expect(usersService.createUser).toHaveBeenCalledWith(mockSignUpDto);
       expect(authService.login).toHaveBeenCalledWith(mockCreateUserResult);
     });
 
-    it('should call auth service response', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
+    it('유저가 이미 존재할 경우 UserAlreadyExistsError를 반환한다', async () => {
+      mockUsersService.createUser.mockRejectedValueOnce(
+        new UserAlreadyExistsError(),
+      );
 
-      expect(authService.response).toHaveBeenCalledWith({
-        user: mockCreateUserResult,
-        tokens: mockTokenResult,
-        response: mockResponse,
-        status: HttpStatus.CREATED,
-      });
+      await expect(controller.signup(mockSignUpDto)).rejects.toThrow(
+        UserAlreadyExistsError,
+      );
     });
   });
 
-  describe('sign-in', () => {
-    it('should be defined', () => {
-      expect(controller.signin).toBeDefined();
-    });
+  describe('signin', () => {
+    it('로그인을 하고 토큰을 발행한다', async () => {
+      const result = await controller.signin(mockLoginDto);
 
-    it('should call userService.findOneByEmail with LoginUpDto', async () => {
-      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
-
-      expect(usersService.findOneByEmail).toHaveBeenCalledWith(
-        mockLoginDto.email as string,
+      expect(result).toEqual(mockTokenResult);
+      expect(usersService.validateUserPassword).toHaveBeenCalledWith(
+        mockLoginDto,
       );
+      expect(authService.login).toHaveBeenCalledWith(mockFindOneResult);
     });
 
-    it('should call encryptService.compareAndThrow with password', async () => {
-      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
-
-      expect(encryptService.compareAndThrow).toHaveBeenCalledWith(
-        mockLoginDto.password as string,
-        mockFindOneResult.password as string,
-      );
-    });
-
-    it("should call login with user's information", async () => {
-      await controller.signin(mockLoginDto as SignInDto, mockResponse as any);
-
-      expect(authService.login).toHaveBeenCalledWith(
-        mockFindOneResult as UserEntity,
-      );
-    });
-
-    it('should call auth service response', async () => {
-      await controller.signup(mockSignUpDto as SignUpDto, mockResponse as any);
-
-      expect(authService.response).toHaveBeenCalledWith({
-        user: mockCreateUserResult,
-        tokens: mockTokenResult,
-        response: mockResponse,
-        status: HttpStatus.CREATED,
-      });
-    });
-  });
-
-  describe('google', () => {
-    it('should be defined', () => {
-      expect(controller.google).toBeDefined();
-    });
-
-    it('should return { success: true }', async () => {
-      const result = await controller.google();
-
-      expect(result).toEqual({ success: true });
-    });
-  });
-
-  describe('googleRedirect', () => {
-    it('should be defined', () => {
-      expect(controller.googleRedirect).toBeDefined();
-    });
-
-    it('should call userService.findOrCreateOauth with user information', async () => {
-      await controller.googleRedirect(
-        mockOauthUserDto.email,
-        mockOauthUserDto.firstName,
-        mockOauthUserDto.lastName,
-        mockOauthUserDto.provider,
-        mockResponse as any,
+    it('비밀번호가 일치하지 않는다면 PasswordDoesNotMatch를 반환한다', async () => {
+      mockUsersService.validateUserPassword.mockRejectedValueOnce(
+        new PasswordDoesNotMatch(),
       );
 
-      expect(usersService.findOrCreateOauth).toHaveBeenCalledWith({
-        email: mockOauthUserResult.email,
-        provider: mockOauthUserResult.provider,
-        firstName: mockOauthUserResult.firstName,
-        lastName: mockOauthUserResult.lastName,
-      });
-    });
-
-    it('should call authService.login with user', async () => {
-      await controller.googleRedirect(
-        mockOauthUserDto.email,
-        mockOauthUserDto.firstName,
-        mockOauthUserDto.lastName,
-        mockOauthUserDto.provider,
-        mockResponse as any,
+      await expect(controller.signin(mockLoginDto)).rejects.toThrow(
+        PasswordDoesNotMatch,
       );
-
-      expect(authService.login).toHaveBeenCalledWith(
-        mockOauthUserResult as UserEntity,
-      );
-    });
-
-    it('should call authService.redirectUser with user', async () => {
-      mockResponse.redirect = jest.fn();
-      await controller.googleRedirect(
-        mockOauthUserDto.email,
-        mockOauthUserDto.firstName,
-        mockOauthUserDto.lastName,
-        mockOauthUserDto.provider,
-        mockResponse as any,
-      );
-
-      expect(authService.redirectUser).toHaveBeenCalled();
-    });
-
-    it('should call authService.redirectUserWithError with error', async () => {
-      mockResponse.redirect = jest.fn();
-      mockUsersService.findOrCreateOauth.mockRejectedValueOnce(
-        new InternalServerErrorException(),
-      );
-
-      await controller.googleRedirect(
-        mockOauthUserDto.email,
-        mockOauthUserDto.firstName,
-        mockOauthUserDto.lastName,
-        mockOauthUserDto.provider,
-        mockResponse as any,
-      );
-
-      expect(authService.redirectUserWithError).toHaveBeenCalled();
     });
   });
 
   describe('logout', () => {
-    it('should be defined', () => {
-      expect(controller.logout).toBeDefined();
-    });
-
-    it('should call authService.logout with id', async () => {
-      const id = mockCreateUserResult.id as string;
-
-      await controller.logout(id);
-
-      expect(authService.logout).toHaveBeenCalledWith(id);
-    });
-
-    it('should return success', async () => {
-      const id = mockCreateUserResult.id as string;
-
-      const result = await controller.logout(id);
+    it('로그아웃을 한다', async () => {
+      const result = await controller.logout('1');
 
       expect(result).toEqual({ success: true });
+      expect(authService.logout).toHaveBeenCalledWith('1');
+    });
+
+    it('로그아웃에 실패할 경우 FailedToDeleteRefreshTokenError를 반환한다', async () => {
+      mockAuthService.logout.mockRejectedValueOnce(
+        new FailedToDeleteRefreshTokenError(),
+      );
+
+      await expect(controller.logout('1')).rejects.toThrow(
+        FailedToDeleteRefreshTokenError,
+      );
     });
   });
 
-  describe('refresh', () => {
-    const userId = '1';
-    const userRefreshToken = 'valid_refresh_token';
-
-    it('should be defined', () => {
-      expect(controller.refreshTokens).toBeDefined();
-    });
-
-    it('should call authService.checkIsLoggedIn with id and refreshToken', async () => {
-      await controller.refreshTokens(
-        userId,
-        userRefreshToken,
-        mockResponse as any,
+  describe('refreshTokens', () => {
+    it('리프래시 토큰을 발행한다', async () => {
+      mockUsersService.findOneByIdAndThrow.mockResolvedValueOnce(
+        mockFindOneResult,
       );
+      const result = await controller.refreshTokens('1', 'valid_refresh_token');
 
+      expect(result).toEqual(mockTokenResult);
       expect(authService.checkIsLoggedIn).toHaveBeenCalledWith(
-        userId,
-        userRefreshToken,
+        '1',
+        'valid_refresh_token',
       );
-    });
-
-    it('should call authService.login with user', async () => {
-      await controller.refreshTokens(
-        userId,
-        userRefreshToken,
-        mockResponse as any,
-      );
-
+      expect(usersService.findOneByIdAndThrow).toHaveBeenCalledWith('1');
       expect(authService.login).toHaveBeenCalledWith(mockFindOneResult);
     });
 
-    it('should throw UnauthorizedException if checkIsLoggedIn fails', async () => {
+    it('리프래시 토큰을 가져오는데 실패한다면 FailedToGetRefreshTokenError를 반환한다', async () => {
       mockAuthService.checkIsLoggedIn.mockRejectedValueOnce(
-        new UnauthorizedException(),
+        new FailedToGetRefreshTokenError(),
       );
 
       await expect(
-        controller.refreshTokens(userId, userRefreshToken, mockResponse as any),
-      ).rejects.toThrow(UnauthorizedException);
-    });
-
-    it('should call auth service response', async () => {
-      await controller.refreshTokens(
-        userId,
-        userRefreshToken,
-        mockResponse as any,
-      );
-
-      expect(authService.response).toHaveBeenCalledWith({
-        user: mockCreateUserResult,
-        tokens: mockTokenResult,
-        response: mockResponse,
-        status: HttpStatus.OK,
-      });
-    });
-
-    it('should call auth service response', async () => {
-      await controller.refreshTokens(
-        userId,
-        userRefreshToken,
-        mockResponse as any,
-      );
-
-      expect(authService.response).toHaveBeenCalledWith({
-        user: mockCreateUserResult,
-        tokens: mockTokenResult,
-        response: mockResponse,
-        status: HttpStatus.OK,
-      });
+        controller.refreshTokens('1', 'invalid_refresh_token'),
+      ).rejects.toThrow(FailedToGetRefreshTokenError);
     });
   });
 });

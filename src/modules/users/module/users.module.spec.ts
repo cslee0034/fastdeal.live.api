@@ -3,18 +3,14 @@ import { UsersModule } from './users.module';
 import { UsersService } from '../service/users.service';
 import { UsersController } from '../controller/users.controller';
 import { UsersRepository } from '../repository/users.repository';
-import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
+import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
-import { UsersManager } from '../manager/users.manager';
-import { UsersErrorHandler } from '../error/handler/users.error.handler';
 
 describe('UsersModule', () => {
   let usersModule: UsersModule;
   let usersController: UsersController;
   let usersService: UsersService;
   let usersRepository: UsersRepository;
-  let usersManager: UsersManager;
-  let usersErrorHandler: UsersErrorHandler;
   let prismaService: PrismaService;
   let encryptService: EncryptService;
 
@@ -27,8 +23,6 @@ describe('UsersModule', () => {
     usersController = module.get<UsersController>(UsersController);
     usersService = module.get<UsersService>(UsersService);
     usersRepository = module.get<UsersRepository>(UsersRepository);
-    usersManager = module.get<UsersManager>(UsersManager);
-    usersErrorHandler = module.get<UsersErrorHandler>(UsersErrorHandler);
     prismaService = module.get<PrismaService>(PrismaService);
     encryptService = module.get<EncryptService>(EncryptService);
   });
@@ -37,31 +31,23 @@ describe('UsersModule', () => {
     expect(usersModule).toBeDefined();
   });
 
-  it('should have UsersController', () => {
+  it('UsersController를 가져야 한다', () => {
     expect(usersController).toBeDefined();
   });
 
-  it('should have UsersService', () => {
+  it('UsersServicer를 가져야 한다', () => {
     expect(usersService).toBeDefined();
   });
 
-  it('should have UsersRepository', () => {
+  it('UsersRepository를 가져야 한다', () => {
     expect(usersRepository).toBeDefined();
   });
 
-  it('should have usersManager', () => {
-    expect(usersManager).toBeDefined();
-  });
-
-  it('should have UserErrorHandler', () => {
-    expect(usersErrorHandler).toBeDefined();
-  });
-
-  it('should have PrismaService', () => {
+  it('PrismaService를 가져야 한다', () => {
     expect(prismaService).toBeDefined();
   });
 
-  it('should have EncryptService', () => {
+  it('EncryptService를 가져야 한다', () => {
     expect(encryptService).toBeDefined();
   });
 });

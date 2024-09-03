@@ -1,7 +1,7 @@
+import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersRepository } from './users.repository';
-import { PrismaService } from '../../../common/orm/prisma/service/prisma.service';
-import { Provider, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 describe('UsersRepository', () => {
@@ -13,6 +13,21 @@ describe('UsersRepository', () => {
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
+  };
+
+  const mockUser: CreateUserDto = {
+    email: 'test@email.com',
+    firstName: 'test_first_name',
+    lastName: 'test_last_name',
+    password: 'password',
+  };
+
+  const mockId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
+
+  const mockExpectedUser = {
+    ...mockUser,
+    id: mockId,
+    role: Role.customer,
   };
 
   beforeEach(async () => {
@@ -29,219 +44,70 @@ describe('UsersRepository', () => {
     repository = module.get<UsersRepository>(UsersRepository);
   });
 
-  it('should be defined', () => {
+  it('UsersRepository가 정의되어 있어야 한다', () => {
     expect(repository).toBeDefined();
   });
 
   describe('create', () => {
-    it('should create a new user', async () => {
-      const createUserDto = {
-        email: 'test@email.com',
-        provider: Provider.local,
-        firstName: 'test_first_name',
-        lastName: 'test_last_name',
-        password: 'password',
-        role: Role.user,
-      };
-      const expectedUser = { id: 1, ...createUserDto };
-
-      mockPrismaService.user.create.mockResolvedValue(expectedUser);
-
-      const result = await repository.create(createUserDto);
-
-      expect(result).toEqual(expectedUser);
-      expect(mockPrismaService.user.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            provider: Provider.local,
-          }),
-        }),
-      );
-    });
-
-    it('should create a user with local provider by default', async () => {
-      const createUserDto = {
-        email: 'test@email.com',
-        provider: null,
-        firstName: 'test_first_name',
-        lastName: 'test_last_name',
-        password: 'password',
-        role: Role.user,
-      };
+    it('새로운 유저를 생성해야 한다', async () => {
       const expectedUser = {
-        id: 1,
-        ...createUserDto,
-        provider: Provider.local,
+        ...mockUser,
+        id: '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec',
+        role: Role.customer,
       };
 
       mockPrismaService.user.create.mockResolvedValue(expectedUser);
 
-      const result = await repository.create(createUserDto);
+      const result = await repository.create(mockUser);
 
       expect(result).toEqual(expectedUser);
-      expect(mockPrismaService.user.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            provider: Provider.local,
-          }),
-        }),
-      );
-    });
-
-    it('should create a user with default value', async () => {
-      const createUserDto = {
-        email: 'test@email.com',
-        role: Role.user,
-      };
-      const expectedUser = {
-        id: 1,
-        ...createUserDto,
-        provider: Provider.local,
-      };
-
-      mockPrismaService.user.create.mockResolvedValue(expectedUser);
-
-      const result = await repository.create(
-        createUserDto as unknown as CreateUserDto,
-      );
-
-      expect(result).toEqual(expectedUser);
-      expect(mockPrismaService.user.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            provider: Provider.local,
-            firstName: null,
-            lastName: null,
-            password: null,
-          }),
-        }),
-      );
-    });
-  });
-
-  describe('findOrCreate', () => {
-    it('should upsert a user', async () => {
-      const createUserDto = {
-        email: 'test@email.com',
-        provider: Provider.google,
-        firstName: 'test_first_name',
-        lastName: 'test_last_name',
-        password: 'password',
-        role: Role.user,
-      };
-      const expectedUser = {
-        id: 1,
-        ...createUserDto,
-        provider: Provider.google,
-      };
-
-      mockPrismaService.user.upsert.mockResolvedValue(expectedUser);
-
-      const result = await repository.findOrCreate(createUserDto);
-
-      expect(result).toEqual(expectedUser);
-      expect(mockPrismaService.user.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          create: expect.objectContaining({
-            provider: Provider.google,
-          }),
-        }),
-      );
-    });
-
-    it('should upsert a user with default value', async () => {
-      const createUserDto = {
-        email: 'test@email.com',
-        role: Role.user,
-      };
-      const expectedUser = {
-        id: 1,
-        ...createUserDto,
-        provider: Provider.local,
-      };
-
-      mockPrismaService.user.upsert.mockResolvedValue(expectedUser);
-
-      const result = await repository.findOrCreate(
-        createUserDto as unknown as CreateUserDto,
-      );
-
-      expect(result).toEqual(expectedUser);
-      expect(mockPrismaService.user.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          create: expect.objectContaining({
-            provider: Provider.local,
-            firstName: null,
-            lastName: null,
-            password: null,
-          }),
-        }),
-      );
     });
   });
 
   describe('findOneById', () => {
-    it('should be defined', () => {
+    it('findOneById가 정의되어 있어야 한다', () => {
       expect(repository.findOneById).toBeDefined();
     });
 
-    it('should return a user if a user with the id exists', async () => {
-      const id = '1';
-      const expectedUser = {
-        id: id,
-        email: 'test@example.com',
-        firstName: 'test_first_name',
-        lastName: 'test_last_name',
-        password: 'test_password',
-        role: Role.user,
-      };
+    it('주어진 ID로 유저를 찾아 반환해야 한다', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(mockExpectedUser);
 
-      mockPrismaService.user.findUnique.mockResolvedValue(expectedUser);
+      const result = await repository.findOneById(mockId);
+
+      expect(result).toEqual(mockExpectedUser);
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { id: mockId },
+      });
+    });
+
+    it('유저가 존재하지 않을 경우 null을 반환해야 한다', async () => {
+      const id = 'nonexistent-id';
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       const result = await repository.findOneById(id);
 
-      expect(result).toEqual(expectedUser);
+      expect(result).toBeNull();
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: id },
       });
     });
   });
 
-  it('should return null if no user with the id exists', async () => {
-    const id = 'nonexistent-id';
-    mockPrismaService.user.findUnique.mockResolvedValue(null);
-
-    const result = await repository.findOneById(id);
-
-    expect(result).toBeNull();
-    expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
-      where: { id: id },
-    });
-  });
-
   describe('findOneByEmail', () => {
-    it('should return a user if a user with the email exists', async () => {
+    it('주어진 이메일로 유저를 찾아 반환해야 한다', async () => {
       const email = 'test@example.com';
-      const expectedUser = {
-        id: '1',
-        email,
-        firstName: 'test_first_name',
-        lastName: 'test_last_name',
-        password: 'test_password',
-        role: Role.user,
-      };
 
-      mockPrismaService.user.findUnique.mockResolvedValue(expectedUser);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockExpectedUser);
 
       const result = await repository.findOneByEmail(email);
 
-      expect(result).toEqual(expectedUser);
+      expect(result).toEqual(mockExpectedUser);
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: email },
       });
     });
 
-    it('should return null if no user with the email exists', async () => {
+    it('유저가 존재하지 않을 경우 null을 반환해야 한다', async () => {
       const email = 'nonexistent@example.com';
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 

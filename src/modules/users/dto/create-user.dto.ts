@@ -1,13 +1,8 @@
-import { IsEmail, IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
-import { Provider } from '@prisma/client';
+import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail()
   email: string;
-
-  @IsNotEmpty()
-  @IsEnum(Provider)
-  provider: string;
 
   @MaxLength(30)
   firstName: string;

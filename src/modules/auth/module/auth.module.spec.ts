@@ -7,8 +7,7 @@ import { EncryptModule } from '../../encrypt/module/encrypt.module';
 import { ConfigService } from '@nestjs/config';
 import { AccessTokenStrategy } from '../strategies/access-token.strategy';
 import { RefreshTokenStrategy } from '../strategies/refresh-token-strategy';
-import { RedisModule } from '../../cache/module/redis.module';
-import { GoogleStrategy } from '../strategies/google-strategy';
+import { RedisModule } from '../../../infrastructure/cache/module/redis.module';
 
 jest.mock('../../../config/cache/cache', () => ({
   getCacheConfig: jest.fn(() => ({
@@ -31,7 +30,6 @@ describe('AuthModule', () => {
 
   let accessTokenStrategy: AccessTokenStrategy;
   let refreshTokenStrategy: RefreshTokenStrategy;
-  let googleStrategy: GoogleStrategy;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -54,7 +52,6 @@ describe('AuthModule', () => {
     redisModule = module.get<RedisModule>(RedisModule);
     refreshTokenStrategy =
       module.get<RefreshTokenStrategy>(RefreshTokenStrategy);
-    googleStrategy = module.get<GoogleStrategy>(GoogleStrategy);
   });
   it('should be defined', () => {
     expect(authModule).toBeDefined();
@@ -86,9 +83,5 @@ describe('AuthModule', () => {
 
   it('should have refreshTokenStrategy', () => {
     expect(refreshTokenStrategy).toBeDefined();
-  });
-
-  it('should have googleStrategy', () => {
-    expect(googleStrategy).toBeDefined();
   });
 });

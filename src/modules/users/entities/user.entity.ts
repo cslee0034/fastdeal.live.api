@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Provider, Role, User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 
 export class UserEntity implements User {
@@ -9,35 +9,38 @@ export class UserEntity implements User {
 
   @Exclude()
   @ApiProperty({
-    description: 'The id of the user',
+    description: '유저의 아이디 (UUID)',
     example: '1af07b9b-0b1b-4b3d-8e1b-4f4b9b7b1b1b',
   })
   id: string;
 
   @Expose()
   @ApiProperty({
-    description: 'The email of the user',
+    description: '유저의 이메일',
     example: 'test@email.com',
   })
   email: string;
 
   @Expose()
-  @ApiProperty({ enum: Provider })
-  provider: Provider;
+  @ApiProperty({
+    description: '유저의 계정 제공자',
+    example: 'local',
+  })
+  provider: string;
 
   @Exclude() // 인스턴스를 직렬화할 때 해당 필드를 제외
   password: string;
 
   @Expose()
   @ApiProperty({
-    description: 'The first name of the user',
+    description: '유저의 이름',
     example: 'chang su',
   })
   firstName: string;
 
   @Expose()
   @ApiProperty({
-    description: 'The last name of the user',
+    description: '유저의 성',
     example: 'lee',
   })
   lastName: string;
@@ -48,14 +51,14 @@ export class UserEntity implements User {
 
   @Exclude()
   @ApiProperty({
-    description: 'The created date of the user',
+    description: '유저의 생성일',
     example: '2024-03-01T00:00:00.000Z',
   })
   createdAt: Date;
 
   @Exclude()
   @ApiProperty({
-    description: 'The updated date of the user',
+    description: '유저의 업데이트일',
     example: '2024-03-01T00:00:00.000Z',
   })
   updatedAt: Date;

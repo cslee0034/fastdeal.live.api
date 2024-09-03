@@ -1,257 +1,77 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import { SignUpDto } from '../dto/request/signup.dto';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from '../../users/service/users.service';
 import { AuthService } from '../service/auth.service';
-import { EncryptService } from '../../encrypt/service/encrypt.service';
-import {
-  ApiCreatedResponse,
-  ApiForbiddenResponse,
-  ApiHeader,
-  ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { SignInDto } from '../dto/request/signin.dto';
+import { ApiOperation } from '@nestjs/swagger';
+import { SignInDto } from '../dto/signin.dto';
 import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
 import { RefreshTokenGuard } from '../../../common/guard/refresh-token.guard';
 import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
-import { Response } from 'express';
-import { GoogleAuthGuard } from '../../../common/guard/google-auth.guard';
-import { SuccessResponseDto } from '../dto/response/success-response.dto';
-import { ConvertedUserResponseDto } from '../dto/response/user-response.dto';
-import { AUTH_ERROR } from '../error/constant/auth.error.constant';
-import { USERS_ERROR } from '../../users/error/constant/users.error.constant';
-import { ENCRYPT_ERROR } from '../../encrypt/error/constant/encrypt.error.constant';
+import { Tokens } from '../interface/tokens.interface';
+import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
+import { SignUpDto } from '../dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    private readonly encryptService: EncryptService,
   ) {}
 
   @Public()
   @Post('local/sign-up')
   @ApiOperation({
-    summary: 'Sign up a user',
-    description:
-      'This endpoint is used to sign up a user with email and password in local provider.',
+    summary: '유저 회원가입',
   })
-  @ApiCreatedResponse({
-    description: 'The user has been successfully created and cookie is set.',
-    type: ConvertedUserResponseDto,
-  })
-  @ApiForbiddenResponse({
-    description: USERS_ERROR.USER_ALREADY_EXISTS,
-  })
-  @ApiInternalServerErrorResponse({
-    description: `${USERS_ERROR.FAILED_TO_CREATE_USER}, \
-                  ${AUTH_ERROR.FAILED_TO_CREATE_TOKENS}, \
-                  ${AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN}, \
-                  ${AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE}, \
-                  Internal server error`,
-  })
-  async signup(
-    @Body() signUpDto: SignUpDto,
-    @Res() response: Response,
-  ): Promise<void> {
-    const createdUser = await this.usersService.createLocal(signUpDto);
+  async signup(@Body() signUpDto: SignUpDto): Promise<Tokens> {
+    const user = await this.usersService.createUser(signUpDto);
 
-    const tokens = await this.authService.login(createdUser);
+    const tokens = await this.authService.login(user);
 
-    this.authService.response({
-      user: createdUser,
-      tokens: tokens,
-      response: response,
-      status: HttpStatus.CREATED,
-    });
-
-    return;
+    return tokens;
   }
 
   @Public()
   @Post('local/sign-in')
   @ApiOperation({
-    summary: 'Sign in a user',
-    description:
-      'This endpoint is used to sign in a user with email and password.',
+    summary: '유저 로그인',
   })
-  @ApiOkResponse({
-    description: 'The user has been successfully signed in and cookie is set.',
-    type: ConvertedUserResponseDto,
-  })
-  @ApiNotFoundResponse({
-    description: USERS_ERROR.USER_NOT_FOUND,
-  })
-  @ApiUnauthorizedResponse({
-    description: ENCRYPT_ERROR.PASSWORD_DO_NOT_MATCH,
-  })
-  @ApiInternalServerErrorResponse({
-    description: `${AUTH_ERROR.FAILED_TO_CREATE_TOKENS},\
-                  ${AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN},\
-                  ${AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE},\ 
-                  Internal server error`,
-  })
-  async signin(
-    @Body() signInDto: SignInDto,
-    @Res() response: Response,
-  ): Promise<void> {
-    const user = await this.usersService.findOneByEmail(signInDto.email);
-
-    await this.encryptService.compareAndThrow(
-      signInDto.password,
-      user.password,
-    );
+  async signin(@Body() signInDto: SignInDto): Promise<Tokens> {
+    const user = await this.usersService.validateUserPassword(signInDto);
 
     const tokens = await this.authService.login(user);
 
-    this.authService.response({
-      user: user,
-      tokens: tokens,
-      response: response,
-      status: HttpStatus.OK,
-    });
-
-    return;
-  }
-
-  @Public()
-  @UseGuards(GoogleAuthGuard)
-  @ApiOperation({
-    summary: 'Google OAuth2 login',
-    description:
-      'This endpoint is used to authenticate a user with Google OAuth2.',
-  })
-  @ApiOkResponse({
-    description: 'User will be redirected to Google OAuth2 login page.',
-  })
-  @Get('google/login')
-  async google(): Promise<{ success: boolean }> {
-    return { success: true };
-  }
-
-  @Public()
-  @UseGuards(GoogleAuthGuard)
-  @Get('google/redirect')
-  @ApiOperation({
-    summary: 'Google OAuth2 redirect',
-    description:
-      'This endpoint is used to redirect the user after Google OAuth2 authentication.',
-  })
-  @ApiOkResponse({
-    description: 'User will be redirected to {client-url}/api/google',
-  })
-  @ApiInternalServerErrorResponse({
-    description:
-      'User will be redirected to {client-url}/api/google?error=${error.message}',
-  })
-  async googleRedirect(
-    @GetTokenUser('email') email: string,
-    @GetTokenUser('firstName') firstName: string,
-    @GetTokenUser('lastName') lastName: string,
-    @GetTokenUser('provider') provider: string,
-    @Res() response: Response,
-  ): Promise<void> {
-    try {
-      const user = await this.usersService.findOrCreateOauth({
-        email,
-        provider,
-        firstName,
-        lastName,
-      });
-
-      await this.authService.login(user);
-
-      this.authService.redirectUser(response, user);
-
-      return;
-    } catch (error) {
-      this.authService.redirectUserWithError(response, error);
-
-      return;
-    }
+    return tokens;
   }
 
   @Public()
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Logout a user',
-    description:
-      "This endpoint requires an 'x-access-token' cookie for authentication.",
+    summary: '유저 로그아웃',
   })
-  @ApiOkResponse({
-    description: 'The user has been successfully logged out.',
-    type: SuccessResponseDto,
-  })
-  @ApiInternalServerErrorResponse({
-    description: `${AUTH_ERROR.FAILED_TO_DELETE_REFRESH_TOKEN},\
-                  Internal server error`,
-  })
-  async logout(@GetTokenUserId() id: string): Promise<SuccessResponseDto> {
+  async logout(@GetTokenUserId() id: string): Promise<ObjectWithSuccess> {
     const success = await this.authService.logout(id);
-    return { success };
+
+    return { success: success };
   }
 
   @Public()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @ApiOperation({
-    summary: 'Refresh tokens',
-    description:
-      "This endpoint requires an 'x-refresh-token' cookie for token rotation.",
-  })
-  @ApiHeader({
-    name: 'x-refresh-token',
-    description: 'The refresh token is needed',
-  })
-  @ApiOkResponse({
-    description:
-      'The tokens have been successfully refreshed and cookie is set.',
-    type: ConvertedUserResponseDto,
-  })
-  @ApiUnauthorizedResponse({
-    description: AUTH_ERROR.REFRESH_TOKEN_DO_NOT_MATCH,
-  })
-  @ApiInternalServerErrorResponse({
-    description: `${AUTH_ERROR.FAILED_TO_GET_REFRESH_TOKEN},\
-                  ${AUTH_ERROR.FAILED_TO_CREATE_TOKENS},\
-                  ${AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN},\
-                  ${AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE},\
-                  Internal server error`,
+    summary: '리프레시 토큰 재발급',
   })
   async refreshTokens(
     @GetTokenUserId() id: string,
     @GetTokenUser('refreshToken') refreshToken: string,
-    @Res() response: Response,
-  ): Promise<void> {
+  ): Promise<Tokens> {
     await this.authService.checkIsLoggedIn(id, refreshToken);
 
-    const user = await this.usersService.findOneById(id);
+    const user = await this.usersService.findOneByIdAndThrow(id);
 
     const tokens = await this.authService.login(user);
 
-    this.authService.response({
-      user,
-      tokens,
-      response,
-      status: HttpStatus.OK,
-    });
-
-    return;
+    return tokens;
   }
 }

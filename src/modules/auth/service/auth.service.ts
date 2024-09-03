@@ -1,109 +1,53 @@
-import {
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Tokens } from '../interfaces/tokens.interface';
-import { RedisService } from '../../cache/service/redis.service';
-import { Response, CookieOptions } from 'express';
-import { AUTH_ERROR } from '../error/constant/auth.error.constant';
+import { Tokens } from '../interface/tokens.interface';
+import { RedisService } from '../../../infrastructure/cache/service/redis.service';
 import { UserEntity } from '../../users/entities/user.entity';
-import { UsersService } from '../../users/service/users.service';
+import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
+import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
+import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
+import { FailedToCreateTokensError } from '../error/failed-to-create-tokens';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
-    private readonly usersService: UsersService,
+    private readonly cacheService: RedisService,
   ) {}
 
   public async login(user: UserEntity): Promise<Tokens> {
     const tokens = await this.generateTokens(user.id, user.email);
 
-    await this.setRefreshTokenToRedis(user.id, tokens.refreshToken);
+    await this.setRefreshTokenToCache(user.id, tokens.refreshToken);
 
     return tokens;
   }
 
   public async logout(id: string): Promise<boolean> {
-    try {
-      await this.redisService.del(
-        `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
-      );
+    const tokenId = this.getRefreshTokenId(id);
 
-      return true;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        AUTH_ERROR.FAILED_TO_DELETE_REFRESH_TOKEN,
-      );
-    }
+    await this.cacheService.deleteRefreshToken(tokenId).catch(() => {
+      throw new FailedToDeleteRefreshTokenError();
+    });
+
+    return true;
   }
 
   public async checkIsLoggedIn(
     id: string,
     refreshToken: string,
-  ): Promise<void> {
-    try {
-      const savedRefreshToken = await this.redisService.get(
-        `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
-      );
+  ): Promise<boolean> {
+    const tokenId = this.getRefreshTokenId(id);
 
-      if (savedRefreshToken !== refreshToken) {
-        throw new UnauthorizedException(AUTH_ERROR.REFRESH_TOKEN_DO_NOT_MATCH);
-      }
+    const savedRefreshToken = await this.cacheService
+      .getRefreshToken(tokenId)
+      .catch(() => {
+        throw new FailedToGetRefreshTokenError();
+      });
 
-      return;
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException(
-        AUTH_ERROR.FAILED_TO_GET_REFRESH_TOKEN,
-      );
-    }
-  }
-
-  public redirectUser(response: Response, user: UserEntity): Promise<void> {
-    const redirectUrl = this.buildRedirectUrl(user);
-
-    response.redirect(HttpStatus.FOUND, redirectUrl);
-
-    return;
-  }
-
-  public redirectUserWithError(
-    response: Response,
-    error: { message: string },
-  ): Promise<void> {
-    const redirectUrl = this.buildRedirectUrlWithError(error);
-
-    response.redirect(HttpStatus.FOUND, redirectUrl);
-
-    return;
-  }
-
-  public async response({
-    user,
-    tokens,
-    response,
-    status,
-  }: {
-    user: UserEntity;
-    tokens: Tokens;
-    response: Response;
-    status: number;
-  }): Promise<Response> {
-    await this.setTokensToResponse(response, tokens);
-
-    return response
-      .status(status)
-      .json(this.usersService.convertUserResponse(user));
+    return refreshToken && savedRefreshToken === refreshToken;
   }
 
   private async generateTokens(id: string, email: string): Promise<Tokens> {
@@ -112,78 +56,67 @@ export class AuthService {
       email: email,
     };
 
-    try {
-      const [accessToken, refreshToken] = await Promise.all([
-        this.jwtService.signAsync(payload, {
-          secret: this.configService.get<string>('jwt.access.secret'),
-          expiresIn: this.configService.get<string>('jwt.access.expiresIn'),
-        }),
-        this.jwtService.signAsync(payload, {
-          secret: this.configService.get<string>('jwt.refresh.secret'),
-          expiresIn: this.configService.get<string>('jwt.refresh.expiresIn'),
-        }),
-      ]);
+    const [accessToken, refreshToken] = await Promise.all([
+      this.generateAccessToken(payload),
+      this.generateRefreshToken(payload),
+    ]).catch(() => {
+      throw new FailedToCreateTokensError();
+    });
 
-      return { accessToken, refreshToken };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        AUTH_ERROR.FAILED_TO_CREATE_TOKENS,
-      );
-    }
+    return { accessToken, refreshToken };
   }
 
-  private async setRefreshTokenToRedis(
+  private async setRefreshTokenToCache(
     id: string,
     refreshToken: string,
   ): Promise<boolean> {
-    try {
-      await this.redisService.set(
-        `${this.configService.get<number>('jwt.refresh.prefix')}${id}`,
-        refreshToken,
-        this.configService.get<number>('jwt.refresh.expiresIn'),
-      );
+    const tokenId = this.getRefreshTokenId(id);
+    const expiresIn = this.getRefreshTokenExpiresIn();
 
-      return true;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        AUTH_ERROR.FAILED_TO_SET_REFRESH_TOKEN,
-      );
-    }
-  }
-
-  private async setTokensToResponse(
-    res: Response,
-    tokens: Tokens,
-  ): Promise<void> {
-    const options: CookieOptions = {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    };
-
-    try {
-      res.cookie('x-access-token', tokens.accessToken, {
-        ...options,
-        maxAge: Number(this.configService.get<number>('jwt.access.expiresIn')),
-      });
-      res.cookie('x-refresh-token', tokens.refreshToken, {
-        ...options,
-        maxAge: Number(this.configService.get<number>('jwt.refresh.expiresIn')),
+    await this.cacheService
+      .setRefreshToken({
+        id: tokenId,
+        token: refreshToken,
+        ttl: expiresIn,
+      })
+      .catch(() => {
+        throw new FailedToSetRefreshTokenError();
       });
 
-      return;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        AUTH_ERROR.FAILED_TO_SET_TOKENS_TO_COOKIE,
-      );
-    }
+    return true;
   }
 
-  private buildRedirectUrl(user: UserEntity): string {
-    return `${this.configService.get<string>('client.url')}/api/auth/google?id=${encodeURIComponent(user.id)}&email=${encodeURIComponent(user.email)}&&provider=${encodeURIComponent(user.provider)}&firstName=${encodeURIComponent(user.firstName)}&lastName=${encodeURIComponent(user.lastName)}&expiresIn=${this.configService.get<number>('jwt.refresh.expiresIn')}`;
+  private async generateAccessToken(payload: any): Promise<string> {
+    return this.jwtService.signAsync(payload, {
+      secret: this.getAccessTokenSecret(),
+      expiresIn: this.getAccessTokenExpiresIn(),
+    });
   }
 
-  private buildRedirectUrlWithError(error: { message: string }): string {
-    return `${this.configService.get<string>('client.url')}/api/auth/google?error=${encodeURIComponent(error?.message)}`;
+  private async generateRefreshToken(payload: any): Promise<string> {
+    return this.jwtService.signAsync(payload, {
+      secret: this.getRefreshTokenSecret(),
+      expiresIn: this.getRefreshTokenExpiresIn(),
+    });
+  }
+
+  private getRefreshTokenId(id: string): string {
+    return `${this.configService.get<number>('jwt.refresh.prefix')}${id}`;
+  }
+
+  private getAccessTokenSecret(): string {
+    return this.configService.get<string>('jwt.access.secret');
+  }
+
+  private getRefreshTokenSecret(): string {
+    return this.configService.get<string>('jwt.refresh.secret');
+  }
+
+  private getAccessTokenExpiresIn(): number {
+    return this.configService.get<number>('jwt.access.expiresIn');
+  }
+
+  private getRefreshTokenExpiresIn(): number {
+    return this.configService.get<number>('jwt.refresh.expiresIn');
   }
 }

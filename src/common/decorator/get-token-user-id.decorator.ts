@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { Payload } from '../../modules/auth/interfaces/payload.interface';
+import { Payload } from '../../modules/auth/interface/payload.interface';
 
 export const GetTokenUserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): string => {

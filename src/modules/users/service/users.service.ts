@@ -1,98 +1,90 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ClassSerializerInterceptor, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { EncryptService } from '../../encrypt/service/encrypt.service';
-import { UsersManager } from '../manager/users.manager';
-import { USERS_ERROR } from '../error/constant/users.error.constant';
-import { ConfigService } from '@nestjs/config';
-import { UsersErrorHandler } from '../error/handler/users.error.handler';
+import { UserAlreadyExistsError } from '../error/user-already-exists';
+import { FailedToGetUserError } from '../error/failed-to-get-user';
+import { UserNotFoundError } from '../error/user-not-found';
+import { FailedToCreateUserError } from '../error/failed-to-create-user';
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UsersRepository,
-    private readonly usersManager: UsersManager,
     private readonly encryptService: EncryptService,
-    private readonly configService: ConfigService,
-    private readonly errorHandler: UsersErrorHandler,
   ) {}
 
-  async createLocal(createUserDto: CreateUserDto): Promise<UserEntity> {
-    try {
-      const existingUser = await this.userRepository.findOneByEmail(
-        createUserDto.email,
-      );
+  public async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const user = await this.findOneByEmail(createUserDto.email);
 
-      this.usersManager.validateLocalUser(existingUser);
+    this.assertUserDoesNotExists(user);
 
-      createUserDto.password = await this.encryptService.hash(
-        createUserDto.password,
-      );
+    const hashedUser = await this.hashUserPassword(createUserDto);
 
-      return new UserEntity(await this.userRepository.create(createUserDto));
-    } catch (error) {
-      this.errorHandler.createLocal({ error, inputs: createUserDto });
+    const newUser = await this.userRepository.create(hashedUser).catch(() => {
+      throw new FailedToCreateUserError();
+    });
+
+    return new UserEntity(newUser);
+  }
+
+  public async findOneByIdAndThrow(id: string): Promise<UserEntity> {
+    const user = await this.findOneById(id);
+
+    this.assertUserExists(user);
+
+    return new UserEntity(user);
+  }
+
+  public async findOneById(id: string): Promise<UserEntity | null> {
+    return await this.userRepository.findOneById(id).catch(() => {
+      throw new FailedToGetUserError();
+    });
+  }
+
+  public async validateUserPassword({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<UserEntity | null> {
+    const user = await this.userRepository.findOneByEmail(email).catch(() => {
+      throw new FailedToGetUserError();
+    });
+
+    this.assertUserExists(user);
+
+    await this.encryptService.compareAndThrow(password, user.password);
+
+    return new UserEntity(user);
+  }
+
+  private async findOneByEmail(email: string): Promise<UserEntity | null> {
+    return await this.userRepository.findOneByEmail(email).catch(() => {
+      throw new FailedToGetUserError();
+    });
+  }
+
+  private assertUserExists(user: UserEntity | null): void {
+    if (!user) {
+      throw new UserNotFoundError();
     }
   }
 
-  async findOneById(id: string): Promise<UserEntity | null> {
-    const existingUser = await this.userRepository.findOneById(id);
-
-    if (!existingUser) {
-      throw new NotFoundException(USERS_ERROR.USER_NOT_FOUND);
-    }
-
-    return new UserEntity(existingUser);
-  }
-
-  async findOneByEmail(email: string): Promise<UserEntity | null> {
-    const existingUser = await this.userRepository.findOneByEmail(email);
-
-    if (!existingUser) {
-      throw new NotFoundException(USERS_ERROR.USER_NOT_FOUND);
-    }
-
-    return new UserEntity(existingUser);
-  }
-
-  async findOrCreateOauth(
-    createOauthUserDto: CreateUserDto,
-  ): Promise<UserEntity> {
-    try {
-      const existingUser = await this.userRepository.findOneByEmail(
-        createOauthUserDto.email,
-      );
-
-      this.usersManager.validateOauthUser(
-        existingUser,
-        createOauthUserDto.provider,
-      );
-
-      return new UserEntity(
-        await this.userRepository.findOrCreate(createOauthUserDto),
-      );
-    } catch (error) {
-      this.errorHandler.findOrCreateOauth({
-        error,
-        inputs: createOauthUserDto,
-      });
+  private assertUserDoesNotExists(user: UserEntity | null): void {
+    if (user) {
+      throw new UserAlreadyExistsError();
     }
   }
 
-  /**
-   * 토큰을 내보내기 위해 res.json()을 사용하면
-   * class-serializer와 transform-interceptor가 동작하지 않기 때문에
-   * 별도의 사용자 응답 변환 메서드를 만들어 사용한다
-   */
-  convertUserResponse(user: UserEntity) {
-    return {
-      success: true,
-      email: user?.email,
-      provider: user?.provider || 'local',
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      // milliseconds가 기본 값이므로 초로 변환
-      expiresIn: this.configService.get('jwt.refresh.expiresIn') / 1000,
-    };
+  private async hashUserPassword(
+    createUserDto: CreateUserDto,
+  ): Promise<CreateUserDto> {
+    const hashedPassword = await this.encryptService.hash(
+      createUserDto.password,
+    );
+
+    return { ...createUserDto, password: hashedPassword };
   }
 }
