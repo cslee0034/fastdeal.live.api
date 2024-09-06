@@ -11,7 +11,7 @@ import { Tokens } from '../../../infrastructure/token/interface/tokens.interface
 import { SignInDto } from '../dto/signin.dto';
 import { SignUpDto } from '../dto/signup.dto';
 import { UserAlreadyExistsError } from '../../users/error/user-already-exists';
-import { PasswordDoesNotMatch } from '../../encrypt/error/password-does-not-match';
+import { PasswordDoesNotMatch } from '../../../infrastructure/encrypt/error/password-does-not-match';
 import { FailedToGetRefreshTokenError } from '../../../infrastructure/cache/error/failed-to-get-refresh-token';
 import { FailedToDeleteRefreshTokenError } from '../../../infrastructure/cache/error/failed-to-delete-refresh-token';
 

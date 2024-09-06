@@ -4,7 +4,7 @@ import { UsersService } from '../service/users.service';
 import { UsersController } from '../controller/users.controller';
 import { UsersRepository } from '../repository/users.repository';
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
-import { EncryptService } from '../../encrypt/service/encrypt.service';
+import { EncryptService } from '../../../infrastructure/encrypt/service/encrypt.service';
 
 describe('UsersModule', () => {
   let usersModule: UsersModule;

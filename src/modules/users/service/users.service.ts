@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersRepository } from '../repository/users.repository';
 import { UserEntity } from '../entities/user.entity';
-import { EncryptService } from '../../encrypt/service/encrypt.service';
+import { EncryptService } from '../../../infrastructure/encrypt/service/encrypt.service';
 import { UserAlreadyExistsError } from '../error/user-already-exists';
 import { FailedToGetUserError } from '../error/failed-to-get-user';
 import { UserNotFoundError } from '../error/user-not-found';

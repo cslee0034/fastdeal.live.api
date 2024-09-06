@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { UsersRepository } from '../repository/users.repository';
-import { EncryptService } from '../../encrypt/service/encrypt.service';
+import { EncryptService } from '../../../infrastructure/encrypt/service/encrypt.service';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserAlreadyExistsError } from '../error/user-already-exists';
@@ -9,7 +9,7 @@ import { FailedToGetUserError } from '../error/failed-to-get-user';
 import { UserNotFoundError } from '../error/user-not-found';
 import { FailedToCreateUserError } from '../error/failed-to-create-user';
 import { UserEntity } from '../entities/user.entity';
-import { PasswordDoesNotMatch } from '../../encrypt/error/password-does-not-match';
+import { PasswordDoesNotMatch } from '../../../infrastructure/encrypt/error/password-does-not-match';
 
 describe('UsersService', () => {
   let service: UsersService;
