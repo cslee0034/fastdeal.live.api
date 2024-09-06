@@ -25,6 +25,7 @@ import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
 import { TokenModule } from './infrastructure/token/module/token.module';
+import { PlacesModule } from './modules/places/module/places.module';
 
 @Module({
   imports: [
@@ -56,12 +57,13 @@ import { TokenModule } from './infrastructure/token/module/token.module';
       }),
       inject: [ConfigService],
     }),
+    RedisModule,
+    EncryptModule,
     LoggerModule,
     PrismaModule,
     TokenModule,
-    RedisModule,
     AuthModule,
-    EncryptModule,
+    PlacesModule,
     UsersModule,
   ],
   controllers: [AppController],
