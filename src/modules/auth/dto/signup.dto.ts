@@ -5,26 +5,32 @@ import { CreateUserDto } from '../../users/dto/create-user.dto';
 export class SignUpDto implements CreateUserDto {
   @ApiProperty({
     example: 'example@email.com',
-    description: `The user's email address`,
+    description: `유저 이메일`,
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
     example: 'local',
-    description: `The user's provider that must be 'local'`,
+    description: `로그인 방식`,
   })
-  @ApiProperty({ example: 'chang su', description: `The user's given name` })
+  @ApiProperty({
+    example: 'chang su',
+    description: `이름`,
+  })
   @MaxLength(30)
   firstName: string;
 
-  @ApiProperty({ example: 'lee', description: `The user's family name` })
+  @ApiProperty({
+    example: 'lee',
+    description: `성`,
+  })
   @MaxLength(30)
   lastName: string;
 
   @ApiProperty({
     example: 'example_password',
-    description: `The user's password`,
+    description: `비밀번호`,
   })
   @MaxLength(30)
   password: string;
