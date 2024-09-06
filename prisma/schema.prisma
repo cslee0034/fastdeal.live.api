@@ -35,11 +35,13 @@ enum Role {
 }
 
 model Place {
-  id        String   @id @default(uuid())
-  name      String
-  address   String
-  latitude  Float
-  longitude Float
-  createdAt DateTime @default(now()) @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @db.Timestamp(0)
+  id           String   @id @default(uuid())
+  city         String
+  district     String
+  street       String
+  streetNumber Int
+  createdAt    DateTime @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime @updatedAt @db.Timestamp(0)
+
+  @@index([city, district, street])
 }
