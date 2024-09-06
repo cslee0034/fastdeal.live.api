@@ -24,6 +24,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
+import { TokenModule } from './infrastructure/token/module/token.module';
 
 @Module({
   imports: [
@@ -57,8 +58,9 @@ import { RolesGuard } from './common/guard/role.guard';
     }),
     LoggerModule,
     PrismaModule,
-    AuthModule,
+    TokenModule,
     RedisModule,
+    AuthModule,
     EncryptModule,
     UsersModule,
   ],
