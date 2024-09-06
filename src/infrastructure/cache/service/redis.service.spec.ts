@@ -66,7 +66,9 @@ describe('RedisService', () => {
         ttl: mockTtl,
       });
 
-      expect(cacheManager.set).toHaveBeenCalledWith(mockId, mockToken, mockTtl);
+      expect(cacheManager.set).toHaveBeenCalledWith(mockId, mockToken, {
+        ttl: mockTtl / 1000,
+      });
     });
 
     it('캐시 저장소에 refresh token을 저장하는 것에 실패하면 FailedToSetRefreshTokenError를 던져야 한다', async () => {
