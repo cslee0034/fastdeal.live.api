@@ -7,7 +7,7 @@ import { Public } from '../../../common/decorator/public.decorator';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
 import { RefreshTokenGuard } from '../../../common/guard/refresh-token.guard';
 import { GetTokenUser } from '../../../common/decorator/get-token-user.decorator';
-import { Tokens } from '../interface/tokens.interface';
+import { Tokens } from '../../../infrastructure/token/interface/tokens.interface';
 import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
 import { SignUpDto } from '../dto/signup.dto';
 

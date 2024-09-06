@@ -1,4 +1,4 @@
-import { Payload } from '../../modules/auth/interface/payload.interface';
+import { Payload } from '../../infrastructure/token/interface/payload.interface';
 
 export interface TokenPayload extends Payload {
   iat: number;

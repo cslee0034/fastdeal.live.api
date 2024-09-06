@@ -1,17 +1,22 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { CacheService } from '../interface/cache.service.interface';
+import { ICacheService } from '../interface/cache.service.interface';
+import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
+import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
+import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
 
 @Injectable()
-export class RedisService implements CacheService {
+export class RedisService implements ICacheService {
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
   public async getRefreshToken(id: string): Promise<string | undefined> {
-    return await this.get<string>(id);
+    return await this.get<string>(id).catch(() => {
+      throw new FailedToGetRefreshTokenError();
+    });
   }
 
   public async setRefreshToken({
@@ -23,11 +28,15 @@ export class RedisService implements CacheService {
     token: string;
     ttl: number;
   }): Promise<void> {
-    return await this.set(id, token, ttl);
+    return await this.set(id, token, ttl).catch(() => {
+      throw new FailedToSetRefreshTokenError();
+    });
   }
 
   public async deleteRefreshToken(id: string): Promise<void> {
-    return await this.del(id);
+    return await this.del(id).catch(() => {
+      throw new FailedToDeleteRefreshTokenError();
+    });
   }
 
   private async set(key: string, value: any, ttl?: number): Promise<void> {

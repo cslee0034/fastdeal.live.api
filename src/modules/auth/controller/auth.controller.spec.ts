@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import { UserEntity } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/service/users.service';
-import { Tokens } from '../interface/tokens.interface';
+import { Tokens } from '../../../infrastructure/token/interface/tokens.interface';
 import { SignInDto } from '../dto/signin.dto';
 import { SignUpDto } from '../dto/signup.dto';
 import { UserAlreadyExistsError } from '../../users/error/user-already-exists';
 import { PasswordDoesNotMatch } from '../../encrypt/error/password-does-not-match';
-import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
-import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
+import { FailedToGetRefreshTokenError } from '../../../infrastructure/cache/error/failed-to-get-refresh-token';
+import { FailedToDeleteRefreshTokenError } from '../../../infrastructure/cache/error/failed-to-delete-refresh-token';
 
 describe('AuthController', () => {
   let controller: AuthController;

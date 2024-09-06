@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Cache } from 'cache-manager';
 import { RedisService } from './redis.service';
+import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
+import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
+import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
 
 describe('RedisService', () => {
   let service: RedisService;
@@ -45,6 +48,14 @@ describe('RedisService', () => {
       expect(result).toBe(mockToken);
       expect(cacheManager.get).toHaveBeenCalledWith(mockId);
     });
+
+    it('캐시 저장소에서 refresh token을 가져오는 것에 실패하면 FailedToGetRefreshTokenError를 반환 한다', async () => {
+      mockCacheManager.get.mockRejectedValueOnce(new Error());
+
+      await expect(service.getRefreshToken(mockId)).rejects.toThrow(
+        FailedToGetRefreshTokenError,
+      );
+    });
   });
 
   describe('setRefreshToken', () => {
@@ -57,6 +68,18 @@ describe('RedisService', () => {
 
       expect(cacheManager.set).toHaveBeenCalledWith(mockId, mockToken, mockTtl);
     });
+
+    it('캐시 저장소에 refresh token을 저장하는 것에 실패하면 FailedToSetRefreshTokenError를 던져야 한다', async () => {
+      mockCacheManager.set.mockRejectedValueOnce(new Error());
+
+      await expect(
+        service.setRefreshToken({
+          id: mockId,
+          token: mockToken,
+          ttl: mockTtl,
+        }),
+      ).rejects.toThrow(FailedToSetRefreshTokenError);
+    });
   });
 
   describe('deleteRefreshToken', () => {
@@ -64,6 +87,14 @@ describe('RedisService', () => {
       await service.deleteRefreshToken(mockId);
 
       expect(cacheManager.del).toHaveBeenCalledWith(mockId);
+    });
+
+    it('캐시 저장소에서 refresh token을 삭제하는 것에 실패하면 FailedToDeleteRefreshTokenError를 반환 한다', async () => {
+      mockCacheManager.del.mockRejectedValueOnce(new Error());
+
+      await expect(service.deleteRefreshToken(mockId)).rejects.toThrow(
+        FailedToDeleteRefreshTokenError,
+      );
     });
   });
 

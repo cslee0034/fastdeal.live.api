@@ -3,11 +3,11 @@ import { AuthModule } from './auth.module';
 import { AuthController } from '../controller/auth.controller';
 import { AuthService } from '../service/auth.service';
 import { UsersModule } from '../../users/module/users.module';
-import { EncryptModule } from '../../encrypt/module/encrypt.module';
 import { ConfigService } from '@nestjs/config';
 import { AccessTokenStrategy } from '../strategies/access-token.strategy';
 import { RefreshTokenStrategy } from '../strategies/refresh-token-strategy';
 import { RedisModule } from '../../../infrastructure/cache/module/redis.module';
+import { TokenModule } from '../../../infrastructure/token/module/token.module';
 
 jest.mock('../../../config/cache/cache', () => ({
   getCacheConfig: jest.fn(() => ({
@@ -25,7 +25,7 @@ describe('AuthModule', () => {
   let authService: AuthService;
 
   let usersModule: UsersModule;
-  let encryptModule: EncryptModule;
+  let tokenModule: TokenModule;
   let redisModule: RedisModule;
 
   let accessTokenStrategy: AccessTokenStrategy;
@@ -47,7 +47,7 @@ describe('AuthModule', () => {
     authController = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
     usersModule = module.get<UsersModule>(UsersModule);
-    encryptModule = module.get<EncryptModule>(EncryptModule);
+    tokenModule = module.get<TokenModule>(TokenModule);
     accessTokenStrategy = module.get<AccessTokenStrategy>(AccessTokenStrategy);
     redisModule = module.get<RedisModule>(RedisModule);
     refreshTokenStrategy =
@@ -69,8 +69,8 @@ describe('AuthModule', () => {
     expect(usersModule).toBeDefined();
   });
 
-  it('should have encryptModule', () => {
-    expect(encryptModule).toBeDefined();
+  it('should have tokenModule', () => {
+    expect(tokenModule).toBeDefined();
   });
 
   it('should have redisModule', () => {

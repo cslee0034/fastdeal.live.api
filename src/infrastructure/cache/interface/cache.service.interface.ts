@@ -1,4 +1,4 @@
-export interface CacheService {
+export interface ICacheService {
   getRefreshToken(id: string): Promise<string | undefined>;
   setRefreshToken({
     id,
