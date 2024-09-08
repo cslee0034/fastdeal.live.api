@@ -14,7 +14,7 @@ export class SellerApplicationEntity implements SellerApplication {
   })
   id: string;
 
-  @Expose()
+  @Exclude()
   @ApiProperty({
     description: '판매자 신청서를 작성한 유저의 아이디 (UUID)',
     example: '1af07b9b-0b1b-4b3d-8e1b-4f4b9b7b1b1b',
