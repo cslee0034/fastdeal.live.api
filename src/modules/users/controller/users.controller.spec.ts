@@ -53,6 +53,8 @@ describe('UsersController', () => {
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {

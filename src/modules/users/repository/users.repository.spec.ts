@@ -56,9 +56,11 @@ describe('UsersRepository', () => {
     }).compile();
 
     repository = module.get<UsersRepository>(UsersRepository);
+
+    jest.clearAllMocks();
   });
 
-  it('UsersRepository가 정의되어 있어야 한다', () => {
+  it('should be defined', () => {
     expect(repository).toBeDefined();
   });
 

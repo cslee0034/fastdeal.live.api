@@ -89,6 +89,8 @@ describe('PlacesController', () => {
 
     controller = module.get<PlacesController>(PlacesController);
     service = module.get<PlacesService>(PlacesService);
+
+    jest.clearAllMocks();
   });
 
   it('PlacesController가 정의되어 있어야 한다', () => {
