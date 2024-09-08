@@ -2,7 +2,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { Injectable } from '@nestjs/common';
 import { Place } from '@prisma/client';
 import { CreatePlaceDto } from '../dto/create-place.dto';
-import { FindManyPlacesDto } from '../dto/find-many-places-dto';
+import { FindPlacesDto } from '../dto/find-places-dto';
 import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
 
@@ -16,18 +16,18 @@ export class PlacesRepository {
     });
   }
 
-  async findMany(findPlaceDto: FindManyPlacesDto): Promise<Place[]> {
+  async findMany(findPlacesDto: FindPlacesDto): Promise<Place[]> {
     return await this.prisma.place.findMany({
       where: {
-        city: findPlaceDto.city,
+        city: findPlacesDto.city,
         district:
-          findPlaceDto?.district || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
-        street: findPlaceDto?.street || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          findPlacesDto?.district || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+        street: findPlacesDto?.street || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
         streetNumber:
-          findPlaceDto?.streetNumber || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          findPlacesDto?.streetNumber || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
       },
-      skip: findPlaceDto?.skip || REPOSITORY_CONSTANT.DEFAULT_SKIP,
-      take: findPlaceDto?.take || REPOSITORY_CONSTANT.DEFAULT_TAKE,
+      skip: findPlacesDto?.skip || REPOSITORY_CONSTANT.DEFAULT_SKIP,
+      take: findPlacesDto?.take || REPOSITORY_CONSTANT.DEFAULT_TAKE,
     });
   }
 

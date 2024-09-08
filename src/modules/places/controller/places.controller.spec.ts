@@ -4,7 +4,7 @@ import { PlacesService } from '../service/places.service';
 import { Place } from '@prisma/client';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { PlaceEntity } from '../entities/place.entity';
-import { FindManyPlacesDto } from '../dto/find-many-places-dto';
+import { FindPlacesDto } from '../dto/find-places-dto';
 
 describe('PlacesController', () => {
   let controller: PlacesController;
@@ -56,13 +56,11 @@ describe('PlacesController', () => {
 
     findMany: jest
       .fn()
-      .mockImplementation(
-        (findManyPlacesDto: FindManyPlacesDto): Promise<Place[]> => {
-          return Promise.resolve(
-            mockPlaces.map((place) => new PlaceEntity(place)),
-          );
-        },
-      ),
+      .mockImplementation((findPlacesDto: FindPlacesDto): Promise<Place[]> => {
+        return Promise.resolve(
+          mockPlaces.map((place) => new PlaceEntity(place)),
+        );
+      }),
 
     update: jest.fn().mockImplementation((id: string, updatePlaceDto: any) => {
       return Promise.resolve({
@@ -113,7 +111,7 @@ describe('PlacesController', () => {
 
   describe('findMany', () => {
     it('조건에 맞는 장소 목록을 반환해야 한다', async () => {
-      const findManyDto: FindManyPlacesDto = {
+      const findManyDto: FindPlacesDto = {
         city: '서울시',
         district: '강남구',
         street: '봉은사로',

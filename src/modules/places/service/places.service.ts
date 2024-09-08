@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
-import { FindManyPlacesDto } from '../dto/find-many-places-dto';
+import { FindPlacesDto } from '../dto/find-places-dto';
 import { PlacesRepository } from '../repository/places.repository';
 import { FailedToCreatePlaceError } from '../error/failed-to-create-place';
 import { PlaceEntity } from '../entities/place.entity';
@@ -23,9 +23,9 @@ export class PlacesService {
     return new PlaceEntity(place);
   }
 
-  async findMany(findManyPlaceDto: FindManyPlacesDto) {
+  async findMany(findPlaceDto: FindPlacesDto) {
     const places = await this.placesRepository
-      .findMany(findManyPlaceDto)
+      .findMany(findPlaceDto)
       .catch(() => {
         throw new FailedToFindPlaceError();
       });

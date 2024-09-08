@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class FindManyPlacesDto {
+export class FindPlacesDto {
   @ApiProperty({
     example: '서울시',
     description: `시/도`,

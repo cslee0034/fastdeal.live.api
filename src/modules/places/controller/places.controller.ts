@@ -11,7 +11,7 @@ import { PlacesService } from '../service/places.service';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { FindManyPlacesDto } from '../dto/find-many-places-dto';
+import { FindPlacesDto } from '../dto/find-places-dto';
 import { Public } from '../../../common/decorator/public.decorator';
 import { PlaceEntity } from '../entities/place.entity';
 
@@ -27,10 +27,8 @@ export class PlacesController {
 
   @Public()
   @Get()
-  async findMany(
-    @Body() findManyPlacesDto: FindManyPlacesDto,
-  ): Promise<PlaceEntity[]> {
-    return await this.placesService.findMany(findManyPlacesDto);
+  async findMany(@Body() findPlacesDto: FindPlacesDto): Promise<PlaceEntity[]> {
+    return await this.placesService.findMany(findPlacesDto);
   }
 
   @Patch(':id')

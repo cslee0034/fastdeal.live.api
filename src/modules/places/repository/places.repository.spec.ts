@@ -2,7 +2,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { Test, TestingModule } from '@nestjs/testing';
 import { PlacesRepository } from './places.repository';
 import { CreatePlaceDto } from '../dto/create-place.dto';
-import { FindManyPlacesDto } from '../dto/find-many-places-dto';
+import { FindPlacesDto } from '../dto/find-places-dto';
 import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
 
@@ -28,7 +28,7 @@ describe('PlacesRepository', () => {
     streetNumber: 10,
   };
 
-  const mockFindPlaceDto: FindManyPlacesDto = {
+  const mockFindPlaceDto: FindPlacesDto = {
     city: '서울시',
     district: '강남구',
     street: '봉은사로',
