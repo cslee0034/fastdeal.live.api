@@ -12,7 +12,7 @@ export class UsersRepository {
     return await this.prisma.user.create({
       data: {
         ...createUserDto,
-        role: Role.customer,
+        role: Role.CUSTOMER,
       },
     });
   }

@@ -27,7 +27,7 @@ describe('UsersRepository', () => {
   const mockExpectedUser = {
     ...mockUser,
     id: mockId,
-    role: Role.customer,
+    role: Role.CUSTOMER,
   };
 
   beforeEach(async () => {
@@ -53,7 +53,7 @@ describe('UsersRepository', () => {
       const expectedUser = {
         ...mockUser,
         id: '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec',
-        role: Role.customer,
+        role: Role.CUSTOMER,
       };
 
       mockPrismaService.user.create.mockResolvedValue(expectedUser);

@@ -20,7 +20,7 @@ export class PlacesController {
   constructor(private readonly placesService: PlacesService) {}
 
   @Post()
-  @Roles(['admin'])
+  @Roles(['ADMIN'])
   create(@Body() createPlaceDto: CreatePlaceDto): Promise<PlaceEntity> {
     return this.placesService.create(createPlaceDto);
   }
@@ -34,7 +34,7 @@ export class PlacesController {
   }
 
   @Patch(':id')
-  @Roles(['admin'])
+  @Roles(['ADMIN'])
   update(
     @Param('id') id: string,
     @Body() updatePlaceDto: UpdatePlaceDto,
@@ -43,7 +43,7 @@ export class PlacesController {
   }
 
   @Delete(':id')
-  @Roles(['admin'])
+  @Roles(['ADMIN'])
   remove(@Param('id') id: string): Promise<boolean> {
     return this.placesService.remove(id);
   }
