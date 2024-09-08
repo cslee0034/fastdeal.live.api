@@ -106,6 +106,31 @@ describe('PlacesRepository', () => {
       });
     });
 
+    it('district, street, streetNumber가 없을 경우 기본값을 사용해야 한다', async () => {
+      const expectedPlaces = [mockPlaceEntity];
+
+      mockPrismaService.place.findMany.mockResolvedValue(expectedPlaces);
+
+      const result = await repository.findMany({
+        ...mockFindPlaceDto,
+        district: undefined,
+        street: undefined,
+        streetNumber: undefined,
+      });
+
+      expect(result).toEqual(expectedPlaces);
+      expect(prisma.place.findMany).toHaveBeenCalledWith({
+        where: {
+          city: mockFindPlaceDto.city,
+          district: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          street: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          streetNumber: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+        },
+        skip: mockFindPlaceDto.skip || REPOSITORY_CONSTANT.DEFAULT_SKIP,
+        take: mockFindPlaceDto.take || REPOSITORY_CONSTANT.DEFAULT_TAKE,
+      });
+    });
+
     it('skip과 take가 없을 경우 기본값을 사용해야 한다', async () => {
       const expectedPlaces = [mockPlaceEntity];
 

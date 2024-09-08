@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { EventsRepository } from './events.repository';
 import { CreateEventDto } from '../dto/create-event-dto';
+import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
 describe('UsersRepository', () => {
   let repository: EventsRepository;
 
@@ -117,6 +118,46 @@ describe('UsersRepository', () => {
             streetNumber: mockEventPlace.streetNumber,
           },
           name: mockEventPlace.eventName,
+        },
+      });
+    });
+
+    it('city, district, street, streetNumber가 없을 경우 기본값을 사용해야 한다', async () => {
+      await repository.findEventsByPlace({
+        city: '서울시',
+        eventName: '테스트 이벤트',
+      });
+
+      expect(mockPrismaService.event.findMany).toHaveBeenCalledWith({
+        where: {
+          place: {
+            city: '서울시',
+            district: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+            street: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+            streetNumber: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          },
+          name: '테스트 이벤트',
+        },
+      });
+    });
+
+    it('eventName이 없을 경우 기본값을 사용해야 한다', async () => {
+      await repository.findEventsByPlace({
+        city: '서울시',
+        district: '강남구',
+        street: '봉은사로',
+        streetNumber: 10,
+      });
+
+      expect(mockPrismaService.event.findMany).toHaveBeenCalledWith({
+        where: {
+          place: {
+            city: '서울시',
+            district: '강남구',
+            street: '봉은사로',
+            streetNumber: 10,
+          },
+          name: REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
         },
       });
     });
