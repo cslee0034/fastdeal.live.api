@@ -8,6 +8,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { TicketsRepository } from '../../tickets/repository/tickets.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { FailedToFindEventError } from '../error/failed-to-find-event';
+import { EventType } from '@prisma/client';
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid'),
@@ -26,6 +27,7 @@ describe('EventsService', () => {
     name: '테스트 이벤트',
     description: '이벤트 설명',
     date: new Date(),
+    eventType: EventType.STANDING,
     placeId: mockPlaceId,
     price: 10000,
     quantity: 100,

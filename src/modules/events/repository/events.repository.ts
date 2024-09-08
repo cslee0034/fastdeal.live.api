@@ -15,6 +15,7 @@ export class EventsRepository {
         name: createEventDto.name,
         description: createEventDto.description,
         date: createEventDto.date,
+        eventType: createEventDto.eventType,
         place: {
           connect: {
             id: createEventDto.placeId,
@@ -30,6 +31,7 @@ export class EventsRepository {
         name: createEventDto.name,
         description: createEventDto.description,
         date: createEventDto.date,
+        eventType: createEventDto.eventType,
         place: {
           connect: {
             id: createEventDto.placeId,

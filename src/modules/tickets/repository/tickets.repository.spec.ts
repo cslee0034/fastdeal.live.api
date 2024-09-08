@@ -4,6 +4,7 @@ import { TicketsRepository } from './tickets.repository';
 import { MappedTicket } from '../interface/mapped-ticket.interface';
 import { CreateEventDto } from '../../events/dto/create-event-dto';
 import { EventEntity } from '../../events/entities/event.entity';
+import { EventType } from '@prisma/client';
 describe('TicketsRepository', () => {
   let repository: TicketsRepository;
 
@@ -22,6 +23,7 @@ describe('TicketsRepository', () => {
     description: '이벤트 설명',
     date: new Date(),
     placeId: mockPlaceId,
+    eventType: EventType.STANDING,
     price: 10000,
     quantity: 100,
     image: 'https://example.com/image.jpg',

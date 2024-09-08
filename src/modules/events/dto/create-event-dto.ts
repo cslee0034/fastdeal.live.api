@@ -1,4 +1,12 @@
-import { IsDate, IsNumber, IsString, IsUrl, IsUUID } from 'class-validator';
+import { EventType } from '@prisma/client';
+import {
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsString,
+  IsUrl,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
@@ -9,6 +17,9 @@ export class CreateEventDto {
 
   @IsDate()
   date: Date;
+
+  @IsEnum(EventType)
+  eventType: EventType;
 
   @IsUUID()
   placeId: string;

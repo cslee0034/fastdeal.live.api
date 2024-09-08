@@ -5,6 +5,7 @@ import { CreateEventDto } from '../dto/create-event-dto';
 import { EventEntity } from '../entities/event.entity';
 import { EventTicketCreate } from '../interface/event-ticket-create.interface';
 import { FindEventsByPlaceDto } from '../dto/find-events-by-place.dto';
+import { EventType } from '@prisma/client';
 describe('EventsController', () => {
   let controller: EventsController;
   let service: EventsService;
@@ -25,6 +26,7 @@ describe('EventsController', () => {
     name: '테스트 이벤트',
     description: '이벤트 설명',
     date: new Date(),
+    eventType: EventType.STANDING,
     placeId: mockPlaceId,
     price: 10000,
     quantity: 100,

@@ -68,19 +68,25 @@ model Place {
 }
 
 model Event {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   description String?
   date        DateTime
-  place       Place    @relation(fields: [placeId], references: [id])
+  eventType   EventType
+  place       Place     @relation(fields: [placeId], references: [id])
   placeId     String
-  createdAt   DateTime @default(now()) @db.Timestamp(0)
-  updatedAt   DateTime @updatedAt @db.Timestamp(0)
+  createdAt   DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime  @updatedAt @db.Timestamp(0)
 
   Reservations Reservation[]
   Ticket       Ticket[]
 
   @@index([date])
+}
+
+enum EventType {
+  RESERVED // 좌석이 구분됨
+  STANDING // 좌석이 구분되지 않음
 }
 
 model Ticket {

@@ -3,6 +3,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { EventsRepository } from './events.repository';
 import { CreateEventDto } from '../dto/create-event-dto';
 import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
+import { EventType } from '@prisma/client';
 describe('UsersRepository', () => {
   let repository: EventsRepository;
 
@@ -19,6 +20,7 @@ describe('UsersRepository', () => {
     name: '테스트 이벤트',
     description: '이벤트 설명',
     date: new Date(),
+    eventType: EventType.STANDING,
     placeId: mockPlaceId,
     price: 10000,
     quantity: 100,
@@ -67,6 +69,7 @@ describe('UsersRepository', () => {
           name: mockCreateEventDto.name,
           description: mockCreateEventDto.description,
           date: mockCreateEventDto.date,
+          eventType: mockCreateEventDto.eventType,
           place: {
             connect: {
               id: mockCreateEventDto.placeId,
@@ -93,6 +96,7 @@ describe('UsersRepository', () => {
           name: mockCreateEventDto.name,
           description: mockCreateEventDto.description,
           date: mockCreateEventDto.date,
+          eventType: mockCreateEventDto.eventType,
           place: {
             connect: {
               id: mockCreateEventDto.placeId,
