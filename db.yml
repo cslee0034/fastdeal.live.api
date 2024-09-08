@@ -13,16 +13,29 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  redis:
+  # 캐싱 Redis
+  redis_cache:
     image: redis:latest
     command: redis-server --requirepass 1234
     ports:
       - '6379:6379'
     volumes:
-      - redis_data:/data
+      - redis_cache_data:/data
+    environment:
+      REDIS_PASSWORD: 1234
+
+  # 락킹 Redis
+  redis_lock:
+    image: redis:latest
+    command: redis-server --requirepass 1234
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis_lock_data:/data
     environment:
       REDIS_PASSWORD: 1234
 
 volumes:
   mysql_data:
-  redis_data:
+  redis_cache_data:
+  redis_lock_data:
