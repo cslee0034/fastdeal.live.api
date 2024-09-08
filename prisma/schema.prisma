@@ -99,10 +99,12 @@ model Ticket {
   seatNumber    Int
   checkInCode   String
   image         String
+  isAvailable   Boolean      @default(true)
   createdAt     DateTime     @default(now()) @db.Timestamp(0)
   updatedAt     DateTime     @updatedAt @db.Timestamp(0)
 
-  @@index([eventId])
+  @@index([id, isAvailable])
+  @@index([eventId, isAvailable])
 }
 
 model Reservation {
