@@ -26,6 +26,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
 import { TokenModule } from './infrastructure/token/module/token.module';
 import { PlacesModule } from './modules/places/module/places.module';
+import { EventsModule } from './modules/events/module/events.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { PlacesModule } from './modules/places/module/places.module';
     PrismaModule,
     TokenModule,
     AuthModule,
+    EventsModule,
     PlacesModule,
     UsersModule,
   ],
