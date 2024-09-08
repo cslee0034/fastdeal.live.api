@@ -3,6 +3,7 @@ import { TicketsService } from './tickets.service';
 import { TicketsRepository } from '../repository/tickets.repository';
 import { TicketEntity } from '../entities/ticket.entity';
 import { FailedToFindTicketError } from '../error/failed-to-find-ticket';
+import { FailedToCountTicketError } from '../error/failed-to-count-ticket';
 
 describe('TicketsService', () => {
   let service: TicketsService;
@@ -15,6 +16,14 @@ describe('TicketsService', () => {
       }
 
       return Promise.resolve(mockTickets);
+    }),
+
+    countTicketsByEventId: jest.fn(async (eventId: string) => {
+      if (eventId === 'not-exists') {
+        return Promise.resolve(0);
+      }
+
+      return Promise.resolve(mockTickets.length);
     }),
   };
 
@@ -79,5 +88,35 @@ describe('TicketsService', () => {
     await expect(service.findTicketsByEventId(mockEventId)).rejects.toThrow(
       FailedToFindTicketError,
     );
+  });
+
+  describe('countTicketsByEventId', () => {
+    it('이벤트 ID에 해당하는 티켓 수를 반환한다', async () => {
+      const result = await service.countTicketsByEventId(mockEventId);
+
+      expect(repository.countTicketsByEventId).toHaveBeenCalledWith(
+        mockEventId,
+      );
+      expect(result).toEqual(mockTickets.length);
+    });
+
+    it('이벤트 ID에 해당하는 티켓이 없을 경우 0을 반환한다', async () => {
+      const result = await service.countTicketsByEventId('not-exists');
+
+      expect(repository.countTicketsByEventId).toHaveBeenCalledWith(
+        'not-exists',
+      );
+      expect(result).toEqual(0);
+    });
+
+    it('티켓을 찾는 도중 에러가 발생하면 FailedToCountTicketError 반환한다', async () => {
+      mockTicketsRepository.countTicketsByEventId.mockRejectedValue(
+        new Error(),
+      );
+
+      await expect(service.countTicketsByEventId(mockEventId)).rejects.toThrow(
+        FailedToCountTicketError,
+      );
+    });
   });
 });

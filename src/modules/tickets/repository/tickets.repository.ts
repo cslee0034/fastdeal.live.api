@@ -26,4 +26,12 @@ export class TicketsRepository {
       },
     });
   }
+
+  async countTicketsByEventId(eventId: string): Promise<number> {
+    return await this.prisma.ticket.count({
+      where: {
+        eventId,
+      },
+    });
+  }
 }

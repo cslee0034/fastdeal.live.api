@@ -11,4 +11,10 @@ export class TicketsController {
   async findTicketsByEventId(@Param('eventId') eventId: string) {
     return await this.ticketsService.findTicketsByEventId(eventId);
   }
+
+  @Public()
+  @Get('event/:eventId/count')
+  async countTicketsByEventId(@Param('eventId') eventId: string) {
+    return await this.ticketsService.countTicketsByEventId(eventId);
+  }
 }

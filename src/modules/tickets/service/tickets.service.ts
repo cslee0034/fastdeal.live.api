@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TicketsRepository } from '../repository/tickets.repository';
 import { TicketEntity } from '../entities/ticket.entity';
 import { FailedToFindTicketError } from '../error/failed-to-find-ticket';
+import { FailedToCountTicketError } from '../error/failed-to-count-ticket';
 
 @Injectable()
 export class TicketsService {
@@ -15,5 +16,15 @@ export class TicketsService {
       });
 
     return tickets.map((ticket) => new TicketEntity(ticket));
+  }
+
+  async countTicketsByEventId(eventId: string) {
+    const ticketCount = await this.ticketsRepository
+      .countTicketsByEventId(eventId)
+      .catch(() => {
+        throw new FailedToCountTicketError();
+      });
+
+    return ticketCount;
   }
 }

@@ -11,6 +11,12 @@ describe('TicketsController', () => {
       .mockImplementation(async (eventId: string) => {
         return Promise.resolve(mockTickets);
       }),
+
+    countTicketsByEventId: jest
+      .fn()
+      .mockImplementation(async (eventId: string) => {
+        return Promise.resolve(mockTickets.length);
+      }),
   };
 
   const mockEventId = '9a7b5b9e-1b7b-4b3b-8e0e-1b0b5b9e7b5b';
@@ -55,6 +61,15 @@ describe('TicketsController', () => {
 
       expect(service.findTicketsByEventId).toHaveBeenCalledWith(mockEventId);
       expect(result).toEqual(mockTickets);
+    });
+  });
+
+  describe('countTicketsByEventId', () => {
+    it('이벤트 ID에 해당하는 티켓 수를 반환한다', async () => {
+      const result = await controller.countTicketsByEventId(mockEventId);
+
+      expect(service.countTicketsByEventId).toHaveBeenCalledWith(mockEventId);
+      expect(result).toEqual(mockTickets.length);
     });
   });
 });
