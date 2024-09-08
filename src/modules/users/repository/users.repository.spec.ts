@@ -1,7 +1,7 @@
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersRepository } from './users.repository';
-import { Role } from '@prisma/client';
+import { ApplicationStatus, Role } from '@prisma/client';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 describe('UsersRepository', () => {
@@ -15,6 +15,7 @@ describe('UsersRepository', () => {
     },
     sellerApplication: {
       create: jest.fn(),
+      update: jest.fn(),
     },
   };
 
@@ -145,6 +146,42 @@ describe('UsersRepository', () => {
             },
           },
           description: mockSellerApplication.description,
+        },
+      });
+    });
+  });
+
+  describe('approveToSeller', () => {
+    it('판매자 신청을 승인해야 한다', async () => {
+      mockPrismaService.sellerApplication.update.mockResolvedValue(
+        mockSellerApplication,
+      );
+
+      const result = await repository.approveToSeller(mockId);
+
+      expect(result).toEqual(mockSellerApplication);
+      expect(mockPrismaService.sellerApplication.update).toHaveBeenCalledWith({
+        where: { id: mockId },
+        data: {
+          status: ApplicationStatus.APPROVED,
+        },
+      });
+    });
+  });
+
+  describe('rejectToSeller', () => {
+    it('판매자 신청을 거절해야 한다', async () => {
+      mockPrismaService.sellerApplication.update.mockResolvedValue(
+        mockSellerApplication,
+      );
+
+      const result = await repository.rejectToSeller(mockId);
+
+      expect(result).toEqual(mockSellerApplication);
+      expect(mockPrismaService.sellerApplication.update).toHaveBeenCalledWith({
+        where: { id: mockId },
+        data: {
+          status: ApplicationStatus.REJECTED,
         },
       });
     });

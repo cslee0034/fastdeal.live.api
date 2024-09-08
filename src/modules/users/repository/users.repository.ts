@@ -1,7 +1,7 @@
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { SellerApplication, User } from '@prisma/client';
+import { ApplicationStatus, SellerApplication, User } from '@prisma/client';
 import { Role } from '@prisma/client';
 import { ApplyToSellerDto } from '../dto/apply-to-seller.dto';
 
@@ -41,6 +41,24 @@ export class UsersRepository {
           },
         },
         description: applyToSellerDto.description,
+      },
+    });
+  }
+
+  async approveToSeller(id: string): Promise<SellerApplication> {
+    return await this.prisma.sellerApplication.update({
+      where: { id },
+      data: {
+        status: ApplicationStatus.APPROVED,
+      },
+    });
+  }
+
+  async rejectToSeller(id: string): Promise<SellerApplication> {
+    return await this.prisma.sellerApplication.update({
+      where: { id },
+      data: {
+        status: ApplicationStatus.REJECTED,
       },
     });
   }

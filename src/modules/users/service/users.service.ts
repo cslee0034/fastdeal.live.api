@@ -10,6 +10,8 @@ import { FailedToCreateUserError } from '../error/failed-to-create-user';
 import { ApplyToSellerDto } from '../dto/apply-to-seller.dto';
 import { FailedToCreateSellerApplicationError } from '../error/failed-to-create-seller-application';
 import { SellerApplicationEntity } from '../entities/seller-application.entity';
+import { FailedToUpdateSellerApplicationError } from '../error/failed-to-update-seller-application';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -74,6 +76,26 @@ export class UsersService {
       .applyToSeller(applyToSellerDto)
       .catch(() => {
         throw new FailedToCreateSellerApplicationError();
+      });
+
+    return new SellerApplicationEntity(sellerApplication);
+  }
+
+  public async approveToSeller(id: string): Promise<SellerApplicationEntity> {
+    const sellerApplication = await this.userRepository
+      .approveToSeller(id)
+      .catch(() => {
+        throw new FailedToUpdateSellerApplicationError();
+      });
+
+    return new SellerApplicationEntity(sellerApplication);
+  }
+
+  public async rejectToSeller(id: string): Promise<SellerApplicationEntity> {
+    const sellerApplication = await this.userRepository
+      .rejectToSeller(id)
+      .catch(() => {
+        throw new FailedToUpdateSellerApplicationError();
       });
 
     return new SellerApplicationEntity(sellerApplication);

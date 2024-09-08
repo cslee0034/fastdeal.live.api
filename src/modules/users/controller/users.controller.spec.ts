@@ -22,6 +22,14 @@ describe('UsersController', () => {
           new SellerApplicationEntity(mockApplyToSellerDto),
         );
       }),
+
+    approveToSeller: jest.fn().mockImplementation((id: string) => {
+      return Promise.resolve(new SellerApplicationEntity(mockApplyToSellerDto));
+    }),
+
+    rejectToSeller: jest.fn().mockImplementation((id: string) => {
+      return Promise.resolve(new SellerApplicationEntity(mockApplyToSellerDto));
+    }),
   };
 
   beforeEach(async () => {
@@ -44,13 +52,31 @@ describe('UsersController', () => {
   });
 
   describe('applyToSeller', () => {
-    it('판매자 신청을 하고 true를 반환해야 한다', async () => {
+    it('판매자 신청을 하고 SellerApplicationEntity를 반환해야 한다', async () => {
       const result = await controller.applyToSeller(
         mockApplyToSellerDto as ApplyToSellerDto,
       );
 
       expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
       expect(service.applyToSeller).toHaveBeenCalled();
+    });
+  });
+
+  describe('approveToSeller', () => {
+    it('판매자 신청을 승인하고 SellerApplicationEntity를 반환해야 한다', async () => {
+      const result = await controller.approveToSeller(mockId);
+
+      expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
+      expect(service.approveToSeller).toHaveBeenCalled();
+    });
+  });
+
+  describe('rejectToSeller', () => {
+    it('판매자 신청을 거절하고 SellerApplicationEntity를 반환해야 한다', async () => {
+      const result = await controller.rejectToSeller(mockId);
+
+      expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
+      expect(service.rejectToSeller).toHaveBeenCalled();
     });
   });
 });
