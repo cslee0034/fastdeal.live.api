@@ -13,6 +13,9 @@ describe('UsersRepository', () => {
       findUnique: jest.fn(),
       upsert: jest.fn(),
     },
+    sellerApplication: {
+      create: jest.fn(),
+    },
   };
 
   const mockUser: CreateUserDto = {
@@ -28,6 +31,11 @@ describe('UsersRepository', () => {
     ...mockUser,
     id: mockId,
     role: Role.CUSTOMER,
+  };
+
+  const mockSellerApplication = {
+    userId: mockId,
+    description: '판매자 신청합니다',
   };
 
   beforeEach(async () => {
@@ -116,6 +124,28 @@ describe('UsersRepository', () => {
       expect(result).toBeNull();
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: email },
+      });
+    });
+  });
+
+  describe('applyToSeller', () => {
+    it('판매자 신청을 생성해야 한다', async () => {
+      mockPrismaService.sellerApplication.create.mockResolvedValue(
+        mockSellerApplication,
+      );
+
+      const result = await repository.applyToSeller(mockSellerApplication);
+
+      expect(result).toEqual(mockSellerApplication);
+      expect(mockPrismaService.sellerApplication.create).toHaveBeenCalledWith({
+        data: {
+          user: {
+            connect: {
+              id: mockSellerApplication.userId,
+            },
+          },
+          description: mockSellerApplication.description,
+        },
       });
     });
   });

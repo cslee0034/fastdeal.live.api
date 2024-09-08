@@ -7,6 +7,9 @@ import { UserAlreadyExistsError } from '../error/user-already-exists';
 import { FailedToGetUserError } from '../error/failed-to-get-user';
 import { UserNotFoundError } from '../error/user-not-found';
 import { FailedToCreateUserError } from '../error/failed-to-create-user';
+import { ApplyToSellerDto } from '../dto/apply-to-seller.dto';
+import { FailedToCreateSellerApplicationError } from '../error/failed-to-create-seller-application';
+import { SellerApplicationEntity } from '../entities/seller-application.entity';
 @Injectable()
 export class UsersService {
   constructor(
@@ -58,6 +61,22 @@ export class UsersService {
     await this.encryptService.compareAndThrow(password, user.password);
 
     return new UserEntity(user);
+  }
+
+  public async applyToSeller(
+    applyToSellerDto: ApplyToSellerDto,
+  ): Promise<SellerApplicationEntity> {
+    const user = await this.findOneById(applyToSellerDto.userId);
+
+    this.assertUserExists(user);
+
+    const sellerApplication = await this.userRepository
+      .applyToSeller(applyToSellerDto)
+      .catch(() => {
+        throw new FailedToCreateSellerApplicationError();
+      });
+
+    return new SellerApplicationEntity(sellerApplication);
   }
 
   private async findOneByEmail(email: string): Promise<UserEntity | null> {

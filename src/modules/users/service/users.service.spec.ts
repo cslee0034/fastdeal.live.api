@@ -10,6 +10,8 @@ import { UserNotFoundError } from '../error/user-not-found';
 import { FailedToCreateUserError } from '../error/failed-to-create-user';
 import { UserEntity } from '../entities/user.entity';
 import { PasswordDoesNotMatch } from '../../../infrastructure/encrypt/error/password-does-not-match';
+import { SellerApplicationEntity } from '../entities/seller-application.entity';
+import { FailedToCreateSellerApplicationError } from '../error/failed-to-create-seller-application';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -39,6 +41,10 @@ describe('UsersService', () => {
           ...user,
         }),
       );
+    }),
+
+    applyToSeller: jest.fn().mockImplementation((applyToSellerDto) => {
+      return Promise.resolve(new SellerApplicationEntity(applyToSellerDto));
     }),
   };
 
@@ -86,6 +92,11 @@ describe('UsersService', () => {
     email: mockExistingUserEmail,
     password: mockHashedPassword,
   });
+
+  const mockApplyToSellerDto = {
+    userId: mockId,
+    description: '판매자 신청합니다',
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -231,6 +242,45 @@ describe('UsersService', () => {
           password: 'password',
         }),
       ).rejects.toThrow(FailedToGetUserError);
+    });
+  });
+
+  describe('applyToSeller', () => {
+    it('유저가 존재하면 판매자 신청 성공', async () => {
+      mockUserRepository.findOneById.mockResolvedValue(mockExistingUserEntity);
+
+      const result = await service.applyToSeller(mockApplyToSellerDto);
+
+      expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
+      expect(mockUserRepository.findOneById).toHaveBeenCalledWith(mockId);
+      expect(mockUserRepository.applyToSeller).toHaveBeenCalledWith(
+        mockApplyToSellerDto,
+      );
+    });
+
+    it('유저가 존재하지 않으면 UserNotFoundError 반환', async () => {
+      mockUserRepository.findOneById.mockResolvedValue(null);
+
+      await expect(service.applyToSeller(mockApplyToSellerDto)).rejects.toThrow(
+        UserNotFoundError,
+      );
+    });
+
+    it('유저 조회에 실패하면 FailedToGetUserError 반환', async () => {
+      mockUserRepository.findOneById.mockRejectedValue(new Error());
+
+      await expect(service.applyToSeller(mockApplyToSellerDto)).rejects.toThrow(
+        FailedToGetUserError,
+      );
+    });
+
+    it('판매자 신청에 실패하면 FailedToCreateSellerApplicationError 반환', async () => {
+      mockUserRepository.findOneById.mockResolvedValue(mockExistingUserEntity);
+      mockUserRepository.applyToSeller.mockRejectedValue(new Error());
+
+      await expect(service.applyToSeller(mockApplyToSellerDto)).rejects.toThrow(
+        FailedToCreateSellerApplicationError,
+      );
     });
   });
 });

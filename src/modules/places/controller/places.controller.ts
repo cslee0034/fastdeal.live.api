@@ -21,30 +21,30 @@ export class PlacesController {
 
   @Post()
   @Roles(['ADMIN'])
-  create(@Body() createPlaceDto: CreatePlaceDto): Promise<PlaceEntity> {
-    return this.placesService.create(createPlaceDto);
+  async create(@Body() createPlaceDto: CreatePlaceDto): Promise<PlaceEntity> {
+    return await this.placesService.create(createPlaceDto);
   }
 
   @Public()
   @Get()
-  findMany(
+  async findMany(
     @Body() findManyPlacesDto: FindManyPlacesDto,
   ): Promise<PlaceEntity[]> {
-    return this.placesService.findMany(findManyPlacesDto);
+    return await this.placesService.findMany(findManyPlacesDto);
   }
 
   @Patch(':id')
   @Roles(['ADMIN'])
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePlaceDto: UpdatePlaceDto,
   ): Promise<PlaceEntity> {
-    return this.placesService.update(id, updatePlaceDto);
+    return await this.placesService.update(id, updatePlaceDto);
   }
 
   @Delete(':id')
   @Roles(['ADMIN'])
-  remove(@Param('id') id: string): Promise<boolean> {
-    return this.placesService.remove(id);
+  async remove(@Param('id') id: string): Promise<boolean> {
+    return await this.placesService.remove(id);
   }
 }
