@@ -4,6 +4,7 @@ import { EventsService } from '../service/events.service';
 import { CreateEventDto } from '../dto/create-event-dto';
 import { EventEntity } from '../entities/event.entity';
 import { EventTicketCreate } from '../interface/event-ticket-create.interface';
+import { FindEventsByPlaceDto } from '../dto/find-events-by-place.dto';
 describe('EventsController', () => {
   let controller: EventsController;
   let service: EventsService;
@@ -11,6 +12,10 @@ describe('EventsController', () => {
   const mockEventsService = {
     create: jest.fn().mockImplementation((createEventDto: CreateEventDto) => {
       return Promise.resolve(mockEventTicketCreate);
+    }),
+
+    findEventsByPlace: jest.fn().mockImplementation((place: any) => {
+      return Promise.resolve(mockEventEntity);
     }),
   };
 
@@ -24,6 +29,14 @@ describe('EventsController', () => {
     price: 10000,
     quantity: 100,
     image: 'https://example.com/image.jpg',
+  };
+
+  const mockEventPlace = {
+    city: '서울시',
+    district: '강남구',
+    street: '봉은사로',
+    streetNumber: 10,
+    eventName: '테스트 이벤트',
   };
 
   const mockEventEntity = new EventEntity({
@@ -65,6 +78,17 @@ describe('EventsController', () => {
 
       expect(service.create).toHaveBeenCalledWith(mockCreateEventDto);
       expect(result).toEqual(mockEventTicketCreate);
+    });
+  });
+
+  describe('findEventsByPlace', () => {
+    it('장소에 해당하는 이벤트 목록을 반환한다', async () => {
+      const result = await controller.findEventsByPlace(
+        mockEventPlace as FindEventsByPlaceDto,
+      );
+
+      expect(service.findEventsByPlace).toHaveBeenCalledWith(mockEventPlace);
+      expect(result).toEqual(mockEventEntity);
     });
   });
 });

@@ -3,6 +3,8 @@ import { EventsService } from '../service/events.service';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { CreateEventDto } from '../dto/create-event-dto';
 import { EventTicketCreate } from '../interface/event-ticket-create.interface';
+import { FindEventsByPlaceDto } from '../dto/find-events-by-place.dto';
+import { Public } from '../../../common/decorator/public.decorator';
 
 @Controller('events')
 export class EventsController {
@@ -13,8 +15,14 @@ export class EventsController {
   async create(
     @Body() createEventDto: CreateEventDto,
   ): Promise<EventTicketCreate> {
-    const result = await this.eventsService.create(createEventDto);
+    return await this.eventsService.create(createEventDto);
+  }
 
-    return result;
+  @Public()
+  @Get()
+  async findEventsByPlace(
+    @Body() findEventsDto: FindEventsByPlaceDto,
+  ): Promise<any> {
+    return await this.eventsService.findEventsByPlace(findEventsDto);
   }
 }

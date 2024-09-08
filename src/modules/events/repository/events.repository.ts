@@ -2,6 +2,8 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { Injectable } from '@nestjs/common';
 import { CreateEventDto } from '../dto/create-event-dto';
 import { Event } from '@prisma/client';
+import { FindEventsByPlaceDto } from '../dto/find-events-by-place.dto';
+import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
 
 @Injectable()
 export class EventsRepository {
@@ -22,7 +24,7 @@ export class EventsRepository {
     });
   }
 
-  async createEvents(tx: PrismaService, createEventDto: CreateEventDto) {
+  async createEventTx(tx: PrismaService, createEventDto: CreateEventDto) {
     return await tx.event.create({
       data: {
         name: createEventDto.name,
@@ -33,6 +35,24 @@ export class EventsRepository {
             id: createEventDto.placeId,
           },
         },
+      },
+    });
+  }
+
+  async findEventsByPlace(findEventsDto: FindEventsByPlaceDto) {
+    return await this.prisma.event.findMany({
+      where: {
+        place: {
+          city: findEventsDto.city,
+          district:
+            findEventsDto.district || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          street:
+            findEventsDto.street || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+          streetNumber:
+            findEventsDto.streetNumber ||
+            REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
+        },
+        name: findEventsDto.eventName || REPOSITORY_CONSTANT.DEFAULT_UNSELECTED,
       },
     });
   }

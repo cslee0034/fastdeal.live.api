@@ -7,6 +7,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { v4 as uuidv4 } from 'uuid';
 import { TicketsRepository } from '../../tickets/repository/tickets.repository';
 import { EventTicketCreate } from '../interface/event-ticket-create.interface';
+import { FindEventsByPlaceDto } from '../dto/find-events-by-place.dto';
 
 @Injectable()
 export class EventsService {
@@ -19,14 +20,14 @@ export class EventsService {
   async create(createEventDto: CreateEventDto): Promise<EventTicketCreate> {
     const result = await this.prisma
       .$transaction(async (tx: PrismaService) => {
-        const event = await this.eventsRepository.createEvents(
+        const event = await this.eventsRepository.createEventTx(
           tx,
           createEventDto,
         );
 
         const mappedTicket = await this.mapTicketData(createEventDto, event);
 
-        const tickets = await this.ticketsRepository.createTickets(
+        const tickets = await this.ticketsRepository.createTicketsTx(
           tx,
           mappedTicket,
         );
@@ -38,6 +39,12 @@ export class EventsService {
       });
 
     return result;
+  }
+
+  public async findEventsByPlace(findEventsDto: FindEventsByPlaceDto) {
+    const events = await this.eventsRepository.findEventsByPlace(findEventsDto);
+
+    return events.map((event) => new EventEntity(event));
   }
 
   private async mapTicketData(

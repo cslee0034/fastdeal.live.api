@@ -31,6 +31,14 @@ describe('EventsService', () => {
     image: 'https://example.com/image.jpg',
   };
 
+  const mockEventPlace = {
+    city: '서울',
+    district: '강남구',
+    street: '봉은사로',
+    streetNumber: 10,
+    eventName: '테스트 이벤트',
+  };
+
   const mockEventEntity = new EventEntity({
     id: mockId,
     ...mockCreateEventDto,
@@ -53,11 +61,12 @@ describe('EventsService', () => {
   };
 
   const mockEventsRepository = {
-    createEvents: jest.fn(),
+    createEventTx: jest.fn(),
+    findEventsByPlace: jest.fn(),
   };
 
   const mockTicketsRepository = {
-    createTickets: jest.fn(),
+    createTicketsTx: jest.fn(),
   };
 
   const mockPrismaService = {
@@ -95,10 +104,10 @@ describe('EventsService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create 이벤트 생성', () => {
+  describe('create', () => {
     it('이벤트와 티켓을 생성하고 EventTicketCreate를 반환해야 한다', async () => {
-      mockEventsRepository.createEvents.mockResolvedValue(mockEventEntity);
-      mockTicketsRepository.createTickets.mockResolvedValue(mockTickets);
+      mockEventsRepository.createEventTx.mockResolvedValue(mockEventEntity);
+      mockTicketsRepository.createTicketsTx.mockResolvedValue(mockTickets);
 
       mockPrismaService.$transaction.mockImplementation(async (tx: any) => {
         return tx(prisma);
@@ -106,11 +115,11 @@ describe('EventsService', () => {
 
       const result = await service.create(mockCreateEventDto);
 
-      expect(eventsRepository.createEvents).toHaveBeenCalledWith(
+      expect(eventsRepository.createEventTx).toHaveBeenCalledWith(
         prisma,
         mockCreateEventDto,
       );
-      expect(ticketsRepository.createTickets).toHaveBeenCalledWith(
+      expect(ticketsRepository.createTicketsTx).toHaveBeenCalledWith(
         prisma,
         mockTickets,
       );
@@ -133,6 +142,21 @@ describe('EventsService', () => {
       );
 
       expect(mappedTickets).toEqual(mockTickets);
+    });
+  });
+
+  describe('findEventsByPlace', () => {
+    it('장소에 해당하는 이벤트 목록을 반환해야 한다', async () => {
+      const mockEvents = [mockEventEntity];
+
+      mockEventsRepository.findEventsByPlace.mockResolvedValue(mockEvents);
+
+      const result = await service.findEventsByPlace(mockEventPlace);
+
+      expect(eventsRepository.findEventsByPlace).toHaveBeenCalledWith(
+        mockEventPlace,
+      );
+      expect(result).toEqual(mockEvents);
     });
   });
 });

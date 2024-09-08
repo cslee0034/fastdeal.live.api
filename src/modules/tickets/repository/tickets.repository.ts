@@ -7,7 +7,7 @@ import { TicketCount } from '../interface/ticket-count';
 export class TicketsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createTickets(
+  async createTicketsTx(
     tx: PrismaService,
     mappedTicket: MappedTicket[],
   ): Promise<TicketCount> {
