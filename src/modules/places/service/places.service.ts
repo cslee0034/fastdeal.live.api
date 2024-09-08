@@ -2,11 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
 import { FindPlaceDto } from '../dto/find-place-dto';
+import { PlacesRepository } from '../repository/places.repository';
+import { FailedToCreatePlaceError } from '../error/failed-to-create-place';
+import { PlaceEntity } from '../entities/place.entity';
 
 @Injectable()
 export class PlacesService {
-  create(createPlaceDto: CreatePlaceDto) {
-    return 'This action adds a new place';
+  constructor(private readonly placesRepository: PlacesRepository) {}
+
+  async create(createPlaceDto: CreatePlaceDto) {
+    const place = await this.placesRepository
+      .create(createPlaceDto)
+      .catch(() => {
+        throw new FailedToCreatePlaceError();
+      });
+
+    return new PlaceEntity(place);
   }
 
   find(findPlaceDto: FindPlaceDto) {
