@@ -28,6 +28,7 @@ import { TokenModule } from './infrastructure/token/module/token.module';
 import { PlacesModule } from './modules/places/module/places.module';
 import { TicketsModule } from './modules/tickets/module/tickets.module';
 import { EventsModule } from './modules/events/module/events.module';
+import { ReservationsModule } from './modules/reservations/module/reservations.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { EventsModule } from './modules/events/module/events.module';
     AuthModule,
     EventsModule,
     PlacesModule,
+    ReservationsModule,
     TicketsModule,
     UsersModule,
   ],
