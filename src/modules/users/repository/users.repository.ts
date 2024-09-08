@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { ApplicationStatus, SellerApplication, User } from '@prisma/client';
 import { Role } from '@prisma/client';
-import { ApplyToSellerDto } from '../dto/apply-to-seller.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -31,17 +30,28 @@ export class UsersRepository {
   }
 
   async applyToSeller(
-    applyToSellerDto: ApplyToSellerDto,
+    id: string,
+    description: string,
   ): Promise<SellerApplication> {
     return await this.prisma.sellerApplication.create({
       data: {
         user: {
           connect: {
-            id: applyToSellerDto.userId,
+            id: id,
           },
         },
-        description: applyToSellerDto.description,
+        description: description,
       },
+    });
+  }
+
+  async findManySellerApplication(
+    skip: number,
+    take: number,
+  ): Promise<SellerApplication[]> {
+    return await this.prisma.sellerApplication.findMany({
+      skip,
+      take,
     });
   }
 

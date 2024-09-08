@@ -7,10 +7,10 @@ import { UserAlreadyExistsError } from '../error/user-already-exists';
 import { FailedToGetUserError } from '../error/failed-to-get-user';
 import { UserNotFoundError } from '../error/user-not-found';
 import { FailedToCreateUserError } from '../error/failed-to-create-user';
-import { ApplyToSellerDto } from '../dto/apply-to-seller.dto';
 import { FailedToCreateSellerApplicationError } from '../error/failed-to-create-seller-application';
 import { SellerApplicationEntity } from '../entities/seller-application.entity';
 import { FailedToUpdateSellerApplicationError } from '../error/failed-to-update-seller-application';
+import { FailedToGetSellerApplicationError } from '../error/failed-to-get-seller-application';
 
 @Injectable()
 export class UsersService {
@@ -66,19 +66,35 @@ export class UsersService {
   }
 
   public async applyToSeller(
-    applyToSellerDto: ApplyToSellerDto,
+    id: string,
+    description: string,
   ): Promise<SellerApplicationEntity> {
-    const user = await this.findOneById(applyToSellerDto.userId);
+    const user = await this.findOneById(id);
 
     this.assertUserExists(user);
 
     const sellerApplication = await this.userRepository
-      .applyToSeller(applyToSellerDto)
+      .applyToSeller(id, description)
       .catch(() => {
         throw new FailedToCreateSellerApplicationError();
       });
 
     return new SellerApplicationEntity(sellerApplication);
+  }
+
+  public async findManySellerApplication(
+    skip: number,
+    take: number,
+  ): Promise<SellerApplicationEntity[]> {
+    const sellerApplications = await this.userRepository
+      .findManySellerApplication(skip, take)
+      .catch(() => {
+        throw new FailedToGetSellerApplicationError();
+      });
+
+    return sellerApplications.map(
+      (sellerApplication) => new SellerApplicationEntity(sellerApplication),
+    );
   }
 
   public async approveToSeller(id: string): Promise<SellerApplicationEntity> {

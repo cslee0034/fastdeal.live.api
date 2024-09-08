@@ -16,6 +16,7 @@ describe('UsersRepository', () => {
     sellerApplication: {
       create: jest.fn(),
       update: jest.fn(),
+      findMany: jest.fn(),
     },
   };
 
@@ -34,9 +35,13 @@ describe('UsersRepository', () => {
     role: Role.CUSTOMER,
   };
 
+  const mockDescription = '판매자 신청합니다';
+
   const mockSellerApplication = {
+    id: mockId.replace('6', '7'),
     userId: mockId,
-    description: '판매자 신청합니다',
+    description: mockDescription,
+    status: ApplicationStatus.PENDING,
   };
 
   beforeEach(async () => {
@@ -135,19 +140,37 @@ describe('UsersRepository', () => {
         mockSellerApplication,
       );
 
-      const result = await repository.applyToSeller(mockSellerApplication);
+      const result = await repository.applyToSeller(mockId, mockDescription);
 
       expect(result).toEqual(mockSellerApplication);
       expect(mockPrismaService.sellerApplication.create).toHaveBeenCalledWith({
         data: {
           user: {
             connect: {
-              id: mockSellerApplication.userId,
+              id: mockId,
             },
           },
-          description: mockSellerApplication.description,
+          description: mockDescription,
         },
       });
+    });
+  });
+
+  describe('findManySellerApplication', () => {
+    it('판매자 신청 목록을 찾아 반환해야 한다', async () => {
+      mockPrismaService.sellerApplication.findMany.mockResolvedValue([
+        mockSellerApplication,
+      ]);
+
+      const result = await repository.findManySellerApplication(0, 10);
+
+      expect(result).toEqual([mockSellerApplication]);
+      expect(mockPrismaService.sellerApplication.findMany).toHaveBeenCalledWith(
+        {
+          skip: 0,
+          take: 10,
+        },
+      );
     });
   });
 

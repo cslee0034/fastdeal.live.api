@@ -13,6 +13,7 @@ import { PasswordDoesNotMatch } from '../../../infrastructure/encrypt/error/pass
 import { SellerApplicationEntity } from '../entities/seller-application.entity';
 import { FailedToCreateSellerApplicationError } from '../error/failed-to-create-seller-application';
 import { FailedToUpdateSellerApplicationError } from '../error/failed-to-update-seller-application';
+import { FailedToGetSellerApplicationError } from '../error/failed-to-get-seller-application';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -45,15 +46,27 @@ describe('UsersService', () => {
     }),
 
     applyToSeller: jest.fn().mockImplementation((applyToSellerDto) => {
-      return Promise.resolve(new SellerApplicationEntity(applyToSellerDto));
+      return Promise.resolve(
+        new SellerApplicationEntity(mockSellerApplication),
+      );
+    }),
+
+    findManySellerApplication: jest.fn().mockImplementation(() => {
+      return Promise.resolve([
+        new SellerApplicationEntity(mockSellerApplication),
+      ]);
     }),
 
     approveToSeller: jest.fn().mockImplementation((id: string) => {
-      return Promise.resolve(new SellerApplicationEntity(mockApplyToSellerDto));
+      return Promise.resolve(
+        new SellerApplicationEntity(mockSellerApplication),
+      );
     }),
 
     rejectToSeller: jest.fn().mockImplementation((id: string) => {
-      return Promise.resolve(new SellerApplicationEntity(mockApplyToSellerDto));
+      return Promise.resolve(
+        new SellerApplicationEntity(mockSellerApplication),
+      );
     }),
   };
 
@@ -83,6 +96,7 @@ describe('UsersService', () => {
   mockCreateUserDto.password = 'test_password';
 
   const mockId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
+  const mockSellerApplicationId = mockId.replace('6', '7');
   const mockPassword = 'test_password';
   const mockHashedPassword = 'hashed_' + mockPassword;
 
@@ -102,9 +116,12 @@ describe('UsersService', () => {
     password: mockHashedPassword,
   });
 
-  const mockApplyToSellerDto = {
+  const mockSellerDescription = '판매자 신청합니다';
+
+  const mockSellerApplication = {
+    id: mockSellerApplicationId,
     userId: mockId,
-    description: '판매자 신청합니다',
+    description: mockSellerDescription,
   };
 
   beforeEach(async () => {
@@ -256,49 +273,80 @@ describe('UsersService', () => {
 
   describe('applyToSeller', () => {
     it('유저가 존재하면 판매자 신청 성공', async () => {
-      mockUserRepository.findOneById.mockResolvedValue(mockExistingUserEntity);
+      mockUserRepository.findOneById.mockResolvedValue(mockSellerApplication);
 
-      const result = await service.applyToSeller(mockApplyToSellerDto);
+      const result = await service.applyToSeller(mockId, mockSellerDescription);
 
-      expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
+      expect(result).toEqual(
+        new SellerApplicationEntity(mockSellerApplication),
+      );
       expect(mockUserRepository.findOneById).toHaveBeenCalledWith(mockId);
       expect(mockUserRepository.applyToSeller).toHaveBeenCalledWith(
-        mockApplyToSellerDto,
+        mockId,
+        mockSellerDescription,
       );
     });
 
     it('유저가 존재하지 않으면 UserNotFoundError 반환', async () => {
       mockUserRepository.findOneById.mockResolvedValue(null);
 
-      await expect(service.applyToSeller(mockApplyToSellerDto)).rejects.toThrow(
-        UserNotFoundError,
-      );
+      await expect(
+        service.applyToSeller(mockId, mockSellerDescription),
+      ).rejects.toThrow(UserNotFoundError);
     });
 
     it('유저 조회에 실패하면 FailedToGetUserError 반환', async () => {
       mockUserRepository.findOneById.mockRejectedValue(new Error());
 
-      await expect(service.applyToSeller(mockApplyToSellerDto)).rejects.toThrow(
-        FailedToGetUserError,
-      );
+      await expect(
+        service.applyToSeller(mockId, mockSellerDescription),
+      ).rejects.toThrow(FailedToGetUserError);
     });
 
     it('판매자 신청에 실패하면 FailedToCreateSellerApplicationError 반환', async () => {
       mockUserRepository.findOneById.mockResolvedValue(mockExistingUserEntity);
       mockUserRepository.applyToSeller.mockRejectedValue(new Error());
 
-      await expect(service.applyToSeller(mockApplyToSellerDto)).rejects.toThrow(
-        FailedToCreateSellerApplicationError,
+      await expect(
+        service.applyToSeller(mockId, mockSellerDescription),
+      ).rejects.toThrow(FailedToCreateSellerApplicationError);
+    });
+  });
+
+  describe('findManySellerApplication', () => {
+    it('판매자 신청 목록 반환 성공', async () => {
+      const result = await service.findManySellerApplication(0, 10);
+
+      expect(result).toEqual([
+        new SellerApplicationEntity(mockSellerApplication),
+      ]);
+      expect(mockUserRepository.findManySellerApplication).toHaveBeenCalledWith(
+        0,
+        10,
+      );
+    });
+
+    it('판매자 신청 목록 조회에 실패하면 FailedToGetUserError 반환', async () => {
+      mockUserRepository.findManySellerApplication.mockRejectedValue(
+        new Error(),
+      );
+
+      await expect(service.findManySellerApplication(0, 10)).rejects.toThrow(
+        FailedToGetSellerApplicationError,
       );
     });
   });
 
   describe('approveToSeller', () => {
     it('판매자 신청 승인 성공', async () => {
-      const result = await service.approveToSeller(mockId);
+      const result = await service.approveToSeller(mockSellerApplicationId);
 
-      expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
-      expect(mockUserRepository.approveToSeller).toHaveBeenCalledWith(mockId);
+      expect(result).toEqual(
+        new SellerApplicationEntity(mockSellerApplication),
+      );
+      expect(mockUserRepository.approveToSeller).toHaveBeenCalledWith(
+        mockSellerApplicationId,
+      );
     });
 
     it('판매자 신청 승인에 실패하면 FailedToUpdateSellerApplicationError 반환', async () => {
@@ -312,10 +360,14 @@ describe('UsersService', () => {
 
   describe('rejectToSeller', () => {
     it('판매자 신청 거절 성공', async () => {
-      const result = await service.rejectToSeller(mockId);
+      const result = await service.rejectToSeller(mockSellerApplicationId);
 
-      expect(result).toEqual(new SellerApplicationEntity(mockApplyToSellerDto));
-      expect(mockUserRepository.rejectToSeller).toHaveBeenCalledWith(mockId);
+      expect(result).toEqual(
+        new SellerApplicationEntity(mockSellerApplication),
+      );
+      expect(mockUserRepository.rejectToSeller).toHaveBeenCalledWith(
+        mockSellerApplicationId,
+      );
     });
 
     it('판매자 신청 거절에 실패하면 FailedToUpdateSellerApplicationError 반환', async () => {
