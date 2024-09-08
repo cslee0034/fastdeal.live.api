@@ -8,7 +8,7 @@ import { FailedToCountTicketError } from '../error/failed-to-count-ticket';
 export class TicketsService {
   constructor(private readonly ticketsRepository: TicketsRepository) {}
 
-  async findTicketsByEventId(eventId: string) {
+  async findTicketsByEventId(eventId: string): Promise<TicketEntity[]> {
     const tickets = await this.ticketsRepository
       .findTicketsByEventId(eventId)
       .catch(() => {
@@ -18,7 +18,7 @@ export class TicketsService {
     return tickets.map((ticket) => new TicketEntity(ticket));
   }
 
-  async countTicketsByEventId(eventId: string) {
+  async countTicketsByEventId(eventId: string): Promise<number> {
     const ticketCount = await this.ticketsRepository
       .countTicketsByEventId(eventId)
       .catch(() => {
