@@ -49,6 +49,10 @@ export class EventsService {
     for (let i = 0; i < createEventDto.quantity; i++) {
       const checkInCode = uuidv4();
 
+      /**
+       * 좌석의 위치에 따라 가격이 달라질 수 있기 때문에 각각의 티켓에 가격을 부여한다.
+       * TODO: 좌석의 위치에 따라 가격이 달라지는 로직을 추가한다.
+       */
       tickets.push({
         eventId: event.id,
         price: createEventDto.price,
