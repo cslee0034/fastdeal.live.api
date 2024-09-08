@@ -58,6 +58,13 @@ export class TicketEntity implements Ticket {
 
   @Expose()
   @ApiProperty({
+    description: '티켓의 사용 가능 여부',
+    example: true,
+  })
+  isAvailable: boolean;
+
+  @Expose()
+  @ApiProperty({
     description: '티켓의 생성일',
     example: '2024-09-09T00:00:00.000Z',
   })

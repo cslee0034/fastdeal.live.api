@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Event } from '@prisma/client';
+import { Event, EventType } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 
 export class EventEntity implements Event {
@@ -34,6 +34,13 @@ export class EventEntity implements Event {
     example: '2024-03-01T00:00:00.000Z',
   })
   date: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: '이벤트의 종류',
+    example: 'STANDING',
+  })
+  eventType: EventType;
 
   @Expose()
   @ApiProperty({
