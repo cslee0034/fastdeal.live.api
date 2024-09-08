@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { TicketsRepository } from '../../tickets/repository/tickets.repository';
 import { EventTicketCreate } from '../interface/event-ticket-create.interface';
 import { FindEventsByPlaceDto } from '../dto/find-events-by-place.dto';
+import { FailedToFindEventError } from '../error/failed-to-find-event';
 
 @Injectable()
 export class EventsService {
@@ -42,7 +43,11 @@ export class EventsService {
   }
 
   public async findEventsByPlace(findEventsDto: FindEventsByPlaceDto) {
-    const events = await this.eventsRepository.findEventsByPlace(findEventsDto);
+    const events = await this.eventsRepository
+      .findEventsByPlace(findEventsDto)
+      .catch(() => {
+        throw new FailedToFindEventError();
+      });
 
     return events.map((event) => new EventEntity(event));
   }

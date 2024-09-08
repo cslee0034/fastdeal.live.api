@@ -7,6 +7,7 @@ import { FailedToCreateEventError } from '../error/failed-to-create-event';
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { TicketsRepository } from '../../tickets/repository/tickets.repository';
 import { v4 as uuidv4 } from 'uuid';
+import { FailedToFindEventError } from '../error/failed-to-find-event';
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid'),
@@ -157,6 +158,14 @@ describe('EventsService', () => {
         mockEventPlace,
       );
       expect(result).toEqual(mockEvents);
+    });
+
+    it('이벤트를 찾는 중 오류가 발생하면 FailedToFindEventError 예외를 반환한다', async () => {
+      mockEventsRepository.findEventsByPlace.mockRejectedValue(new Error());
+
+      await expect(service.findEventsByPlace(mockEventPlace)).rejects.toThrow(
+        FailedToFindEventError,
+      );
     });
   });
 });
