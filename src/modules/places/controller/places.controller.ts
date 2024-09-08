@@ -11,7 +11,7 @@ import { PlacesService } from '../service/places.service';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
 import { Roles } from '../../../common/decorator/roles.decorator';
-import { FindPlaceDto } from '../dto/find-place-dto';
+import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 import { Public } from '../../../common/decorator/public.decorator';
 
 @Controller('places')
@@ -26,8 +26,8 @@ export class PlacesController {
 
   @Public()
   @Get()
-  find(@Body() findPlaceDto: FindPlaceDto) {
-    return this.placesService.find(findPlaceDto);
+  findMany(@Body() findManyPlacesDto: FindManyPlacesDto) {
+    return this.placesService.findMany(findManyPlacesDto);
   }
 
   @Patch(':id')

@@ -1,36 +1,39 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class FindPlaceDto {
+export class FindManyPlacesDto {
   @ApiProperty({
     example: '서울시',
     description: `시/도`,
   })
   city: string;
+
   @ApiProperty({
     example: '강남구',
     description: `구`,
   })
-  district: string;
+  district?: string;
+
   @ApiProperty({
     example: '역삼동',
     description: `동`,
   })
-  street: string;
+  street?: string;
+
   @ApiProperty({
     example: 120,
     description: `도로명 번호`,
   })
-  streetNumber: number;
+  streetNumber?: number;
 
   @ApiProperty({
     example: 0,
     description: `시작점`,
   })
-  skip: number;
+  skip?: number;
 
   @ApiProperty({
     example: 10,
     description: `가져올 갯수`,
   })
-  take: number;
+  take?: number;
 }

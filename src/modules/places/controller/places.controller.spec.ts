@@ -4,6 +4,7 @@ import { PlacesService } from '../service/places.service';
 import { Place } from '@prisma/client';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { PlaceEntity } from '../entities/place.entity';
+import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 
 describe('PlacesController', () => {
   let controller: PlacesController;
@@ -17,6 +18,23 @@ describe('PlacesController', () => {
     streetNumber: 10,
   } as Place;
 
+  const mockPlaces = [
+    {
+      id: mockId,
+      city: '서울시',
+      district: '강남구',
+      street: '봉은사로',
+      streetNumber: 10,
+    },
+    {
+      id: 'another-id',
+      city: '서울시',
+      district: '서초구',
+      street: '서초대로',
+      streetNumber: 50,
+    },
+  ] as Place[];
+
   const mockPlacesService = {
     create: jest
       .fn()
@@ -28,6 +46,15 @@ describe('PlacesController', () => {
           }),
         );
       }),
+    findMany: jest
+      .fn()
+      .mockImplementation(
+        (findManyPlacesDto: FindManyPlacesDto): Promise<Place[]> => {
+          return Promise.resolve(
+            mockPlaces.map((place) => new PlaceEntity(place)),
+          );
+        },
+      ),
   };
 
   beforeEach(async () => {
@@ -45,12 +72,12 @@ describe('PlacesController', () => {
     service = module.get<PlacesService>(PlacesService);
   });
 
-  it('should be defined', () => {
+  it('PlacesController가 정의되어 있어야 한다', () => {
     expect(controller).toBeDefined();
   });
 
   describe('create', () => {
-    it('should return a new place', async () => {
+    it('생성한 장소를 반환해야 한다', async () => {
       const result = await controller.create(mockPlace);
 
       expect(result).toEqual(
@@ -59,6 +86,23 @@ describe('PlacesController', () => {
           ...mockPlace,
         }),
       );
+      expect(mockPlacesService.create).toHaveBeenCalledWith(mockPlace);
+    });
+  });
+
+  describe('findMany', () => {
+    it('조건에 맞는 장소 목록을 반환해야 한다', async () => {
+      const findManyDto: FindManyPlacesDto = {
+        city: '서울시',
+        district: '강남구',
+        street: '봉은사로',
+        streetNumber: 10,
+      };
+
+      const result = await controller.findMany(findManyDto);
+
+      expect(result).toEqual(mockPlaces.map((place) => new PlaceEntity(place)));
+      expect(mockPlacesService.findMany).toHaveBeenCalledWith(findManyDto);
     });
   });
 });

@@ -1,0 +1,5 @@
+export const REPOSITORY_CONSTANT = {
+  DEFAULT_UNSELECTED: undefined,
+  DEFAULT_SKIP: 0,
+  DEFAULT_TAKE: 10,
+};

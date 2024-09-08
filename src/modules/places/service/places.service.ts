@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { UpdatePlaceDto } from '../dto/update-place.dto';
-import { FindPlaceDto } from '../dto/find-place-dto';
+import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 import { PlacesRepository } from '../repository/places.repository';
 import { FailedToCreatePlaceError } from '../error/failed-to-create-place';
 import { PlaceEntity } from '../entities/place.entity';
+import { FailedToFindPlaceError } from '../error/failed-to-find-place';
 
 @Injectable()
 export class PlacesService {
@@ -20,8 +21,14 @@ export class PlacesService {
     return new PlaceEntity(place);
   }
 
-  find(findPlaceDto: FindPlaceDto) {
-    return `This action returns all places`;
+  async findMany(findManyPlaceDto: FindManyPlacesDto) {
+    const places = await this.placesRepository
+      .findMany(findManyPlaceDto)
+      .catch(() => {
+        throw new FailedToFindPlaceError();
+      });
+
+    return places.map((place) => new PlaceEntity(place));
   }
 
   update(id: string, updatePlaceDto: UpdatePlaceDto) {

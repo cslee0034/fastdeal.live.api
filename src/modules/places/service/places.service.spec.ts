@@ -4,6 +4,9 @@ import { PlacesRepository } from '../repository/places.repository';
 import { Place } from '@prisma/client';
 import { FailedToCreatePlaceError } from '../error/failed-to-create-place';
 import { PlaceEntity } from '../entities/place.entity';
+import { FindManyPlacesDto } from '../dto/find-many-places-dto';
+import { CreatePlaceDto } from '../dto/create-place.dto';
+import { FailedToFindPlaceError } from '../error/failed-to-find-place';
 
 describe('PlacesService', () => {
   let service: PlacesService;
@@ -17,15 +20,41 @@ describe('PlacesService', () => {
     streetNumber: 10,
   } as Place;
 
+  const mockPlaces = [
+    {
+      id: mockId,
+      city: '서울시',
+      district: '강남구',
+      street: '봉은사로',
+      streetNumber: 10,
+    },
+    {
+      id: mockId.replace('6', '7'),
+      city: '서울시',
+      district: '서초구',
+      street: '서초대로',
+      streetNumber: 50,
+    },
+  ] as Place[];
+
   const mockPlacesRepository = {
-    create: jest.fn().mockImplementation((place): Promise<Place> => {
-      return Promise.resolve(
-        new PlaceEntity({
-          id: mockId,
-          ...place,
-        }),
-      );
-    }),
+    create: jest
+      .fn()
+      .mockImplementation((createPlaceDto: CreatePlaceDto): Promise<Place> => {
+        return Promise.resolve(
+          new PlaceEntity({
+            id: mockId,
+            ...createPlaceDto,
+          }),
+        );
+      }),
+    findMany: jest
+      .fn()
+      .mockImplementation(
+        (findManyPlacesDto: FindManyPlacesDto): Promise<Place[]> => {
+          return Promise.resolve(mockPlaces);
+        },
+      ),
   };
 
   beforeEach(async () => {
@@ -68,6 +97,38 @@ describe('PlacesService', () => {
 
       await expect(service.create(mockPlace)).rejects.toThrow(
         FailedToCreatePlaceError,
+      );
+    });
+  });
+
+  describe('findMany', () => {
+    it('조건에 맞는 장소들을 찾아서 반환해야 한다', async () => {
+      const findManyPlacesDto: FindManyPlacesDto = {
+        city: '서울시',
+        district: '강남구',
+        street: '봉은사로',
+        streetNumber: 10,
+        skip: 0,
+        take: 10,
+      };
+
+      const result = await service.findMany(findManyPlacesDto);
+
+      expect(result).toEqual(mockPlaces.map((place) => new PlaceEntity(place)));
+      expect(mockPlacesRepository.findMany).toHaveBeenCalledWith(
+        findManyPlacesDto,
+      );
+    });
+
+    it('장소를 찾을 수 없다면 FailedToFindPlaceError 에러를 반환해야 한다', async () => {
+      mockPlacesRepository.findMany.mockRejectedValue(new Error());
+
+      const findPlaceDto: FindManyPlacesDto = {
+        city: '서울시',
+      };
+
+      await expect(service.findMany(findPlaceDto)).rejects.toThrow(
+        FailedToFindPlaceError,
       );
     });
   });
