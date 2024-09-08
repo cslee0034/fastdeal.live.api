@@ -4,6 +4,7 @@ import { PlacesRepository } from './places.repository';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
+import { UpdatePlaceDto } from '../dto/update-place.dto';
 
 describe('PlacesRepository', () => {
   let repository: PlacesRepository;
@@ -13,8 +14,11 @@ describe('PlacesRepository', () => {
     place: {
       create: jest.fn(),
       findMany: jest.fn(),
+      update: jest.fn(),
     },
   };
+
+  const mockId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
 
   const mockPlace: CreatePlaceDto = {
     city: '서울시',
@@ -32,9 +36,14 @@ describe('PlacesRepository', () => {
     take: 10,
   };
 
+  const updatePlaceDto: UpdatePlaceDto = {
+    city: '서울시',
+    district: '서초구',
+  };
+
   const mockPlaceEntity = {
     ...mockPlace,
-    id: '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec',
+    id: mockId,
   };
 
   beforeEach(async () => {
@@ -119,6 +128,20 @@ describe('PlacesRepository', () => {
         },
         skip: REPOSITORY_CONSTANT.DEFAULT_SKIP,
         take: REPOSITORY_CONSTANT.DEFAULT_TAKE,
+      });
+    });
+  });
+
+  describe('update', () => {
+    it('장소 정보를 업데이트해야 한다', async () => {
+      mockPrismaService.place.update.mockResolvedValue(mockPlaceEntity);
+
+      const result = await repository.update(mockId, updatePlaceDto);
+
+      expect(result).toEqual(mockPlaceEntity);
+      expect(prisma.place.update).toHaveBeenCalledWith({
+        where: { id: mockId },
+        data: updatePlaceDto,
       });
     });
   });

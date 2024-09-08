@@ -4,6 +4,7 @@ import { Place } from '@prisma/client';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 import { REPOSITORY_CONSTANT } from '../../../common/constant/repository.constant';
+import { UpdatePlaceDto } from '../dto/update-place.dto';
 
 @Injectable()
 export class PlacesRepository {
@@ -27,6 +28,13 @@ export class PlacesRepository {
       },
       skip: findPlaceDto?.skip || REPOSITORY_CONSTANT.DEFAULT_SKIP,
       take: findPlaceDto?.take || REPOSITORY_CONSTANT.DEFAULT_TAKE,
+    });
+  }
+
+  async update(id: string, updatePlaceDto: UpdatePlaceDto): Promise<Place> {
+    return await this.prisma.place.update({
+      where: { id },
+      data: updatePlaceDto,
     });
   }
 }

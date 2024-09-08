@@ -35,6 +35,14 @@ describe('PlacesController', () => {
     },
   ] as Place[];
 
+  const updatePlaceDto = {
+    id: mockId,
+    city: '서울시',
+    district: '강남구',
+    street: '봉은사로',
+    streetNumber: 10,
+  };
+
   const mockPlacesService = {
     create: jest
       .fn()
@@ -46,6 +54,7 @@ describe('PlacesController', () => {
           }),
         );
       }),
+
     findMany: jest
       .fn()
       .mockImplementation(
@@ -55,6 +64,13 @@ describe('PlacesController', () => {
           );
         },
       ),
+
+    update: jest.fn().mockImplementation((id: string, updatePlaceDto: any) => {
+      return Promise.resolve({
+        id,
+        ...updatePlaceDto,
+      });
+    }),
   };
 
   beforeEach(async () => {
@@ -103,6 +119,28 @@ describe('PlacesController', () => {
 
       expect(result).toEqual(mockPlaces.map((place) => new PlaceEntity(place)));
       expect(mockPlacesService.findMany).toHaveBeenCalledWith(findManyDto);
+    });
+  });
+
+  describe('update', () => {
+    it('장소를 업데이트하고 반환해야 한다', async () => {
+      const updatePlaceDto = {
+        city: '서울시',
+        district: '강남구',
+        street: '봉은사로',
+        streetNumber: 10,
+      };
+
+      const result = await controller.update(mockId, updatePlaceDto);
+
+      expect(result).toEqual({
+        id: mockId,
+        ...updatePlaceDto,
+      });
+      expect(mockPlacesService.update).toHaveBeenCalledWith(
+        mockId,
+        updatePlaceDto,
+      );
     });
   });
 });

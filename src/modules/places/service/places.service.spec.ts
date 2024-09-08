@@ -7,6 +7,8 @@ import { PlaceEntity } from '../entities/place.entity';
 import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 import { CreatePlaceDto } from '../dto/create-place.dto';
 import { FailedToFindPlaceError } from '../error/failed-to-find-place';
+import { UpdatePlaceDto } from '../dto/update-place.dto';
+import { FailedToUpdatePlaceError } from '../error/failed-to-update-place';
 
 describe('PlacesService', () => {
   let service: PlacesService;
@@ -37,6 +39,11 @@ describe('PlacesService', () => {
     },
   ] as Place[];
 
+  const mockUpdatedPlace = {
+    id: mockId,
+    ...mockPlace,
+  } as Place;
+
   const mockPlacesRepository = {
     create: jest
       .fn()
@@ -48,11 +55,20 @@ describe('PlacesService', () => {
           }),
         );
       }),
+
     findMany: jest
       .fn()
       .mockImplementation(
         (findManyPlacesDto: FindManyPlacesDto): Promise<Place[]> => {
           return Promise.resolve(mockPlaces);
+        },
+      ),
+
+    update: jest
+      .fn()
+      .mockImplementation(
+        (id: string, updatePlaceDto: UpdatePlaceDto): Promise<Place> => {
+          return Promise.resolve(mockUpdatedPlace);
         },
       ),
   };
@@ -129,6 +145,36 @@ describe('PlacesService', () => {
 
       await expect(service.findMany(findPlaceDto)).rejects.toThrow(
         FailedToFindPlaceError,
+      );
+    });
+  });
+
+  describe('update', () => {
+    it('장소 정보를 업데이트하고 반환해야 한다', async () => {
+      const updatePlaceDto: UpdatePlaceDto = {
+        city: '서울시',
+        district: '서초구',
+      };
+
+      const result = await service.update(mockId, updatePlaceDto);
+
+      expect(result).toEqual(new PlaceEntity(mockUpdatedPlace));
+      expect(mockPlacesRepository.update).toHaveBeenCalledWith(
+        mockId,
+        updatePlaceDto,
+      );
+    });
+
+    it('장소 업데이트에 실패하면 FailedToUpdatePlaceError를 반환해야 한다', async () => {
+      mockPlacesRepository.update.mockRejectedValueOnce(new Error());
+
+      const updatePlaceDto: UpdatePlaceDto = {
+        city: '서울시',
+        district: '서초구',
+      };
+
+      await expect(service.update(mockId, updatePlaceDto)).rejects.toThrow(
+        FailedToUpdatePlaceError,
       );
     });
   });

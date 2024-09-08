@@ -6,6 +6,7 @@ import { PlacesRepository } from '../repository/places.repository';
 import { FailedToCreatePlaceError } from '../error/failed-to-create-place';
 import { PlaceEntity } from '../entities/place.entity';
 import { FailedToFindPlaceError } from '../error/failed-to-find-place';
+import { FailedToUpdatePlaceError } from '../error/failed-to-update-place';
 
 @Injectable()
 export class PlacesService {
@@ -31,8 +32,14 @@ export class PlacesService {
     return places.map((place) => new PlaceEntity(place));
   }
 
-  update(id: string, updatePlaceDto: UpdatePlaceDto) {
-    return `This action updates a #${id} place`;
+  async update(id: string, updatePlaceDto: UpdatePlaceDto) {
+    const updatedPlace = await this.placesRepository
+      .update(id, updatePlaceDto)
+      .catch(() => {
+        throw new FailedToUpdatePlaceError();
+      });
+
+    return new PlaceEntity(updatedPlace);
   }
 
   remove(id: string) {
