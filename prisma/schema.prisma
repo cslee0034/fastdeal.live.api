@@ -106,24 +106,18 @@ model Ticket {
 }
 
 model Reservation {
-  id        String            @id @default(uuid())
-  event     Event             @relation(fields: [eventId], references: [id])
+  id        String   @id @default(uuid())
+  event     Event    @relation(fields: [eventId], references: [id])
   eventId   String
-  user      User              @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  status    ReservationStatus @default(PENDING)
-  createdAt DateTime          @default(now()) @db.Timestamp(0)
-  updatedAt DateTime          @updatedAt @db.Timestamp(0)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @db.Timestamp(0)
   Payment   Payment?
   Ticket    Ticket[]
 
-  @@index([eventId, userId])
-}
-
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
-  CANCELED
+  @@index([userId])
+  @@index([eventId])
 }
 
 model Payment {
