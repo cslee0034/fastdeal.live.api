@@ -2,6 +2,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { Injectable } from '@nestjs/common';
 import { MappedTicket } from '../interface/mapped-ticket.interface';
 import { TicketCount } from '../interface/ticket-count';
+import { Ticket } from '@prisma/client';
 
 @Injectable()
 export class TicketsRepository {
@@ -16,5 +17,13 @@ export class TicketsRepository {
     });
 
     return tickets;
+  }
+
+  async findTicketsByEventId(eventId: string): Promise<Ticket[]> {
+    return await this.prisma.ticket.findMany({
+      where: {
+        eventId,
+      },
+    });
   }
 }

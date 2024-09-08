@@ -8,6 +8,9 @@ describe('TicketsRepository', () => {
   let repository: TicketsRepository;
 
   const mockPrismaService = {
+    ticket: {
+      findMany: jest.fn(),
+    },
     $transaction: jest.fn(),
   };
 
@@ -48,6 +51,18 @@ describe('TicketsRepository', () => {
       eventEntity: mockEvent,
     },
   ];
+
+  const mockFoundTickets = mockMappedTickets.map((ticket) => {
+    return {
+      eventId: ticket.eventId,
+      price: ticket.price,
+      seatNumber: ticket.seatNumber,
+      checkInCode: ticket.checkInCode,
+      image: ticket.image,
+      createAt: new Date(),
+      updatedAt: new Date(),
+    };
+  });
 
   const createdTickets = mockMappedTickets.map((ticket) => {
     return {
@@ -99,6 +114,21 @@ describe('TicketsRepository', () => {
       });
 
       expect(result).toEqual(createdTickets);
+    });
+  });
+
+  describe('findTicketsByEventId', () => {
+    it('이벤트 ID에 해당하는 티켓 목록을 반환해야 한다', async () => {
+      mockPrismaService.ticket.findMany.mockResolvedValue(mockFoundTickets);
+
+      const result = await repository.findTicketsByEventId(mockEventId);
+
+      expect(mockPrismaService.ticket.findMany).toHaveBeenCalledWith({
+        where: {
+          eventId: mockEventId,
+        },
+      });
+      expect(result).toEqual(mockFoundTickets);
     });
   });
 });

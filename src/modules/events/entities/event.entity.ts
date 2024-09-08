@@ -45,14 +45,14 @@ export class EventEntity implements Event {
   @Exclude()
   @ApiProperty({
     description: '이벤트의 생성일',
-    example: '2024-03-01T00:00:00.000Z',
+    example: '2024-09-09T00:00:00.000Z',
   })
   createdAt: Date;
 
   @Exclude()
   @ApiProperty({
     description: '이벤트의 갱신일',
-    example: '2024-03-01T00:00:00.000Z',
+    example: '2024-09-09T00:00:00.000Z',
   })
   updatedAt: Date;
 }
