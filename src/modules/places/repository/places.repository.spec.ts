@@ -15,6 +15,7 @@ describe('PlacesRepository', () => {
       create: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
   };
 
@@ -142,6 +143,16 @@ describe('PlacesRepository', () => {
       expect(prisma.place.update).toHaveBeenCalledWith({
         where: { id: mockId },
         data: updatePlaceDto,
+      });
+    });
+  });
+
+  describe('remove', () => {
+    it('장소를 삭제해야 한다', async () => {
+      await repository.remove(mockId);
+
+      expect(prisma.place.delete).toHaveBeenCalledWith({
+        where: { id: mockId },
       });
     });
   });

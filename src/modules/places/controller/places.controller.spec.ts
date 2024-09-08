@@ -36,7 +36,6 @@ describe('PlacesController', () => {
   ] as Place[];
 
   const updatePlaceDto = {
-    id: mockId,
     city: '서울시',
     district: '강남구',
     street: '봉은사로',
@@ -70,6 +69,10 @@ describe('PlacesController', () => {
         id,
         ...updatePlaceDto,
       });
+    }),
+
+    remove: jest.fn().mockImplementation((id: string): Promise<boolean> => {
+      return Promise.resolve(true);
     }),
   };
 
@@ -141,6 +144,15 @@ describe('PlacesController', () => {
         mockId,
         updatePlaceDto,
       );
+    });
+  });
+
+  describe('remove', () => {
+    it('장소를 삭제해야 한다', async () => {
+      const result = await controller.remove(mockId);
+
+      expect(result).toEqual(true);
+      expect(mockPlacesService.remove).toHaveBeenCalledWith(mockId);
     });
   });
 });

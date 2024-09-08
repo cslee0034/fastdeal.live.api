@@ -13,6 +13,7 @@ import { UpdatePlaceDto } from '../dto/update-place.dto';
 import { Roles } from '../../../common/decorator/roles.decorator';
 import { FindManyPlacesDto } from '../dto/find-many-places-dto';
 import { Public } from '../../../common/decorator/public.decorator';
+import { PlaceEntity } from '../entities/place.entity';
 
 @Controller('places')
 export class PlacesController {
@@ -20,25 +21,30 @@ export class PlacesController {
 
   @Post()
   @Roles(['admin'])
-  create(@Body() createPlaceDto: CreatePlaceDto) {
+  create(@Body() createPlaceDto: CreatePlaceDto): Promise<PlaceEntity> {
     return this.placesService.create(createPlaceDto);
   }
 
   @Public()
   @Get()
-  findMany(@Body() findManyPlacesDto: FindManyPlacesDto) {
+  findMany(
+    @Body() findManyPlacesDto: FindManyPlacesDto,
+  ): Promise<PlaceEntity[]> {
     return this.placesService.findMany(findManyPlacesDto);
   }
 
   @Patch(':id')
   @Roles(['admin'])
-  update(@Param('id') id: string, @Body() updatePlaceDto: UpdatePlaceDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePlaceDto: UpdatePlaceDto,
+  ): Promise<PlaceEntity> {
     return this.placesService.update(id, updatePlaceDto);
   }
 
   @Delete(':id')
   @Roles(['admin'])
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<boolean> {
     return this.placesService.remove(id);
   }
 }

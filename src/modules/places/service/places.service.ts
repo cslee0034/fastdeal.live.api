@@ -7,6 +7,7 @@ import { FailedToCreatePlaceError } from '../error/failed-to-create-place';
 import { PlaceEntity } from '../entities/place.entity';
 import { FailedToFindPlaceError } from '../error/failed-to-find-place';
 import { FailedToUpdatePlaceError } from '../error/failed-to-update-place';
+import { FailedToRemovePlaceError } from '../error/failed-to-remove-place';
 
 @Injectable()
 export class PlacesService {
@@ -42,7 +43,11 @@ export class PlacesService {
     return new PlaceEntity(updatedPlace);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} place`;
+  async remove(id: string): Promise<boolean> {
+    await this.placesRepository.remove(id).catch(() => {
+      throw new FailedToRemovePlaceError();
+    });
+
+    return true;
   }
 }

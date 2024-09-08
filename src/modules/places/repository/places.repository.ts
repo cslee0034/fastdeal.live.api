@@ -37,4 +37,10 @@ export class PlacesRepository {
       data: updatePlaceDto,
     });
   }
+
+  async remove(id: string): Promise<void> {
+    await this.prisma.place.delete({
+      where: { id },
+    });
+  }
 }

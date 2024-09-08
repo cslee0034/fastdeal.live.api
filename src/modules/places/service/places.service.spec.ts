@@ -71,6 +71,10 @@ describe('PlacesService', () => {
           return Promise.resolve(mockUpdatedPlace);
         },
       ),
+
+    remove: jest.fn().mockImplementation((id: string): Promise<void> => {
+      return Promise.resolve();
+    }),
   };
 
   beforeEach(async () => {
@@ -176,6 +180,21 @@ describe('PlacesService', () => {
       await expect(service.update(mockId, updatePlaceDto)).rejects.toThrow(
         FailedToUpdatePlaceError,
       );
+    });
+  });
+
+  describe('remove', () => {
+    it('장소를 삭제해야 한다', async () => {
+      const result = await service.remove(mockId);
+
+      expect(repository.remove).toHaveBeenCalledWith(mockId);
+      expect(result).toEqual(true);
+    });
+
+    it('장소를 삭제할 수 없다면 에러를 반환해야 한다', async () => {
+      mockPlacesRepository.remove.mockRejectedValue(new Error());
+
+      await expect(service.remove(mockId)).rejects.toThrow();
     });
   });
 });
