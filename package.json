@@ -5,6 +5,9 @@
   "author": "cslee0034@gmail.com",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -55,6 +58,7 @@
     "prisma": "^5.11.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "uuid": "^10.0.0",
     "winston": "^3.12.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

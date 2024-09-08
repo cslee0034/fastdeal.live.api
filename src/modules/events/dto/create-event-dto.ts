@@ -1,4 +1,4 @@
-import { IsDateString, IsString, IsUUID } from 'class-validator';
+import { IsDate, IsNumber, IsString, IsUrl, IsUUID } from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
@@ -7,9 +7,18 @@ export class CreateEventDto {
   @IsString()
   description: string;
 
-  @IsDateString()
+  @IsDate()
   date: Date;
 
   @IsUUID()
   placeId: string;
+
+  @IsNumber()
+  price: number;
+
+  @IsNumber()
+  quantity: number;
+
+  @IsUrl()
+  image: string;
 }

@@ -26,6 +26,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/role.guard';
 import { TokenModule } from './infrastructure/token/module/token.module';
 import { PlacesModule } from './modules/places/module/places.module';
+import { TicketsModule } from './modules/tickets/module/tickets.module';
 import { EventsModule } from './modules/events/module/events.module';
 
 @Module({
@@ -66,6 +67,7 @@ import { EventsModule } from './modules/events/module/events.module';
     AuthModule,
     EventsModule,
     PlacesModule,
+    TicketsModule,
     UsersModule,
   ],
   controllers: [AppController],

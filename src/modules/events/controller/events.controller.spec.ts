@@ -3,16 +3,14 @@ import { EventsController } from './events.controller';
 import { EventsService } from '../service/events.service';
 import { CreateEventDto } from '../dto/create-event-dto';
 import { EventEntity } from '../entities/event.entity';
+import { EventTicketCreate } from '../interface/event-ticket-create.interface';
 describe('EventsController', () => {
   let controller: EventsController;
   let service: EventsService;
 
   const mockEventsService = {
     create: jest.fn().mockImplementation((createEventDto: CreateEventDto) => {
-      return Promise.resolve({
-        id: mockId,
-        ...mockCreateEventDto,
-      });
+      return Promise.resolve(mockEventTicketCreate);
     }),
   };
 
@@ -23,11 +21,22 @@ describe('EventsController', () => {
     description: '이벤트 설명',
     date: new Date(),
     placeId: mockPlaceId,
+    price: 10000,
+    quantity: 100,
+    image: 'https://example.com/image.jpg',
   };
+
   const mockEventEntity = new EventEntity({
     id: mockId,
     ...mockCreateEventDto,
   });
+
+  const mockEventTicketCreate: EventTicketCreate = {
+    event: mockEventEntity,
+    tickets: {
+      count: mockCreateEventDto.quantity,
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -55,7 +64,7 @@ describe('EventsController', () => {
       const result = await controller.create(mockCreateEventDto);
 
       expect(service.create).toHaveBeenCalledWith(mockCreateEventDto);
-      expect(result).toEqual(mockEventEntity);
+      expect(result).toEqual(mockEventTicketCreate);
     });
   });
 });

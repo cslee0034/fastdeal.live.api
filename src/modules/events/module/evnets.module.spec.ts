@@ -3,11 +3,13 @@ import { EventsModule } from './events.module';
 import { EventsService } from '../service/events.service';
 import { EventsRepository } from '../repository/events.repository';
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
+import { TicketsRepository } from '../../tickets/repository/tickets.repository';
 
 describe('EventsModule', () => {
   let eventsModule: EventsModule;
   let eventsService: EventsService;
   let eventsRepository: EventsRepository;
+  let ticketsRepository: TicketsRepository;
   let prismaService: PrismaService;
 
   beforeEach(async () => {
@@ -18,6 +20,7 @@ describe('EventsModule', () => {
     eventsModule = module.get<EventsModule>(EventsModule);
     eventsService = module.get<EventsService>(EventsService);
     eventsRepository = module.get<EventsRepository>(EventsRepository);
+    ticketsRepository = module.get<TicketsRepository>(TicketsRepository);
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
@@ -31,6 +34,10 @@ describe('EventsModule', () => {
 
   it('should have EventsRepository', () => {
     expect(eventsRepository).toBeDefined();
+  });
+
+  it('should have TicketsRepository', () => {
+    expect(ticketsRepository).toBeDefined();
   });
 
   it('should have PrismaService', () => {

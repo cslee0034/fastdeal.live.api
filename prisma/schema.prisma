@@ -77,9 +77,26 @@ model Event {
   createdAt   DateTime @default(now()) @db.Timestamp(0)
   updatedAt   DateTime @updatedAt @db.Timestamp(0)
 
-  reservations Reservation[]
+  Reservations Reservation[]
+  Ticket       Ticket[]
 
   @@index([date])
+}
+
+model Ticket {
+  id            String       @id @default(uuid())
+  event         Event        @relation(fields: [eventId], references: [id])
+  eventId       String
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  reservationId String?
+  price         Float
+  seatNumber    Int
+  checkInCode   String
+  image         String
+  createdAt     DateTime     @default(now()) @db.Timestamp(0)
+  updatedAt     DateTime     @updatedAt @db.Timestamp(0)
+
+  @@index([eventId, reservationId])
 }
 
 model Reservation {
@@ -92,6 +109,7 @@ model Reservation {
   createdAt DateTime          @default(now()) @db.Timestamp(0)
   updatedAt DateTime          @updatedAt @db.Timestamp(0)
   Payment   Payment?
+  Ticket    Ticket[]
 
   @@index([eventId, userId])
 }

@@ -21,4 +21,19 @@ export class EventsRepository {
       },
     });
   }
+
+  async createEvents(tx: PrismaService, createEventDto: CreateEventDto) {
+    return await tx.event.create({
+      data: {
+        name: createEventDto.name,
+        description: createEventDto.description,
+        date: createEventDto.date,
+        place: {
+          connect: {
+            id: createEventDto.placeId,
+          },
+        },
+      },
+    });
+  }
 }

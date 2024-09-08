@@ -17,6 +17,9 @@ describe('UsersRepository', () => {
     description: '이벤트 설명',
     date: new Date(),
     placeId: mockPlaceId,
+    price: 10000,
+    quantity: 100,
+    image: 'https://example.com/image.jpg',
   };
 
   beforeEach(async () => {
