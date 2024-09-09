@@ -5,10 +5,16 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { TicketsService } from '../../tickets/service/tickets.service';
 import { CreateSeatingDto } from '../dto/create-seating.dto';
 import { ReservationEntity } from '../entities/reservation.entity';
+import { LockService } from '../../../infrastructure/lock/service/lock.service';
+
+jest.mock('murlock', () => ({
+  MurLock: jest.fn(() => () => jest.fn()),
+}));
 
 describe('ReservationsService', () => {
   let service: ReservationsService;
   let repository: ReservationsRepository;
+  let lockService: LockService;
   let prisma: PrismaService;
 
   const mockTicketsService = {

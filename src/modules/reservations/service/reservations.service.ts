@@ -4,6 +4,7 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { CreateSeatingDto } from '../dto/create-seating.dto';
 import { TicketsService } from '../../tickets/service/tickets.service';
 import { ReservationEntity } from '../entities/reservation.entity';
+import { MurLock } from 'murlock';
 
 @Injectable()
 export class ReservationsService {
@@ -13,6 +14,7 @@ export class ReservationsService {
     private readonly reservationsRepository: ReservationsRepository,
   ) {}
 
+  @MurLock(5000, 'userId')
   async createSeating(userId: string, createSeatingDto: CreateSeatingDto) {
     const result = await this.prisma.$transaction(async (tx: PrismaService) => {
       await this.ticketsService.findTicketWithLockTx(tx, createSeatingDto);

@@ -29,6 +29,9 @@ import { PlacesModule } from './modules/places/module/places.module';
 import { TicketsModule } from './modules/tickets/module/tickets.module';
 import { EventsModule } from './modules/events/module/events.module';
 import { ReservationsModule } from './modules/reservations/module/reservations.module';
+import { MurLockModule } from 'murlock';
+import { getLockConfig } from './config/lock/lock';
+import { LockModule } from './infrastructure/lock/module/lock.module';
 
 @Module({
   imports: [
@@ -60,6 +63,7 @@ import { ReservationsModule } from './modules/reservations/module/reservations.m
       }),
       inject: [ConfigService],
     }),
+    LockModule,
     RedisModule,
     EncryptModule,
     LoggerModule,

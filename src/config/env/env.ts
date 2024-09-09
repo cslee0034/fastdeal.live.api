@@ -20,6 +20,13 @@ export const env = () => ({
     url: process.env.CACHE_URL,
     password: process.env.CACHE_PASSWORD,
   },
+  lock: {
+    url: process.env.LOCK_URL,
+    password: process.env.LOCK_PASSWORD,
+    wait: process.env.LOCK_WAIT,
+    maxAttempts: process.env.LOCK_MAX_ATTEMPTS,
+    ignoreUnlockFail: process.env.LOCK_IGNORE_UNLOCK_FAIL,
+  },
   encrypt: {
     salt: process.env.ENCRYPT_SALT,
   },
