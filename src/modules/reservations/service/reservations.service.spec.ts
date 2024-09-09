@@ -20,9 +20,11 @@ describe('ReservationsService', () => {
   const mockTicketsService = {
     findTicketWithLockTx: jest.fn(),
     reserveSeatingTx: jest.fn(),
+    reserveStandingTx: jest.fn(),
   };
   const mockReservationsRepository = {
     createSeatingTx: jest.fn(),
+    createStandingTx: jest.fn(),
   };
 
   const mockPrismaService = {
@@ -39,12 +41,24 @@ describe('ReservationsService', () => {
     eventId: mockEventId,
     ticketId: mockTicketId,
   } as CreateSeatingDto;
+  const mockCreateStandingDto = {
+    eventId: mockEventId,
+  } as CreateSeatingDto;
 
   const mockReservation = new ReservationEntity({
     id: mockReservationId,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
+
+  const mockReservedTicket = {
+    eventId: mockEventId,
+    price: 10000,
+    seatNumber: 1,
+    checkInCode: 'mock-uuid',
+    image: 'https://example.com/image.jpg',
+    eventEntity: mockEventId,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -78,7 +92,6 @@ describe('ReservationsService', () => {
 
   describe('createSeating', () => {
     it('예약 내역을 반환해야 한다', async () => {
-      mockTicketsService.findTicketWithLockTx.mockResolvedValue(mockTicketId);
       mockReservationsRepository.createSeatingTx.mockResolvedValue(
         mockReservation,
       );
@@ -96,6 +109,34 @@ describe('ReservationsService', () => {
         prisma,
         mockCreateSeatingDto,
         mockUserId,
+      );
+      expect(result).toEqual(mockReservation);
+    });
+  });
+
+  describe('createStanding', () => {
+    it('예약 내역을 반환해야 한다', async () => {
+      mockReservationsRepository.createStandingTx.mockResolvedValue(
+        mockReservation,
+      );
+      mockTicketsService.reserveStandingTx.mockResolvedValue(
+        mockReservedTicket,
+      );
+
+      const result = await service.createStanding(
+        mockUserId,
+        mockCreateStandingDto,
+      );
+
+      expect(mockReservationsRepository.createStandingTx).toHaveBeenCalledWith(
+        prisma,
+        mockCreateStandingDto,
+        mockUserId,
+      );
+      expect(mockTicketsService.reserveStandingTx).toHaveBeenCalledWith(
+        prisma,
+        mockCreateStandingDto,
+        mockReservation,
       );
       expect(result).toEqual(mockReservation);
     });

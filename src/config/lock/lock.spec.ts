@@ -13,6 +13,8 @@ jest.mock('@nestjs/config', () => ({
           return 100;
         case 'maxAttempts':
           return 3;
+        case 'logLevel':
+          return 'warn';
         case 'ignoreUnlockFail':
           return false;
         default:

@@ -5,6 +5,7 @@ import { CreateSeatingDto } from '../dto/create-seating.dto';
 import { TicketsService } from '../../tickets/service/tickets.service';
 import { ReservationEntity } from '../entities/reservation.entity';
 import { MurLock } from 'murlock';
+import { CreateStandingDto } from '../dto/create-standing-dto';
 
 @Injectable()
 export class ReservationsService {
@@ -14,7 +15,6 @@ export class ReservationsService {
     private readonly reservationsRepository: ReservationsRepository,
   ) {}
 
-  @MurLock(5000, 'userId')
   async createSeating(userId: string, createSeatingDto: CreateSeatingDto) {
     const result = await this.prisma.$transaction(async (tx: PrismaService) => {
       await this.ticketsService.findTicketWithLockTx(tx, createSeatingDto);
@@ -28,6 +28,27 @@ export class ReservationsService {
       await this.ticketsService.reserveSeatingTx(
         tx,
         createSeatingDto,
+        reservation,
+      );
+
+      return reservation;
+    });
+
+    return new ReservationEntity(result);
+  }
+
+  @MurLock(5000, 'createStandingDto.eventId')
+  async createStanding(userId: string, createStandingDto: CreateStandingDto) {
+    const result = await this.prisma.$transaction(async (tx: PrismaService) => {
+      const reservation = await this.reservationsRepository.createStandingTx(
+        tx,
+        createStandingDto,
+        userId,
+      );
+
+      await this.ticketsService.reserveStandingTx(
+        tx,
+        createStandingDto,
         reservation,
       );
 

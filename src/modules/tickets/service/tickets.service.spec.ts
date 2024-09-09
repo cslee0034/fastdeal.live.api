@@ -39,6 +39,10 @@ describe('TicketsService', () => {
     findTicketWithLockTx: jest.fn(),
 
     reserveSeatingTx: jest.fn(),
+
+    findStandingTicketTx: jest.fn(),
+
+    reserveStandingTicketTx: jest.fn(),
   };
 
   const mockRedisService = {};
@@ -60,9 +64,26 @@ describe('TicketsService', () => {
     } as Ticket,
   ];
 
+  const mockStandingTicket = {
+    id: 'mock-uuid',
+    eventId: mockEventId,
+    price: 10000,
+    seatNumber: 1,
+    checkInCode: 'mock-uuid',
+    image: 'https://example.com/image.jpg',
+    reservationId: 'mock-uuid',
+    isAvailable: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const mockCreateSeatingDto = {
     eventId: mockEventId,
     ticketId: mockTicketId,
+  } as CreateSeatingDto;
+
+  const mockCreateStandingDto = {
+    eventId: mockEventId,
   } as CreateSeatingDto;
 
   const mockReservation = {
@@ -224,6 +245,85 @@ describe('TicketsService', () => {
         service.reserveSeatingTx(
           {} as any,
           mockCreateSeatingDto,
+          mockReservation,
+        ),
+      ).rejects.toThrow(FailedToReserveTicketError);
+    });
+  });
+
+  describe('reserveStandingTx', () => {
+    it('트랜잭션 내에서 스탠딩 티켓을 예약한다', async () => {
+      mockTicketsRepository.findStandingTicketTx.mockResolvedValue(
+        mockStandingTicket,
+      );
+      mockTicketsRepository.reserveStandingTicketTx.mockResolvedValue(
+        mockStandingTicket,
+      );
+
+      const result = await service.reserveStandingTx(
+        {} as any,
+        mockCreateStandingDto,
+        mockReservation,
+      );
+
+      expect(repository.findStandingTicketTx).toHaveBeenCalledWith(
+        {},
+        mockCreateStandingDto,
+      );
+      expect(result).toEqual(mockStandingTicket);
+    });
+
+    it('스탠딩 티켓을 찾는 도중 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
+      mockTicketsRepository.findStandingTicketTx.mockRejectedValue(new Error());
+
+      await expect(
+        service.reserveStandingTx(
+          {} as any,
+          mockCreateStandingDto,
+          mockReservation,
+        ),
+      ).rejects.toThrow(FailedToFindTicketError);
+    });
+
+    it('스탠딩 티켓이 없을 경우 TicketNotFoundError를 반환한다', async () => {
+      mockTicketsRepository.findStandingTicketTx.mockResolvedValue(null);
+
+      await expect(
+        service.reserveStandingTx(
+          {} as any,
+          mockCreateStandingDto,
+          mockReservation,
+        ),
+      ).rejects.toThrow(TicketNotFoundError);
+    });
+
+    it('스탠딩 티켓이 이미 예약되었을 경우 TicketNotAvailableError를 반환한다', async () => {
+      mockTicketsRepository.findStandingTicketTx.mockResolvedValue({
+        ...mockStandingTicket,
+        isAvailable: false,
+      });
+
+      await expect(
+        service.reserveStandingTx(
+          {} as any,
+          mockCreateStandingDto,
+          mockReservation,
+        ),
+      ).rejects.toThrow(TicketNotAvailableError);
+    });
+
+    it('스탠딩 티켓을 예약하는 도중 에러가 발생하면 FailedToReserveTicketError를 반환한다', async () => {
+      mockTicketsRepository.findStandingTicketTx.mockResolvedValue(
+        mockStandingTicket,
+      );
+      mockTicketsRepository.reserveStandingTicketTx.mockRejectedValue(
+        new Error(),
+      );
+
+      await expect(
+        service.reserveStandingTx(
+          {} as any,
+          mockCreateStandingDto,
           mockReservation,
         ),
       ).rejects.toThrow(FailedToReserveTicketError);

@@ -4,6 +4,7 @@ import { MappedTicket } from '../interface/mapped-ticket.interface';
 import { TicketCount } from '../interface/ticket-count';
 import { Reservation, Ticket } from '@prisma/client';
 import { CreateSeatingDto } from '../../reservations/dto/create-seating.dto';
+import { CreateStandingDto } from '../../reservations/dto/create-standing-dto';
 
 @Injectable()
 export class TicketsRepository {
@@ -61,6 +62,41 @@ export class TicketsRepository {
       where: {
         id: createSeatingDto.ticketId,
         eventId: createSeatingDto.eventId,
+      },
+      data: {
+        isAvailable: false,
+        reservation: {
+          connect: {
+            id: reservation.id,
+          },
+        },
+      },
+    });
+  }
+
+  async findStandingTicketTx(
+    tx: PrismaService,
+    createStandingDto: CreateStandingDto,
+  ): Promise<Ticket> {
+    const tickets = await tx.ticket.findFirst({
+      where: {
+        eventId: createStandingDto.eventId,
+        isAvailable: true,
+      },
+    });
+
+    return tickets;
+  }
+
+  async reserveStandingTicketTx(
+    tx: PrismaService,
+    reservation: Reservation,
+    ticket: Ticket,
+  ): Promise<Ticket> {
+    return await tx.ticket.update({
+      where: {
+        id: ticket.id,
+        eventId: ticket.eventId,
       },
       data: {
         isAvailable: false,

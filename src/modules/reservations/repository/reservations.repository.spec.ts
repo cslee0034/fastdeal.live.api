@@ -20,6 +20,9 @@ describe('ReservationsRepository', () => {
     eventId: mockEventId,
     ticketId: mockTicketId,
   } as CreateSeatingDto;
+  const mockCreateStandingDto = {
+    eventId: mockEventId,
+  } as CreateSeatingDto;
 
   const mockReservation = {
     id: mockReservationId,
@@ -58,6 +61,38 @@ describe('ReservationsRepository', () => {
       const result = await repository.createSeatingTx(
         mockTx as any,
         mockCreateSeatingDto,
+        mockUserId,
+      );
+
+      expect(mockTx.reservation.create).toHaveBeenCalledWith({
+        data: {
+          event: {
+            connect: {
+              id: mockEventId,
+            },
+          },
+          user: {
+            connect: {
+              id: mockUserId,
+            },
+          },
+        },
+      });
+      expect(result).toEqual(mockReservation);
+    });
+  });
+
+  describe('createStandingTx', () => {
+    it('예약 내역을 생성하고 반환해야 한다', async () => {
+      const mockTx = {
+        reservation: {
+          create: jest.fn().mockResolvedValue(mockReservation),
+        },
+      };
+
+      const result = await repository.createStandingTx(
+        mockTx as any,
+        mockCreateStandingDto,
         mockUserId,
       );
 

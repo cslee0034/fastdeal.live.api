@@ -13,6 +13,10 @@ describe('ReservationsController', () => {
     createSeating: jest.fn().mockImplementation((userId, createSeatingDto) => {
       return mockReservation;
     }),
+
+    createStanding: jest.fn().mockImplementation((userId, createStanding) => {
+      return mockReservation;
+    }),
   };
 
   const mockUserId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
@@ -22,6 +26,9 @@ describe('ReservationsController', () => {
   const mockCreateSeatingDto = {
     eventId: mockEventId,
     ticketId: mockTicketId,
+  } as CreateSeatingDto;
+  const mockCreateStandingDto = {
+    eventId: mockEventId,
   } as CreateSeatingDto;
 
   const mockReservation = new ReservationEntity({
@@ -61,6 +68,21 @@ describe('ReservationsController', () => {
       expect(mockReservationsService.createSeating).toHaveBeenCalledWith(
         mockUserId,
         mockCreateSeatingDto,
+      );
+      expect(result).toEqual(mockReservation);
+    });
+  });
+
+  describe('createStanding', () => {
+    it('예약 내역을 반환해야 한다', async () => {
+      const result = await controller.createStanding(
+        mockUserId,
+        mockCreateStandingDto,
+      );
+
+      expect(mockReservationsService.createStanding).toHaveBeenCalledWith(
+        mockUserId,
+        mockCreateStandingDto,
       );
       expect(result).toEqual(mockReservation);
     });

@@ -31,6 +31,10 @@ describe('TicketsRepository', () => {
     image: 'https://example.com/image.jpg',
   };
 
+  const mockCreateStandingDto = {
+    eventId: mockEventId,
+  } as CreateSeatingDto;
+
   const mockEvent = {
     ...mockCreateEventDto,
     id: mockEventId,
@@ -59,6 +63,7 @@ describe('TicketsRepository', () => {
 
   const mockFoundTickets = mockMappedTickets.map((ticket) => {
     return {
+      id: 'mock-uuid',
       eventId: ticket.eventId,
       price: ticket.price,
       seatNumber: ticket.seatNumber,
@@ -71,6 +76,7 @@ describe('TicketsRepository', () => {
 
   const createdTickets = mockMappedTickets.map((ticket) => {
     return {
+      id: 'mock-uuid',
       eventId: ticket.eventId,
       price: ticket.price,
       seatNumber: ticket.seatNumber,
@@ -199,6 +205,72 @@ describe('TicketsRepository', () => {
       expect(mockTx.ticket.update).toHaveBeenCalledWith({
         where: {
           id: mockTicketId,
+          eventId: mockEventId,
+        },
+        data: {
+          isAvailable: false,
+          reservation: {
+            connect: {
+              id: mockReservationId,
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe('findStandingTicketTx', () => {
+    it('트랜잭션 내에서 스탠딩 티켓을 조회해야 한다', async () => {
+      const mockTx = {
+        ticket: {
+          findFirst: jest.fn(),
+        },
+      };
+
+      await repository.findStandingTicketTx(
+        mockTx as any,
+        mockCreateStandingDto,
+      );
+
+      expect(mockTx.ticket.findFirst).toHaveBeenCalledWith({
+        where: {
+          eventId: mockEventId,
+          isAvailable: true,
+        },
+      });
+    });
+  });
+
+  describe('reserveStandingTicketTx', () => {
+    it('트랜잭션 내에서 스탠딩 티켓을 예약해야 한다', async () => {
+      const mockTx = {
+        ticket: {
+          update: jest.fn(),
+        },
+      };
+
+      const mockFoundTicket = {
+        id: 'mock-uuid',
+        eventId: mockEventId,
+        price: 10000,
+        seatNumber: 1,
+        checkInCode: 'mock-uuid',
+        image: 'https://example.com/image.jpg',
+        reservationId: 'mock-uuid',
+        isAvailable: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await repository.reserveStandingTicketTx(
+        mockTx as any,
+        mockReservation,
+        mockFoundTicket,
+      );
+
+      expect(mockTx.ticket.update).toHaveBeenCalledWith({
+        where: {
+          id: mockFoundTicket.id,
           eventId: mockEventId,
         },
         data: {

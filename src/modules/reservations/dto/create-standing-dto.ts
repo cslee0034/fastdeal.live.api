@@ -1,9 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class CreateSeatingDto {
+export class CreateStandingDto {
   @IsString()
   eventId: string;
-
-  @IsString()
-  ticketId: string;
 }
