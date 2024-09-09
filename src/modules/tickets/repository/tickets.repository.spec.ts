@@ -5,6 +5,7 @@ import { MappedTicket } from '../interface/mapped-ticket.interface';
 import { CreateEventDto } from '../../events/dto/create-event-dto';
 import { EventEntity } from '../../events/entities/event.entity';
 import { EventType } from '@prisma/client';
+import { CreateSeatingDto } from '../../reservations/dto/create-seating.dto';
 describe('TicketsRepository', () => {
   let repository: TicketsRepository;
 
@@ -14,8 +15,9 @@ describe('TicketsRepository', () => {
       count: jest.fn(),
     },
     $transaction: jest.fn(),
-  };
+  } as any;
 
+  const mockUserId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
   const mockPlaceId = '987e4567-e89b-12d3-a456-426614174000';
   const mockEventId = '6a0e0a7b-6b5b-4c4b-9b0f-0f4b7b1b5f6d';
   const mockCreateEventDto: CreateEventDto = {
@@ -78,6 +80,21 @@ describe('TicketsRepository', () => {
       updatedAt: new Date(),
     };
   });
+
+  const mockTicketId = '087e1c4f-a709-4d80-b9fb-5d9bdd096eec';
+  const mockReservationId = '4c2g1c4f-a709-4d80-b9fb-5d9bdd096eec';
+  const mockCreateSeatingDto = {
+    eventId: mockEventId,
+    ticketId: mockTicketId,
+  } as CreateSeatingDto;
+
+  const mockReservation = {
+    id: mockReservationId,
+    eventId: mockEventId,
+    userId: mockUserId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -147,6 +164,52 @@ describe('TicketsRepository', () => {
         },
       });
       expect(result).toBe(mockFoundTickets.length);
+    });
+  });
+
+  describe('findTicketWithLockTx', () => {
+    it('트랜잭션 내에서 티켓을 조회하고 잠금을 걸어야 한다', async () => {
+      const mockTx = {
+        $queryRaw: jest.fn().mockResolvedValue(mockFoundTickets),
+      };
+
+      const result = await repository.findTicketWithLockTx(
+        mockTx as any,
+        mockCreateSeatingDto,
+      );
+
+      expect(result).toEqual(mockFoundTickets);
+    });
+  });
+
+  describe('reserveSeatingTx', () => {
+    it('트랜잭션 내에서 티켓을 예약해야 한다', async () => {
+      const mockTx = {
+        ticket: {
+          update: jest.fn(),
+        },
+      };
+
+      await repository.reserveSeatingTx(
+        mockTx as any,
+        mockCreateSeatingDto,
+        mockReservation,
+      );
+
+      expect(mockTx.ticket.update).toHaveBeenCalledWith({
+        where: {
+          id: mockTicketId,
+          eventId: mockEventId,
+        },
+        data: {
+          isAvailable: false,
+          reservation: {
+            connect: {
+              id: mockReservationId,
+            },
+          },
+        },
+      });
     });
   });
 });

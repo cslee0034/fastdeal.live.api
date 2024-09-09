@@ -85,7 +85,7 @@ model Event {
 }
 
 enum EventType {
-  RESERVED // 좌석이 구분됨
+  SEATING // 좌석이 구분됨
   STANDING // 좌석이 구분되지 않음
 }
 

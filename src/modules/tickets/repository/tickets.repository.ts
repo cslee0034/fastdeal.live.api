@@ -2,7 +2,8 @@ import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma
 import { Injectable } from '@nestjs/common';
 import { MappedTicket } from '../interface/mapped-ticket.interface';
 import { TicketCount } from '../interface/ticket-count';
-import { Ticket } from '@prisma/client';
+import { Reservation, Ticket } from '@prisma/client';
+import { CreateSeatingDto } from '../../reservations/dto/create-seating.dto';
 
 @Injectable()
 export class TicketsRepository {
@@ -31,6 +32,43 @@ export class TicketsRepository {
     return await this.prisma.ticket.count({
       where: {
         eventId,
+      },
+    });
+  }
+
+  async findTicketWithLockTx(
+    tx: PrismaService,
+    createSeatingDto: CreateSeatingDto,
+  ): Promise<Ticket[]> {
+    return await tx.$queryRaw`
+      SELECT 
+        *
+      FROM 
+        Ticket
+      WHERE 
+        id = ${createSeatingDto.ticketId} AND
+        eventId = ${createSeatingDto.eventId}
+      FOR UPDATE
+    `;
+  }
+
+  async reserveSeatingTx(
+    tx: PrismaService,
+    createSeatingDto: CreateSeatingDto,
+    reservation: Reservation,
+  ): Promise<void> {
+    await tx.ticket.update({
+      where: {
+        id: createSeatingDto.ticketId,
+        eventId: createSeatingDto.eventId,
+      },
+      data: {
+        isAvailable: false,
+        reservation: {
+          connect: {
+            id: reservation.id,
+          },
+        },
       },
     });
   }

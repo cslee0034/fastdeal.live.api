@@ -73,7 +73,9 @@ describe('EventsService', () => {
   };
 
   const mockPrismaService = {
-    $transaction: jest.fn(),
+    $transaction: jest.fn().mockImplementation(async (tx: any) => {
+      return tx(prisma);
+    }),
   };
 
   beforeEach(async () => {
@@ -111,10 +113,6 @@ describe('EventsService', () => {
     it('이벤트와 티켓을 생성하고 EventTicketCreate를 반환해야 한다', async () => {
       mockEventsRepository.createEventTx.mockResolvedValue(mockEventEntity);
       mockTicketsRepository.createTicketsTx.mockResolvedValue(mockTickets);
-
-      mockPrismaService.$transaction.mockImplementation(async (tx: any) => {
-        return tx(prisma);
-      });
 
       const result = await service.create(mockCreateEventDto);
 
