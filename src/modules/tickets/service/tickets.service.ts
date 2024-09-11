@@ -71,9 +71,9 @@ export class TicketsService {
     createStandingDto: CreateStandingDto,
     reservation: Reservation,
   ): Promise<TicketEntity> {
-    const ticket = await this.findStandingTicket(tx, createStandingDto);
+    const ticket = await this.findStandingTicketTx(tx, createStandingDto);
 
-    const bookedTicket = await this.reserveStandingTicket(
+    const bookedTicket = await this.reserveStandingTicketTx(
       tx,
       reservation,
       ticket,
@@ -82,7 +82,7 @@ export class TicketsService {
     return new TicketEntity(bookedTicket);
   }
 
-  private async findStandingTicket(
+  private async findStandingTicketTx(
     tx: PrismaService,
     createStandingDto: CreateStandingDto,
   ): Promise<Ticket> {
@@ -103,7 +103,7 @@ export class TicketsService {
     return ticket;
   }
 
-  private async reserveStandingTicket(
+  private async reserveStandingTicketTx(
     tx: PrismaService,
     reservation: Reservation,
     ticket: Ticket,
