@@ -1,0 +1,31 @@
+{
+  "config": {
+    "target": "http://localhost:4000",
+    "phases": [
+      { "duration": 60, "arrivalRate": 100 },
+      { "duration": 60, "arrivalRate": 200 },
+      { "duration": 60, "arrivalRate": 300 },
+      { "duration": 60, "arrivalRate": 400 },
+      { "duration": 60, "arrivalRate": 500 }
+    ],
+    "payload": {
+      "path": "./ticket.csv",
+      "fields": ["ticketId"]
+    }
+  },
+  "scenarios": [
+    {
+      "flow": [
+        {
+          "post": {
+            "url": "/reservations/seating",
+            "json": {
+              "eventId": "fecc8351-369a-434b-8733-9db39cb8cebb",
+              "ticketId": "{{ ticketId }}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3537 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.0": 90000,
+      "vusers.created": 90000,
+      "http.requests": 90000,
+      "http.codes.201": 9995,
+      "http.responses": 83033,
+      "http.downloaded_bytes": 14396991,
+      "plugins.metrics-by-endpoint./reservations/seating.codes.201": 9995,
+      "vusers.failed": 6967,
+      "vusers.completed": 83033,
+      "http.codes.400": 73038,
+      "plugins.metrics-by-endpoint./reservations/seating.codes.400": 73038,
+      "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 4037,
+      "errors.ECONNRESET": 4037,
+      "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 1403,
+      "errors.EPIPE": 1403,
+      "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 1527,
+      "errors.ETIMEDOUT": 1527
+    },
+    "rates": {
+      "http.request_rate": 296
+    },
+    "firstCounterAt": 1726183049041,
+    "firstHistogramAt": 1726183049089,
+    "lastCounterAt": 1726183349587,
+    "lastHistogramAt": 1726183349587,
+    "firstMetricAt": 1726183049041,
+    "lastMetricAt": 1726183349587,
+    "period": 1726183340000,
+    "summaries": {
+      "http.response_time": {
+        "min": 1,
+        "max": 1304,
+        "count": 83033,
+        "mean": 168.2,
+        "p50": 79.1,
+        "median": 79.1,
+        "p75": 267.8,
+        "p90": 459.5,
+        "p95": 608,
+        "p99": 871.5,
+        "p999": 1153.1
+      },
+      "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+        "min": 1,
+        "max": 1304,
+        "count": 83033,
+        "mean": 168.2,
+        "p50": 79.1,
+        "median": 79.1,
+        "p75": 267.8,
+        "p90": 459.5,
+        "p95": 608,
+        "p99": 871.5,
+        "p999": 1153.1
+      },
+      "vusers.session_length": {
+        "min": 1.8,
+        "max": 4513,
+        "count": 83033,
+        "mean": 240.5,
+        "p50": 98.5,
+        "median": 98.5,
+        "p75": 368.8,
+        "p90": 671.9,
+        "p95": 871.5,
+        "p99": 1380.5,
+        "p999": 1939.5
+      }
+    },
+    "histograms": {
+      "http.response_time": {
+        "min": 1,
+        "max": 1304,
+        "count": 83033,
+        "mean": 168.2,
+        "p50": 79.1,
+        "median": 79.1,
+        "p75": 267.8,
+        "p90": 459.5,
+        "p95": 608,
+        "p99": 871.5,
+        "p999": 1153.1
+      },
+      "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+        "min": 1,
+        "max": 1304,
+        "count": 83033,
+        "mean": 168.2,
+        "p50": 79.1,
+        "median": 79.1,
+        "p75": 267.8,
+        "p90": 459.5,
+        "p95": 608,
+        "p99": 871.5,
+        "p999": 1153.1
+      },
+      "vusers.session_length": {
+        "min": 1.8,
+        "max": 4513,
+        "count": 83033,
+        "mean": 240.5,
+        "p50": 98.5,
+        "median": 98.5,
+        "p75": 368.8,
+        "p90": 671.9,
+        "p95": 871.5,
+        "p99": 1380.5,
+        "p999": 1939.5
+      }
+    }
+  },
+  "intermediate": [
+    {
+      "counters": {
+        "vusers.created_by_name.0": 80,
+        "vusers.created": 80,
+        "http.requests": 80,
+        "http.codes.201": 74,
+        "http.responses": 75,
+        "http.downloaded_bytes": 11055,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 74,
+        "vusers.failed": 0,
+        "vusers.completed": 75,
+        "http.codes.400": 1,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1
+      },
+      "rates": {
+        "http.request_rate": 80
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183049041,
+      "firstHistogramAt": 1726183049089,
+      "lastCounterAt": 1726183049999,
+      "lastHistogramAt": 1726183049966,
+      "firstMetricAt": 1726183049041,
+      "lastMetricAt": 1726183049999,
+      "period": "1726183040000",
+      "summaries": {
+        "http.response_time": {
+          "min": 4,
+          "max": 37,
+          "count": 75,
+          "mean": 9.9,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 13.1,
+          "p95": 16.9,
+          "p99": 18,
+          "p999": 18
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 4,
+          "max": 37,
+          "count": 75,
+          "mean": 9.9,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 13.1,
+          "p95": 16.9,
+          "p99": 18,
+          "p999": 18
+        },
+        "vusers.session_length": {
+          "min": 6.2,
+          "max": 49.8,
+          "count": 75,
+          "mean": 13.2,
+          "p50": 11.4,
+          "median": 11.4,
+          "p75": 13.9,
+          "p90": 20.3,
+          "p95": 22.4,
+          "p99": 27.4,
+          "p999": 27.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 4,
+          "max": 37,
+          "count": 75,
+          "mean": 9.9,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 13.1,
+          "p95": 16.9,
+          "p99": 18,
+          "p999": 18
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 4,
+          "max": 37,
+          "count": 75,
+          "mean": 9.9,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 13.1,
+          "p95": 16.9,
+          "p99": 18,
+          "p999": 18
+        },
+        "vusers.session_length": {
+          "min": 6.2,
+          "max": 49.8,
+          "count": 75,
+          "mean": 13.2,
+          "p50": 11.4,
+          "median": 11.4,
+          "p75": 13.9,
+          "p90": 20.3,
+          "p95": 22.4,
+          "p99": 27.4,
+          "p999": 27.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 1000,
+        "vusers.created": 1000,
+        "http.requests": 1000,
+        "http.codes.201": 947,
+        "http.responses": 1003,
+        "http.downloaded_bytes": 149121,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 947,
+        "vusers.failed": 0,
+        "vusers.completed": 1003,
+        "http.codes.400": 56,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 56
+      },
+      "rates": {
+        "http.request_rate": 100
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183050003,
+      "firstHistogramAt": 1726183050003,
+      "lastCounterAt": 1726183059999,
+      "lastHistogramAt": 1726183059999,
+      "firstMetricAt": 1726183050003,
+      "lastMetricAt": 1726183059999,
+      "period": "1726183050000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 56,
+          "count": 1003,
+          "mean": 10.4,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 18,
+          "p95": 22,
+          "p99": 39.3,
+          "p999": 47
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 56,
+          "count": 1003,
+          "mean": 10.4,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 18,
+          "p95": 22,
+          "p99": 39.3,
+          "p999": 47
+        },
+        "vusers.session_length": {
+          "min": 2.7,
+          "max": 59.4,
+          "count": 1003,
+          "mean": 12.3,
+          "p50": 10.3,
+          "median": 10.3,
+          "p75": 13.3,
+          "p90": 20.7,
+          "p95": 25.8,
+          "p99": 49.9,
+          "p999": 57.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 56,
+          "count": 1003,
+          "mean": 10.4,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 18,
+          "p95": 22,
+          "p99": 39.3,
+          "p999": 47
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 56,
+          "count": 1003,
+          "mean": 10.4,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 10.9,
+          "p90": 18,
+          "p95": 22,
+          "p99": 39.3,
+          "p999": 47
+        },
+        "vusers.session_length": {
+          "min": 2.7,
+          "max": 59.4,
+          "count": 1003,
+          "mean": 12.3,
+          "p50": 10.3,
+          "median": 10.3,
+          "p75": 13.3,
+          "p90": 20.7,
+          "p95": 25.8,
+          "p99": 49.9,
+          "p999": 57.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 1000,
+        "vusers.created": 1000,
+        "http.requests": 1000,
+        "http.codes.201": 866,
+        "http.responses": 997,
+        "http.downloaded_bytes": 150489,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 866,
+        "vusers.failed": 0,
+        "vusers.completed": 997,
+        "http.codes.400": 131,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 131
+      },
+      "rates": {
+        "http.request_rate": 100
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183060002,
+      "firstHistogramAt": 1726183060002,
+      "lastCounterAt": 1726183069999,
+      "lastHistogramAt": 1726183069956,
+      "firstMetricAt": 1726183060002,
+      "lastMetricAt": 1726183069999,
+      "period": "1726183060000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 56,
+          "count": 997,
+          "mean": 10.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 13.1,
+          "p90": 18,
+          "p95": 22,
+          "p99": 37,
+          "p999": 53
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 56,
+          "count": 997,
+          "mean": 10.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 13.1,
+          "p90": 18,
+          "p95": 22,
+          "p99": 37,
+          "p999": 53
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 70.8,
+          "count": 997,
+          "mean": 12.7,
+          "p50": 10.3,
+          "median": 10.3,
+          "p75": 15.3,
+          "p90": 22,
+          "p95": 25.8,
+          "p99": 49.9,
+          "p999": 70.1
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 56,
+          "count": 997,
+          "mean": 10.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 13.1,
+          "p90": 18,
+          "p95": 22,
+          "p99": 37,
+          "p999": 53
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 56,
+          "count": 997,
+          "mean": 10.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 13.1,
+          "p90": 18,
+          "p95": 22,
+          "p99": 37,
+          "p999": 53
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 70.8,
+          "count": 997,
+          "mean": 12.7,
+          "p50": 10.3,
+          "median": 10.3,
+          "p75": 15.3,
+          "p90": 22,
+          "p95": 25.8,
+          "p99": 49.9,
+          "p999": 70.1
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 1000,
+        "vusers.created": 1000,
+        "http.requests": 1000,
+        "http.codes.201": 776,
+        "http.responses": 1000,
+        "http.downloaded_bytes": 153720,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 776,
+        "vusers.failed": 0,
+        "vusers.completed": 1000,
+        "http.codes.400": 224,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 224
+      },
+      "rates": {
+        "http.request_rate": 100
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183070005,
+      "firstHistogramAt": 1726183070005,
+      "lastCounterAt": 1726183079999,
+      "lastHistogramAt": 1726183079959,
+      "firstMetricAt": 1726183070005,
+      "lastMetricAt": 1726183079999,
+      "period": "1726183070000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 41,
+          "count": 1000,
+          "mean": 9.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 12.1,
+          "p90": 16.9,
+          "p95": 21.1,
+          "p99": 34.8,
+          "p999": 39.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 41,
+          "count": 1000,
+          "mean": 9.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 12.1,
+          "p90": 16.9,
+          "p95": 21.1,
+          "p99": 34.8,
+          "p999": 39.3
+        },
+        "vusers.session_length": {
+          "min": 2.3,
+          "max": 79.6,
+          "count": 1000,
+          "mean": 11.6,
+          "p50": 10.1,
+          "median": 10.1,
+          "p75": 13.6,
+          "p90": 19.5,
+          "p95": 24.8,
+          "p99": 38.5,
+          "p999": 79.1
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 41,
+          "count": 1000,
+          "mean": 9.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 12.1,
+          "p90": 16.9,
+          "p95": 21.1,
+          "p99": 34.8,
+          "p999": 39.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 41,
+          "count": 1000,
+          "mean": 9.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 12.1,
+          "p90": 16.9,
+          "p95": 21.1,
+          "p99": 34.8,
+          "p999": 39.3
+        },
+        "vusers.session_length": {
+          "min": 2.3,
+          "max": 79.6,
+          "count": 1000,
+          "mean": 11.6,
+          "p50": 10.1,
+          "median": 10.1,
+          "p75": 13.6,
+          "p90": 19.5,
+          "p95": 24.8,
+          "p99": 38.5,
+          "p999": 79.1
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 1000,
+        "vusers.created": 1000,
+        "http.requests": 1000,
+        "http.codes.400": 275,
+        "http.responses": 1002,
+        "http.downloaded_bytes": 155544,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 275,
+        "vusers.failed": 0,
+        "vusers.completed": 1002,
+        "http.codes.201": 727,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 727
+      },
+      "rates": {
+        "http.request_rate": 100
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183080008,
+      "firstHistogramAt": 1726183080008,
+      "lastCounterAt": 1726183089999,
+      "lastHistogramAt": 1726183089999,
+      "firstMetricAt": 1726183080008,
+      "lastMetricAt": 1726183089999,
+      "period": "1726183080000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 47,
+          "count": 1002,
+          "mean": 8.9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 24.8,
+          "p999": 30.9
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 47,
+          "count": 1002,
+          "mean": 8.9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 24.8,
+          "p999": 30.9
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 50.1,
+          "count": 1002,
+          "mean": 10.8,
+          "p50": 9.9,
+          "median": 9.9,
+          "p75": 13.1,
+          "p90": 18.7,
+          "p95": 22.9,
+          "p99": 30.9,
+          "p999": 37
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 47,
+          "count": 1002,
+          "mean": 8.9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 24.8,
+          "p999": 30.9
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 47,
+          "count": 1002,
+          "mean": 8.9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 24.8,
+          "p999": 30.9
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 50.1,
+          "count": 1002,
+          "mean": 10.8,
+          "p50": 9.9,
+          "median": 9.9,
+          "p75": 13.1,
+          "p90": 18.7,
+          "p95": 22.9,
+          "p99": 30.9,
+          "p999": 37
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 1000,
+        "vusers.created": 1000,
+        "http.requests": 1000,
+        "http.codes.201": 649,
+        "http.responses": 998,
+        "http.downloaded_bytes": 157176,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 649,
+        "vusers.failed": 0,
+        "vusers.completed": 998,
+        "http.codes.400": 349,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 349
+      },
+      "rates": {
+        "http.request_rate": 100
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183090000,
+      "firstHistogramAt": 1726183090000,
+      "lastCounterAt": 1726183099999,
+      "lastHistogramAt": 1726183099962,
+      "firstMetricAt": 1726183090000,
+      "lastMetricAt": 1726183099999,
+      "period": "1726183090000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 59,
+          "count": 998,
+          "mean": 8.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 29.1,
+          "p999": 58.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 59,
+          "count": 998,
+          "mean": 8.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 29.1,
+          "p999": 58.6
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 60.1,
+          "count": 998,
+          "mean": 10.3,
+          "p50": 9.3,
+          "median": 9.3,
+          "p75": 12.8,
+          "p90": 17.6,
+          "p95": 22,
+          "p99": 35.5,
+          "p999": 59.7
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 59,
+          "count": 998,
+          "mean": 8.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 29.1,
+          "p999": 58.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 59,
+          "count": 998,
+          "mean": 8.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 15,
+          "p95": 19.1,
+          "p99": 29.1,
+          "p999": 58.6
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 60.1,
+          "count": 998,
+          "mean": 10.3,
+          "p50": 9.3,
+          "median": 9.3,
+          "p75": 12.8,
+          "p90": 17.6,
+          "p95": 22,
+          "p99": 35.5,
+          "p999": 59.7
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 1083,
+        "vusers.created": 1083,
+        "http.requests": 1082,
+        "http.codes.400": 495,
+        "http.responses": 1081,
+        "http.downloaded_bytes": 173757,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 495,
+        "vusers.failed": 0,
+        "vusers.completed": 1081,
+        "http.codes.201": 586,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 586
+      },
+      "rates": {
+        "http.request_rate": 110
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183100000,
+      "firstHistogramAt": 1726183100000,
+      "lastCounterAt": 1726183109999,
+      "lastHistogramAt": 1726183109996,
+      "firstMetricAt": 1726183100000,
+      "lastMetricAt": 1726183109999,
+      "period": "1726183100000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 64,
+          "count": 1081,
+          "mean": 9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 16,
+          "p95": 21.1,
+          "p99": 47,
+          "p999": 63.4
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 64,
+          "count": 1081,
+          "mean": 9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 16,
+          "p95": 21.1,
+          "p99": 47,
+          "p999": 63.4
+        },
+        "vusers.session_length": {
+          "min": 2.2,
+          "max": 72.1,
+          "count": 1081,
+          "mean": 11.2,
+          "p50": 9.1,
+          "median": 9.1,
+          "p75": 13.6,
+          "p90": 21.5,
+          "p95": 26.8,
+          "p99": 47.9,
+          "p999": 66
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 64,
+          "count": 1081,
+          "mean": 9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 16,
+          "p95": 21.1,
+          "p99": 47,
+          "p999": 63.4
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 64,
+          "count": 1081,
+          "mean": 9,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 10.9,
+          "p90": 16,
+          "p95": 21.1,
+          "p99": 47,
+          "p999": 63.4
+        },
+        "vusers.session_length": {
+          "min": 2.2,
+          "max": 72.1,
+          "count": 1081,
+          "mean": 11.2,
+          "p50": 9.1,
+          "median": 9.1,
+          "p75": 13.6,
+          "p90": 21.5,
+          "p95": 26.8,
+          "p99": 47.9,
+          "p999": 66
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 2000,
+        "vusers.created": 2000,
+        "http.requests": 2001,
+        "http.codes.400": 1033,
+        "http.responses": 2001,
+        "http.downloaded_bytes": 324960,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1032,
+        "vusers.failed": 0,
+        "vusers.completed": 2000,
+        "http.codes.201": 968,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 968
+      },
+      "rates": {
+        "http.request_rate": 200
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183110000,
+      "firstHistogramAt": 1726183110002,
+      "lastCounterAt": 1726183119999,
+      "lastHistogramAt": 1726183119999,
+      "firstMetricAt": 1726183110000,
+      "lastMetricAt": 1726183119999,
+      "period": "1726183110000",
+      "summaries": {
+        "http.response_time": {
+          "min": 2,
+          "max": 96,
+          "count": 2001,
+          "mean": 12.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16,
+          "p90": 25.8,
+          "p95": 34.1,
+          "p99": 61,
+          "p999": 90.9
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 96,
+          "count": 2000,
+          "mean": 12.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16,
+          "p90": 25.8,
+          "p95": 34.1,
+          "p99": 61,
+          "p999": 90.9
+        },
+        "vusers.session_length": {
+          "min": 2.5,
+          "max": 125.4,
+          "count": 2000,
+          "mean": 15.9,
+          "p50": 11.4,
+          "median": 11.4,
+          "p75": 20.3,
+          "p90": 32.1,
+          "p95": 42.5,
+          "p99": 68.7,
+          "p999": 102.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 2,
+          "max": 96,
+          "count": 2001,
+          "mean": 12.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16,
+          "p90": 25.8,
+          "p95": 34.1,
+          "p99": 61,
+          "p999": 90.9
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 96,
+          "count": 2000,
+          "mean": 12.7,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16,
+          "p90": 25.8,
+          "p95": 34.1,
+          "p99": 61,
+          "p999": 90.9
+        },
+        "vusers.session_length": {
+          "min": 2.5,
+          "max": 125.4,
+          "count": 2000,
+          "mean": 15.9,
+          "p50": 11.4,
+          "median": 11.4,
+          "p75": 20.3,
+          "p90": 32.1,
+          "p95": 42.5,
+          "p99": 68.7,
+          "p999": 102.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.downloaded_bytes": 329337,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1222,
+        "vusers.failed": 0,
+        "vusers.completed": 1991,
+        "vusers.created_by_name.0": 2000,
+        "vusers.created": 2000,
+        "http.requests": 1998,
+        "http.codes.400": 1221,
+        "http.responses": 1990,
+        "http.codes.201": 769,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 769
+      },
+      "rates": {
+        "http.request_rate": 200
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183120000,
+      "firstHistogramAt": 1726183120000,
+      "lastCounterAt": 1726183129999,
+      "lastHistogramAt": 1726183129998,
+      "firstMetricAt": 1726183120000,
+      "lastMetricAt": 1726183129999,
+      "period": "1726183120000",
+      "summaries": {
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 105,
+          "count": 1991,
+          "mean": 13.1,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16.9,
+          "p90": 29.1,
+          "p95": 37.7,
+          "p99": 58.6,
+          "p999": 87.4
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 113.2,
+          "count": 1991,
+          "mean": 17.2,
+          "p50": 11.8,
+          "median": 11.8,
+          "p75": 22.4,
+          "p90": 38.5,
+          "p95": 47.9,
+          "p99": 73,
+          "p999": 98.5
+        },
+        "http.response_time": {
+          "min": 1,
+          "max": 105,
+          "count": 1990,
+          "mean": 13.1,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16.9,
+          "p90": 29.1,
+          "p95": 37.7,
+          "p99": 58.6,
+          "p999": 87.4
+        }
+      },
+      "histograms": {
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 105,
+          "count": 1991,
+          "mean": 13.1,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16.9,
+          "p90": 29.1,
+          "p95": 37.7,
+          "p99": 58.6,
+          "p999": 87.4
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 113.2,
+          "count": 1991,
+          "mean": 17.2,
+          "p50": 11.8,
+          "median": 11.8,
+          "p75": 22.4,
+          "p90": 38.5,
+          "p95": 47.9,
+          "p99": 73,
+          "p999": 98.5
+        },
+        "http.response_time": {
+          "min": 1,
+          "max": 105,
+          "count": 1990,
+          "mean": 13.1,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 16.9,
+          "p90": 29.1,
+          "p95": 37.7,
+          "p99": 58.6,
+          "p999": 87.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 1337,
+        "http.responses": 2010,
+        "http.downloaded_bytes": 335580,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1337,
+        "vusers.failed": 0,
+        "vusers.completed": 2010,
+        "vusers.created_by_name.0": 2000,
+        "vusers.created": 2000,
+        "http.requests": 2002,
+        "http.codes.201": 673,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 673
+      },
+      "rates": {
+        "http.request_rate": 200
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183130000,
+      "firstHistogramAt": 1726183130001,
+      "lastCounterAt": 1726183139999,
+      "lastHistogramAt": 1726183139997,
+      "firstMetricAt": 1726183130000,
+      "lastMetricAt": 1726183139999,
+      "period": "1726183130000",
+      "summaries": {
+        "http.response_time": {
+          "min": 2,
+          "max": 148,
+          "count": 2010,
+          "mean": 15,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 18,
+          "p90": 30.9,
+          "p95": 48.9,
+          "p99": 90.9,
+          "p999": 138.4
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 148,
+          "count": 2010,
+          "mean": 15,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 18,
+          "p90": 30.9,
+          "p95": 48.9,
+          "p99": 90.9,
+          "p999": 138.4
+        },
+        "vusers.session_length": {
+          "min": 2.7,
+          "max": 150.1,
+          "count": 2010,
+          "mean": 19,
+          "p50": 11.6,
+          "median": 11.6,
+          "p75": 23.3,
+          "p90": 40.9,
+          "p95": 62.2,
+          "p99": 106.7,
+          "p999": 144
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 2,
+          "max": 148,
+          "count": 2010,
+          "mean": 15,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 18,
+          "p90": 30.9,
+          "p95": 48.9,
+          "p99": 90.9,
+          "p999": 138.4
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 148,
+          "count": 2010,
+          "mean": 15,
+          "p50": 8.9,
+          "median": 8.9,
+          "p75": 18,
+          "p90": 30.9,
+          "p95": 48.9,
+          "p99": 90.9,
+          "p999": 138.4
+        },
+        "vusers.session_length": {
+          "min": 2.7,
+          "max": 150.1,
+          "count": 2010,
+          "mean": 19,
+          "p50": 11.6,
+          "median": 11.6,
+          "p75": 23.3,
+          "p90": 40.9,
+          "p95": 62.2,
+          "p99": 106.7,
+          "p999": 144
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 2000,
+        "vusers.created": 2000,
+        "http.requests": 1998,
+        "http.codes.400": 1445,
+        "http.responses": 1998,
+        "http.downloaded_bytes": 337056,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1445,
+        "vusers.failed": 0,
+        "vusers.completed": 1998,
+        "http.codes.201": 553,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 553
+      },
+      "rates": {
+        "http.request_rate": 200
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183140000,
+      "firstHistogramAt": 1726183140000,
+      "lastCounterAt": 1726183149999,
+      "lastHistogramAt": 1726183149996,
+      "firstMetricAt": 1726183140000,
+      "lastMetricAt": 1726183149999,
+      "period": "1726183140000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 130,
+          "count": 1998,
+          "mean": 12.1,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 15,
+          "p90": 25.8,
+          "p95": 36.2,
+          "p99": 58.6,
+          "p999": 111.1
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 130,
+          "count": 1998,
+          "mean": 12.1,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 15,
+          "p90": 25.8,
+          "p95": 36.2,
+          "p99": 58.6,
+          "p999": 111.1
+        },
+        "vusers.session_length": {
+          "min": 2.5,
+          "max": 131,
+          "count": 1998,
+          "mean": 17.3,
+          "p50": 10.5,
+          "median": 10.5,
+          "p75": 20.7,
+          "p90": 38.5,
+          "p95": 56.3,
+          "p99": 94.6,
+          "p999": 117.9
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 130,
+          "count": 1998,
+          "mean": 12.1,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 15,
+          "p90": 25.8,
+          "p95": 36.2,
+          "p99": 58.6,
+          "p999": 111.1
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 130,
+          "count": 1998,
+          "mean": 12.1,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 15,
+          "p90": 25.8,
+          "p95": 36.2,
+          "p99": 58.6,
+          "p999": 111.1
+        },
+        "vusers.session_length": {
+          "min": 2.5,
+          "max": 131,
+          "count": 1998,
+          "mean": 17.3,
+          "p50": 10.5,
+          "median": 10.5,
+          "p75": 20.7,
+          "p90": 38.5,
+          "p95": 56.3,
+          "p99": 94.6,
+          "p999": 117.9
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 1538,
+        "http.responses": 2000,
+        "http.downloaded_bytes": 340140,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1538,
+        "vusers.failed": 0,
+        "vusers.completed": 2000,
+        "vusers.created_by_name.0": 1998,
+        "vusers.created": 1998,
+        "http.requests": 1999,
+        "http.codes.201": 462,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 462
+      },
+      "rates": {
+        "http.request_rate": 200
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183150000,
+      "firstHistogramAt": 1726183150003,
+      "lastCounterAt": 1726183159998,
+      "lastHistogramAt": 1726183159963,
+      "firstMetricAt": 1726183150000,
+      "lastMetricAt": 1726183159998,
+      "period": "1726183150000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 143,
+          "count": 2000,
+          "mean": 10.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 13.1,
+          "p90": 21.1,
+          "p95": 30.9,
+          "p99": 46.1,
+          "p999": 130.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 143,
+          "count": 2000,
+          "mean": 10.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 13.1,
+          "p90": 21.1,
+          "p95": 30.9,
+          "p99": 46.1,
+          "p999": 130.3
+        },
+        "vusers.session_length": {
+          "min": 2.5,
+          "max": 146.4,
+          "count": 2000,
+          "mean": 16.2,
+          "p50": 10.1,
+          "median": 10.1,
+          "p75": 18,
+          "p90": 32.1,
+          "p95": 56.3,
+          "p99": 106.7,
+          "p999": 133
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 143,
+          "count": 2000,
+          "mean": 10.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 13.1,
+          "p90": 21.1,
+          "p95": 30.9,
+          "p99": 46.1,
+          "p999": 130.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 143,
+          "count": 2000,
+          "mean": 10.6,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 13.1,
+          "p90": 21.1,
+          "p95": 30.9,
+          "p99": 46.1,
+          "p999": 130.3
+        },
+        "vusers.session_length": {
+          "min": 2.5,
+          "max": 146.4,
+          "count": 2000,
+          "mean": 16.2,
+          "p50": 10.1,
+          "median": 10.1,
+          "p75": 18,
+          "p90": 32.1,
+          "p95": 56.3,
+          "p99": 106.7,
+          "p999": 133
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 1731,
+        "http.responses": 2085,
+        "http.downloaded_bytes": 358425,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 1731,
+        "vusers.failed": 0,
+        "vusers.completed": 2085,
+        "vusers.created_by_name.0": 2082,
+        "vusers.created": 2082,
+        "http.requests": 2082,
+        "http.codes.201": 354,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 354
+      },
+      "rates": {
+        "http.request_rate": 210
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183160000,
+      "firstHistogramAt": 1726183160001,
+      "lastCounterAt": 1726183169999,
+      "lastHistogramAt": 1726183169988,
+      "firstMetricAt": 1726183160000,
+      "lastMetricAt": 1726183169999,
+      "period": "1726183160000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 148,
+          "count": 2085,
+          "mean": 12.3,
+          "p50": 7,
+          "median": 7,
+          "p75": 13.1,
+          "p90": 26.8,
+          "p95": 40.9,
+          "p99": 102.5,
+          "p999": 130.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 148,
+          "count": 2085,
+          "mean": 12.3,
+          "p50": 7,
+          "median": 7,
+          "p75": 13.1,
+          "p90": 26.8,
+          "p95": 40.9,
+          "p99": 102.5,
+          "p999": 130.3
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 166.7,
+          "count": 2085,
+          "mean": 17.9,
+          "p50": 9.5,
+          "median": 9.5,
+          "p75": 18.4,
+          "p90": 41.7,
+          "p95": 76,
+          "p99": 127.8,
+          "p999": 144
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 148,
+          "count": 2085,
+          "mean": 12.3,
+          "p50": 7,
+          "median": 7,
+          "p75": 13.1,
+          "p90": 26.8,
+          "p95": 40.9,
+          "p99": 102.5,
+          "p999": 130.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 148,
+          "count": 2085,
+          "mean": 12.3,
+          "p50": 7,
+          "median": 7,
+          "p75": 13.1,
+          "p90": 26.8,
+          "p95": 40.9,
+          "p99": 102.5,
+          "p999": 130.3
+        },
+        "vusers.session_length": {
+          "min": 2.6,
+          "max": 166.7,
+          "count": 2085,
+          "mean": 17.9,
+          "p50": 9.5,
+          "median": 9.5,
+          "p75": 18.4,
+          "p90": 41.7,
+          "p95": 76,
+          "p99": 127.8,
+          "p999": 144
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 3000,
+        "vusers.created": 3000,
+        "http.requests": 3001,
+        "http.codes.400": 2626,
+        "http.responses": 3002,
+        "http.downloaded_bytes": 520074,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 2626,
+        "vusers.failed": 0,
+        "vusers.completed": 3002,
+        "http.codes.201": 376,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 376
+      },
+      "rates": {
+        "http.request_rate": 300
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183170000,
+      "firstHistogramAt": 1726183170000,
+      "lastCounterAt": 1726183179999,
+      "lastHistogramAt": 1726183179999,
+      "firstMetricAt": 1726183170000,
+      "lastMetricAt": 1726183179999,
+      "period": "1726183170000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 286,
+          "count": 3002,
+          "mean": 58,
+          "p50": 34.8,
+          "median": 34.8,
+          "p75": 90.9,
+          "p90": 149.9,
+          "p95": 179.5,
+          "p99": 257.3,
+          "p999": 284.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 286,
+          "count": 3002,
+          "mean": 58,
+          "p50": 34.8,
+          "median": 34.8,
+          "p75": 90.9,
+          "p90": 149.9,
+          "p95": 179.5,
+          "p99": 257.3,
+          "p999": 284.3
+        },
+        "vusers.session_length": {
+          "min": 2,
+          "max": 312.2,
+          "count": 3002,
+          "mean": 64.7,
+          "p50": 43.4,
+          "median": 43.4,
+          "p75": 104.6,
+          "p90": 156,
+          "p95": 190.6,
+          "p99": 267.8,
+          "p999": 295.9
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 286,
+          "count": 3002,
+          "mean": 58,
+          "p50": 34.8,
+          "median": 34.8,
+          "p75": 90.9,
+          "p90": 149.9,
+          "p95": 179.5,
+          "p99": 257.3,
+          "p999": 284.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 286,
+          "count": 3002,
+          "mean": 58,
+          "p50": 34.8,
+          "median": 34.8,
+          "p75": 90.9,
+          "p90": 149.9,
+          "p95": 179.5,
+          "p99": 257.3,
+          "p999": 284.3
+        },
+        "vusers.session_length": {
+          "min": 2,
+          "max": 312.2,
+          "count": 3002,
+          "mean": 64.7,
+          "p50": 43.4,
+          "median": 43.4,
+          "p75": 104.6,
+          "p90": 156,
+          "p95": 190.6,
+          "p99": 267.8,
+          "p999": 295.9
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 3000,
+        "vusers.created": 3000,
+        "http.requests": 2999,
+        "http.codes.400": 2693,
+        "http.responses": 2997,
+        "http.downloaded_bytes": 521349,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 2693,
+        "vusers.failed": 0,
+        "vusers.completed": 2997,
+        "http.codes.201": 304,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 304
+      },
+      "rates": {
+        "http.request_rate": 300
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183180000,
+      "firstHistogramAt": 1726183180001,
+      "lastCounterAt": 1726183189999,
+      "lastHistogramAt": 1726183189997,
+      "firstMetricAt": 1726183180000,
+      "lastMetricAt": 1726183189999,
+      "period": "1726183180000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 222,
+          "count": 2997,
+          "mean": 18,
+          "p50": 7,
+          "median": 7,
+          "p75": 19.9,
+          "p90": 41.7,
+          "p95": 67.4,
+          "p99": 149.9,
+          "p999": 198.4
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 222,
+          "count": 2997,
+          "mean": 18,
+          "p50": 7,
+          "median": 7,
+          "p75": 19.9,
+          "p90": 41.7,
+          "p95": 67.4,
+          "p99": 149.9,
+          "p999": 198.4
+        },
+        "vusers.session_length": {
+          "min": 1.9,
+          "max": 225.2,
+          "count": 2997,
+          "mean": 23.8,
+          "p50": 10.3,
+          "median": 10.3,
+          "p75": 26.3,
+          "p90": 58.6,
+          "p95": 111.1,
+          "p99": 159.2,
+          "p999": 210.6
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 222,
+          "count": 2997,
+          "mean": 18,
+          "p50": 7,
+          "median": 7,
+          "p75": 19.9,
+          "p90": 41.7,
+          "p95": 67.4,
+          "p99": 149.9,
+          "p999": 198.4
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 222,
+          "count": 2997,
+          "mean": 18,
+          "p50": 7,
+          "median": 7,
+          "p75": 19.9,
+          "p90": 41.7,
+          "p95": 67.4,
+          "p99": 149.9,
+          "p999": 198.4
+        },
+        "vusers.session_length": {
+          "min": 1.9,
+          "max": 225.2,
+          "count": 2997,
+          "mean": 23.8,
+          "p50": 10.3,
+          "median": 10.3,
+          "p75": 26.3,
+          "p90": 58.6,
+          "p95": 111.1,
+          "p99": 159.2,
+          "p999": 210.6
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 3000,
+        "vusers.created": 3000,
+        "http.requests": 3000,
+        "http.codes.400": 2762,
+        "http.responses": 3001,
+        "http.downloaded_bytes": 524007,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 2762,
+        "vusers.failed": 0,
+        "vusers.completed": 3001,
+        "http.codes.201": 239,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 239
+      },
+      "rates": {
+        "http.request_rate": 300
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183190000,
+      "firstHistogramAt": 1726183190001,
+      "lastCounterAt": 1726183199999,
+      "lastHistogramAt": 1726183199995,
+      "firstMetricAt": 1726183190000,
+      "lastMetricAt": 1726183199999,
+      "period": "1726183190000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 156,
+          "count": 3001,
+          "mean": 16.7,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 22,
+          "p90": 45.2,
+          "p95": 58.6,
+          "p99": 94.6,
+          "p999": 153
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 156,
+          "count": 3001,
+          "mean": 16.7,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 22,
+          "p90": 45.2,
+          "p95": 58.6,
+          "p99": 94.6,
+          "p999": 153
+        },
+        "vusers.session_length": {
+          "min": 2.1,
+          "max": 167.8,
+          "count": 3001,
+          "mean": 23,
+          "p50": 10.7,
+          "median": 10.7,
+          "p75": 29.1,
+          "p90": 56.3,
+          "p95": 82.3,
+          "p99": 141.2,
+          "p999": 162.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 156,
+          "count": 3001,
+          "mean": 16.7,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 22,
+          "p90": 45.2,
+          "p95": 58.6,
+          "p99": 94.6,
+          "p999": 153
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 156,
+          "count": 3001,
+          "mean": 16.7,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 22,
+          "p90": 45.2,
+          "p95": 58.6,
+          "p99": 94.6,
+          "p999": 153
+        },
+        "vusers.session_length": {
+          "min": 2.1,
+          "max": 167.8,
+          "count": 3001,
+          "mean": 23,
+          "p50": 10.7,
+          "median": 10.7,
+          "p75": 29.1,
+          "p90": 56.3,
+          "p95": 82.3,
+          "p99": 141.2,
+          "p999": 162.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 3000,
+        "vusers.created": 3000,
+        "http.requests": 3000,
+        "http.codes.400": 2813,
+        "http.responses": 3000,
+        "http.downloaded_bytes": 525390,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 2813,
+        "vusers.failed": 0,
+        "vusers.completed": 3000,
+        "http.codes.201": 187,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 187
+      },
+      "rates": {
+        "http.request_rate": 300
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183200000,
+      "firstHistogramAt": 1726183200001,
+      "lastCounterAt": 1726183209999,
+      "lastHistogramAt": 1726183209990,
+      "firstMetricAt": 1726183200000,
+      "lastMetricAt": 1726183209999,
+      "period": "1726183200000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 264,
+          "count": 3000,
+          "mean": 17.5,
+          "p50": 6,
+          "median": 6,
+          "p75": 19.1,
+          "p90": 47.9,
+          "p95": 70.1,
+          "p99": 147,
+          "p999": 210.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 264,
+          "count": 3000,
+          "mean": 17.5,
+          "p50": 6,
+          "median": 6,
+          "p75": 19.1,
+          "p90": 47.9,
+          "p95": 70.1,
+          "p99": 147,
+          "p999": 210.6
+        },
+        "vusers.session_length": {
+          "min": 1.8,
+          "max": 304.7,
+          "count": 3000,
+          "mean": 25.5,
+          "p50": 8.2,
+          "median": 8.2,
+          "p75": 27.4,
+          "p90": 64.7,
+          "p95": 96.6,
+          "p99": 228.2,
+          "p999": 295.9
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 264,
+          "count": 3000,
+          "mean": 17.5,
+          "p50": 6,
+          "median": 6,
+          "p75": 19.1,
+          "p90": 47.9,
+          "p95": 70.1,
+          "p99": 147,
+          "p999": 210.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 264,
+          "count": 3000,
+          "mean": 17.5,
+          "p50": 6,
+          "median": 6,
+          "p75": 19.1,
+          "p90": 47.9,
+          "p95": 70.1,
+          "p99": 147,
+          "p999": 210.6
+        },
+        "vusers.session_length": {
+          "min": 1.8,
+          "max": 304.7,
+          "count": 3000,
+          "mean": 25.5,
+          "p50": 8.2,
+          "median": 8.2,
+          "p75": 27.4,
+          "p90": 64.7,
+          "p95": 96.6,
+          "p99": 228.2,
+          "p999": 295.9
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 2962,
+        "vusers.created": 2962,
+        "http.requests": 2963,
+        "http.codes.400": 2833,
+        "http.responses": 2950,
+        "http.downloaded_bytes": 518640,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 2833,
+        "vusers.failed": 0,
+        "vusers.completed": 2950,
+        "http.codes.201": 117,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 117
+      },
+      "rates": {
+        "http.request_rate": 300
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183210000,
+      "firstHistogramAt": 1726183210004,
+      "lastCounterAt": 1726183219869,
+      "lastHistogramAt": 1726183219824,
+      "firstMetricAt": 1726183210000,
+      "lastMetricAt": 1726183219869,
+      "period": "1726183210000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 243,
+          "count": 2950,
+          "mean": 24.2,
+          "p50": 7,
+          "median": 7,
+          "p75": 30.3,
+          "p90": 71.5,
+          "p95": 96.6,
+          "p99": 162.4,
+          "p999": 223.7
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 243,
+          "count": 2950,
+          "mean": 24.2,
+          "p50": 7,
+          "median": 7,
+          "p75": 30.3,
+          "p90": 71.5,
+          "p95": 96.6,
+          "p99": 162.4,
+          "p999": 223.7
+        },
+        "vusers.session_length": {
+          "min": 2,
+          "max": 287.2,
+          "count": 2950,
+          "mean": 34.2,
+          "p50": 9.5,
+          "median": 9.5,
+          "p75": 44.3,
+          "p90": 92.8,
+          "p95": 156,
+          "p99": 242.3,
+          "p999": 267.8
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 243,
+          "count": 2950,
+          "mean": 24.2,
+          "p50": 7,
+          "median": 7,
+          "p75": 30.3,
+          "p90": 71.5,
+          "p95": 96.6,
+          "p99": 162.4,
+          "p999": 223.7
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 243,
+          "count": 2950,
+          "mean": 24.2,
+          "p50": 7,
+          "median": 7,
+          "p75": 30.3,
+          "p90": 71.5,
+          "p95": 96.6,
+          "p99": 162.4,
+          "p999": 223.7
+        },
+        "vusers.session_length": {
+          "min": 2,
+          "max": 287.2,
+          "count": 2950,
+          "mean": 34.2,
+          "p50": 9.5,
+          "median": 9.5,
+          "p75": 44.3,
+          "p90": 92.8,
+          "p95": 156,
+          "p99": 242.3,
+          "p999": 267.8
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 3118,
+        "vusers.created": 3118,
+        "http.requests": 3118,
+        "http.codes.400": 2986,
+        "http.responses": 3096,
+        "http.downloaded_bytes": 544692,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 2986,
+        "vusers.failed": 0,
+        "vusers.completed": 3096,
+        "http.codes.201": 110,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 110
+      },
+      "rates": {
+        "http.request_rate": 314
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183220065,
+      "firstHistogramAt": 1726183220078,
+      "lastCounterAt": 1726183229999,
+      "lastHistogramAt": 1726183229998,
+      "firstMetricAt": 1726183220065,
+      "lastMetricAt": 1726183229999,
+      "period": "1726183220000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 298,
+          "count": 3096,
+          "mean": 31.9,
+          "p50": 18,
+          "median": 18,
+          "p75": 49.9,
+          "p90": 76,
+          "p95": 90.9,
+          "p99": 228.2,
+          "p999": 273.2
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 298,
+          "count": 3096,
+          "mean": 31.9,
+          "p50": 18,
+          "median": 18,
+          "p75": 49.9,
+          "p90": 76,
+          "p95": 90.9,
+          "p99": 228.2,
+          "p999": 273.2
+        },
+        "vusers.session_length": {
+          "min": 2.1,
+          "max": 303.6,
+          "count": 3096,
+          "mean": 44.2,
+          "p50": 23.8,
+          "median": 23.8,
+          "p75": 66,
+          "p90": 96.6,
+          "p95": 135.7,
+          "p99": 267.8,
+          "p999": 284.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 298,
+          "count": 3096,
+          "mean": 31.9,
+          "p50": 18,
+          "median": 18,
+          "p75": 49.9,
+          "p90": 76,
+          "p95": 90.9,
+          "p99": 228.2,
+          "p999": 273.2
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 298,
+          "count": 3096,
+          "mean": 31.9,
+          "p50": 18,
+          "median": 18,
+          "p75": 49.9,
+          "p90": 76,
+          "p95": 90.9,
+          "p99": 228.2,
+          "p999": 273.2
+        },
+        "vusers.session_length": {
+          "min": 2.1,
+          "max": 303.6,
+          "count": 3096,
+          "mean": 44.2,
+          "p50": 23.8,
+          "median": 23.8,
+          "p75": 66,
+          "p90": 96.6,
+          "p95": 135.7,
+          "p99": 267.8,
+          "p999": 284.3
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 3907,
+        "http.responses": 3981,
+        "http.downloaded_bytes": 702417,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3907,
+        "vusers.failed": 43,
+        "vusers.completed": 3981,
+        "http.codes.201": 74,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 74,
+        "vusers.created_by_name.0": 3992,
+        "vusers.created": 3992,
+        "http.requests": 3991,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 9,
+        "errors.ECONNRESET": 9,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 25,
+        "errors.EPIPE": 25,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 9,
+        "errors.ETIMEDOUT": 9
+      },
+      "rates": {
+        "http.request_rate": 400
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183230000,
+      "firstHistogramAt": 1726183230000,
+      "lastCounterAt": 1726183239999,
+      "lastHistogramAt": 1726183239970,
+      "firstMetricAt": 1726183230000,
+      "lastMetricAt": 1726183239999,
+      "period": "1726183230000",
+      "summaries": {
+        "http.response_time": {
+          "min": 2,
+          "max": 697,
+          "count": 3981,
+          "mean": 246.4,
+          "p50": 242.3,
+          "median": 242.3,
+          "p75": 340.4,
+          "p90": 487.9,
+          "p95": 561.2,
+          "p99": 645.6,
+          "p999": 658.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 697,
+          "count": 3981,
+          "mean": 246.4,
+          "p50": 242.3,
+          "median": 242.3,
+          "p75": 340.4,
+          "p90": 487.9,
+          "p95": 561.2,
+          "p99": 645.6,
+          "p999": 658.6
+        },
+        "vusers.session_length": {
+          "min": 2.8,
+          "max": 1140.7,
+          "count": 3981,
+          "mean": 285.8,
+          "p50": 273.2,
+          "median": 273.2,
+          "p75": 399.5,
+          "p90": 528.6,
+          "p95": 584.2,
+          "p99": 685.5,
+          "p999": 982.6
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 2,
+          "max": 697,
+          "count": 3981,
+          "mean": 246.4,
+          "p50": 242.3,
+          "median": 242.3,
+          "p75": 340.4,
+          "p90": 487.9,
+          "p95": 561.2,
+          "p99": 645.6,
+          "p999": 658.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 697,
+          "count": 3981,
+          "mean": 246.4,
+          "p50": 242.3,
+          "median": 242.3,
+          "p75": 340.4,
+          "p90": 487.9,
+          "p95": 561.2,
+          "p99": 645.6,
+          "p999": 658.6
+        },
+        "vusers.session_length": {
+          "min": 2.8,
+          "max": 1140.7,
+          "count": 3981,
+          "mean": 285.8,
+          "p50": 273.2,
+          "median": 273.2,
+          "p75": 399.5,
+          "p90": 528.6,
+          "p95": 584.2,
+          "p99": 685.5,
+          "p999": 982.6
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 4008,
+        "vusers.created": 4008,
+        "http.requests": 4009,
+        "http.codes.400": 3619,
+        "http.responses": 3687,
+        "http.downloaded_bytes": 650559,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3619,
+        "vusers.failed": 138,
+        "vusers.completed": 3687,
+        "http.codes.201": 68,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 68,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 50,
+        "errors.EPIPE": 50,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 46,
+        "errors.ECONNRESET": 46,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 42,
+        "errors.ETIMEDOUT": 42
+      },
+      "rates": {
+        "http.request_rate": 400
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183240002,
+      "firstHistogramAt": 1726183240012,
+      "lastCounterAt": 1726183249999,
+      "lastHistogramAt": 1726183249999,
+      "firstMetricAt": 1726183240002,
+      "lastMetricAt": 1726183249999,
+      "period": "1726183240000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 749,
+          "count": 3687,
+          "mean": 281.4,
+          "p50": 273.2,
+          "median": 273.2,
+          "p75": 432.7,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 699.4,
+          "p999": 742.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 749,
+          "count": 3687,
+          "mean": 281.4,
+          "p50": 273.2,
+          "median": 273.2,
+          "p75": 432.7,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 699.4,
+          "p999": 742.6
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 1416.5,
+          "count": 3687,
+          "mean": 351,
+          "p50": 333.7,
+          "median": 333.7,
+          "p75": 528.6,
+          "p90": 658.6,
+          "p95": 742.6,
+          "p99": 1107.9,
+          "p999": 1353.1
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 749,
+          "count": 3687,
+          "mean": 281.4,
+          "p50": 273.2,
+          "median": 273.2,
+          "p75": 432.7,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 699.4,
+          "p999": 742.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 749,
+          "count": 3687,
+          "mean": 281.4,
+          "p50": 273.2,
+          "median": 273.2,
+          "p75": 432.7,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 699.4,
+          "p999": 742.6
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 1416.5,
+          "count": 3687,
+          "mean": 351,
+          "p50": 333.7,
+          "median": 333.7,
+          "p75": 528.6,
+          "p90": 658.6,
+          "p95": 742.6,
+          "p99": 1107.9,
+          "p999": 1353.1
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 4062,
+        "http.responses": 4103,
+        "http.downloaded_bytes": 725001,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 4062,
+        "vusers.failed": 16,
+        "vusers.completed": 4103,
+        "vusers.created_by_name.0": 3948,
+        "vusers.created": 3948,
+        "http.requests": 3948,
+        "http.codes.201": 41,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 41,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 8,
+        "errors.ECONNRESET": 8,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 7,
+        "errors.EPIPE": 7,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 1,
+        "errors.ETIMEDOUT": 1
+      },
+      "rates": {
+        "http.request_rate": 400
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183250000,
+      "firstHistogramAt": 1726183250000,
+      "lastCounterAt": 1726183259879,
+      "lastHistogramAt": 1726183259847,
+      "firstMetricAt": 1726183250000,
+      "lastMetricAt": 1726183259879,
+      "period": "1726183250000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 649,
+          "count": 4103,
+          "mean": 174.2,
+          "p50": 141.2,
+          "median": 141.2,
+          "p75": 262.5,
+          "p90": 354.3,
+          "p95": 507.8,
+          "p99": 561.2,
+          "p999": 645.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 649,
+          "count": 4103,
+          "mean": 174.2,
+          "p50": 141.2,
+          "median": 141.2,
+          "p75": 262.5,
+          "p90": 354.3,
+          "p95": 507.8,
+          "p99": 561.2,
+          "p999": 645.6
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 669.9,
+          "count": 4103,
+          "mean": 200.9,
+          "p50": 190.6,
+          "median": 190.6,
+          "p75": 290.1,
+          "p90": 415.8,
+          "p95": 518.1,
+          "p99": 608,
+          "p999": 645.6
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 649,
+          "count": 4103,
+          "mean": 174.2,
+          "p50": 141.2,
+          "median": 141.2,
+          "p75": 262.5,
+          "p90": 354.3,
+          "p95": 507.8,
+          "p99": 561.2,
+          "p999": 645.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 649,
+          "count": 4103,
+          "mean": 174.2,
+          "p50": 141.2,
+          "median": 141.2,
+          "p75": 262.5,
+          "p90": 354.3,
+          "p95": 507.8,
+          "p99": 561.2,
+          "p999": 645.6
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 669.9,
+          "count": 4103,
+          "mean": 200.9,
+          "p50": 190.6,
+          "median": 190.6,
+          "p75": 290.1,
+          "p90": 415.8,
+          "p95": 518.1,
+          "p99": 608,
+          "p999": 645.6
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 4049,
+        "vusers.created": 4049,
+        "http.requests": 4049,
+        "http.codes.400": 3367,
+        "http.responses": 3384,
+        "http.downloaded_bytes": 598458,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3367,
+        "vusers.failed": 505,
+        "vusers.completed": 3384,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 182,
+        "errors.ETIMEDOUT": 182,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 141,
+        "errors.EPIPE": 141,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 182,
+        "errors.ECONNRESET": 182,
+        "http.codes.201": 17,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 17
+      },
+      "rates": {
+        "http.request_rate": 410
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183260127,
+      "firstHistogramAt": 1726183260131,
+      "lastCounterAt": 1726183269999,
+      "lastHistogramAt": 1726183269999,
+      "firstMetricAt": 1726183260127,
+      "lastMetricAt": 1726183269999,
+      "period": "1726183260000",
+      "summaries": {
+        "http.response_time": {
+          "min": 19,
+          "max": 988,
+          "count": 3384,
+          "mean": 395.8,
+          "p50": 354.3,
+          "median": 354.3,
+          "p75": 539.2,
+          "p90": 742.6,
+          "p95": 804.5,
+          "p99": 963.1,
+          "p999": 982.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 19,
+          "max": 988,
+          "count": 3384,
+          "mean": 395.8,
+          "p50": 354.3,
+          "median": 354.3,
+          "p75": 539.2,
+          "p90": 742.6,
+          "p95": 804.5,
+          "p99": 963.1,
+          "p999": 982.6
+        },
+        "vusers.session_length": {
+          "min": 51.2,
+          "max": 2299.4,
+          "count": 3384,
+          "mean": 599.8,
+          "p50": 550.1,
+          "median": 550.1,
+          "p75": 788.5,
+          "p90": 1043.3,
+          "p95": 1224.4,
+          "p99": 1556.5,
+          "p999": 1720.2
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 19,
+          "max": 988,
+          "count": 3384,
+          "mean": 395.8,
+          "p50": 354.3,
+          "median": 354.3,
+          "p75": 539.2,
+          "p90": 742.6,
+          "p95": 804.5,
+          "p99": 963.1,
+          "p999": 982.6
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 19,
+          "max": 988,
+          "count": 3384,
+          "mean": 395.8,
+          "p50": 354.3,
+          "median": 354.3,
+          "p75": 539.2,
+          "p90": 742.6,
+          "p95": 804.5,
+          "p99": 963.1,
+          "p999": 982.6
+        },
+        "vusers.session_length": {
+          "min": 51.2,
+          "max": 2299.4,
+          "count": 3384,
+          "mean": 599.8,
+          "p50": 550.1,
+          "median": 550.1,
+          "p75": 788.5,
+          "p90": 1043.3,
+          "p95": 1224.4,
+          "p99": 1556.5,
+          "p999": 1720.2
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 4003,
+        "vusers.created": 4003,
+        "http.requests": 4002,
+        "http.codes.400": 3776,
+        "http.responses": 3799,
+        "http.downloaded_bytes": 671733,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3776,
+        "vusers.failed": 117,
+        "vusers.completed": 3799,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 61,
+        "errors.EPIPE": 61,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 43,
+        "errors.ECONNRESET": 43,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 13,
+        "errors.ETIMEDOUT": 13,
+        "http.codes.201": 23,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 23
+      },
+      "rates": {
+        "http.request_rate": 400
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183270010,
+      "firstHistogramAt": 1726183270040,
+      "lastCounterAt": 1726183279999,
+      "lastHistogramAt": 1726183279991,
+      "firstMetricAt": 1726183270010,
+      "lastMetricAt": 1726183279999,
+      "period": "1726183270000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 837,
+          "count": 3799,
+          "mean": 198,
+          "p50": 159.2,
+          "median": 159.2,
+          "p75": 273.2,
+          "p90": 399.5,
+          "p95": 608,
+          "p99": 788.5,
+          "p999": 820.7
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 837,
+          "count": 3799,
+          "mean": 198,
+          "p50": 159.2,
+          "median": 159.2,
+          "p75": 273.2,
+          "p90": 399.5,
+          "p95": 608,
+          "p99": 788.5,
+          "p999": 820.7
+        },
+        "vusers.session_length": {
+          "min": 2.1,
+          "max": 4268.2,
+          "count": 3799,
+          "mean": 274.3,
+          "p50": 202.4,
+          "median": 202.4,
+          "p75": 361.5,
+          "p90": 561.2,
+          "p95": 699.4,
+          "p99": 925.4,
+          "p999": 4231.1
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 837,
+          "count": 3799,
+          "mean": 198,
+          "p50": 159.2,
+          "median": 159.2,
+          "p75": 273.2,
+          "p90": 399.5,
+          "p95": 608,
+          "p99": 788.5,
+          "p999": 820.7
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 837,
+          "count": 3799,
+          "mean": 198,
+          "p50": 159.2,
+          "median": 159.2,
+          "p75": 273.2,
+          "p90": 399.5,
+          "p95": 608,
+          "p99": 788.5,
+          "p999": 820.7
+        },
+        "vusers.session_length": {
+          "min": 2.1,
+          "max": 4268.2,
+          "count": 3799,
+          "mean": 274.3,
+          "p50": 202.4,
+          "median": 202.4,
+          "p75": 361.5,
+          "p90": 561.2,
+          "p95": 699.4,
+          "p99": 925.4,
+          "p999": 4231.1
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 3824,
+        "http.responses": 3833,
+        "http.downloaded_bytes": 678171,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3824,
+        "vusers.failed": 175,
+        "vusers.completed": 3833,
+        "vusers.created_by_name.0": 4062,
+        "vusers.created": 4062,
+        "http.requests": 4063,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 31,
+        "errors.ETIMEDOUT": 31,
+        "http.codes.201": 9,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 9,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 77,
+        "errors.ECONNRESET": 77,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 67,
+        "errors.EPIPE": 67
+      },
+      "rates": {
+        "http.request_rate": 410
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183280000,
+      "firstHistogramAt": 1726183280004,
+      "lastCounterAt": 1726183289965,
+      "lastHistogramAt": 1726183289944,
+      "firstMetricAt": 1726183280000,
+      "lastMetricAt": 1726183289965,
+      "period": "1726183280000",
+      "summaries": {
+        "http.response_time": {
+          "min": 2,
+          "max": 694,
+          "count": 3833,
+          "mean": 283.5,
+          "p50": 247.2,
+          "median": 247.2,
+          "p75": 399.5,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 671.9,
+          "p999": 685.5
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 694,
+          "count": 3833,
+          "mean": 283.5,
+          "p50": 247.2,
+          "median": 247.2,
+          "p75": 399.5,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 671.9,
+          "p999": 685.5
+        },
+        "vusers.session_length": {
+          "min": 3.2,
+          "max": 1526.1,
+          "count": 3833,
+          "mean": 365,
+          "p50": 308,
+          "median": 308,
+          "p75": 518.1,
+          "p90": 658.6,
+          "p95": 757.6,
+          "p99": 1153.1,
+          "p999": 1495.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 2,
+          "max": 694,
+          "count": 3833,
+          "mean": 283.5,
+          "p50": 247.2,
+          "median": 247.2,
+          "p75": 399.5,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 671.9,
+          "p999": 685.5
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 694,
+          "count": 3833,
+          "mean": 283.5,
+          "p50": 247.2,
+          "median": 247.2,
+          "p75": 399.5,
+          "p90": 561.2,
+          "p95": 596,
+          "p99": 671.9,
+          "p999": 685.5
+        },
+        "vusers.session_length": {
+          "min": 3.2,
+          "max": 1526.1,
+          "count": 3833,
+          "mean": 365,
+          "p50": 308,
+          "median": 308,
+          "p75": 518.1,
+          "p90": 658.6,
+          "p95": 757.6,
+          "p99": 1153.1,
+          "p999": 1495.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 4240,
+        "http.responses": 4250,
+        "http.downloaded_bytes": 751950,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 4240,
+        "vusers.failed": 980,
+        "vusers.completed": 4250,
+        "vusers.created_by_name.0": 5016,
+        "vusers.created": 5016,
+        "http.requests": 5015,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 564,
+        "errors.ECONNRESET": 564,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 205,
+        "errors.ETIMEDOUT": 205,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 211,
+        "errors.EPIPE": 211,
+        "http.codes.201": 10,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 10
+      },
+      "rates": {
+        "http.request_rate": 520
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183290336,
+      "firstHistogramAt": 1726183290337,
+      "lastCounterAt": 1726183299999,
+      "lastHistogramAt": 1726183299996,
+      "firstMetricAt": 1726183290336,
+      "lastMetricAt": 1726183299999,
+      "period": "1726183290000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 959,
+          "count": 4250,
+          "mean": 309.5,
+          "p50": 278.7,
+          "median": 278.7,
+          "p75": 407.5,
+          "p90": 645.6,
+          "p95": 772.9,
+          "p99": 889.1,
+          "p999": 944
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 959,
+          "count": 4250,
+          "mean": 309.5,
+          "p50": 278.7,
+          "median": 278.7,
+          "p75": 407.5,
+          "p90": 645.6,
+          "p95": 772.9,
+          "p99": 889.1,
+          "p999": 944
+        },
+        "vusers.session_length": {
+          "min": 2.3,
+          "max": 4108.9,
+          "count": 4250,
+          "mean": 497.9,
+          "p50": 432.7,
+          "median": 432.7,
+          "p75": 727.9,
+          "p90": 963.1,
+          "p95": 1153.1,
+          "p99": 1587.9,
+          "p999": 2780
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 959,
+          "count": 4250,
+          "mean": 309.5,
+          "p50": 278.7,
+          "median": 278.7,
+          "p75": 407.5,
+          "p90": 645.6,
+          "p95": 772.9,
+          "p99": 889.1,
+          "p999": 944
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 959,
+          "count": 4250,
+          "mean": 309.5,
+          "p50": 278.7,
+          "median": 278.7,
+          "p75": 407.5,
+          "p90": 645.6,
+          "p95": 772.9,
+          "p99": 889.1,
+          "p999": 944
+        },
+        "vusers.session_length": {
+          "min": 2.3,
+          "max": 4108.9,
+          "count": 4250,
+          "mean": 497.9,
+          "p50": 432.7,
+          "median": 432.7,
+          "p75": 727.9,
+          "p90": 963.1,
+          "p95": 1153.1,
+          "p99": 1587.9,
+          "p999": 2780
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 5000,
+        "vusers.created": 5000,
+        "http.requests": 5001,
+        "http.codes.400": 4669,
+        "http.responses": 4677,
+        "http.downloaded_bytes": 827589,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 4669,
+        "vusers.failed": 322,
+        "vusers.completed": 4677,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 72,
+        "errors.EPIPE": 72,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 216,
+        "errors.ECONNRESET": 216,
+        "http.codes.201": 8,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 8,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 34,
+        "errors.ETIMEDOUT": 34
+      },
+      "rates": {
+        "http.request_rate": 500
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183300000,
+      "firstHistogramAt": 1726183300002,
+      "lastCounterAt": 1726183309999,
+      "lastHistogramAt": 1726183309999,
+      "firstMetricAt": 1726183300000,
+      "lastMetricAt": 1726183309999,
+      "period": "1726183300000",
+      "summaries": {
+        "http.response_time": {
+          "min": 2,
+          "max": 783,
+          "count": 4677,
+          "mean": 203.6,
+          "p50": 169,
+          "median": 169,
+          "p75": 242.3,
+          "p90": 518.1,
+          "p95": 685.5,
+          "p99": 727.9,
+          "p999": 772.9
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 783,
+          "count": 4677,
+          "mean": 203.6,
+          "p50": 169,
+          "median": 169,
+          "p75": 242.3,
+          "p90": 518.1,
+          "p95": 685.5,
+          "p99": 727.9,
+          "p999": 772.9
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 1571.6,
+          "count": 4677,
+          "mean": 260.4,
+          "p50": 214.9,
+          "median": 214.9,
+          "p75": 340.4,
+          "p90": 645.6,
+          "p95": 699.4,
+          "p99": 871.5,
+          "p999": 1274.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 2,
+          "max": 783,
+          "count": 4677,
+          "mean": 203.6,
+          "p50": 169,
+          "median": 169,
+          "p75": 242.3,
+          "p90": 518.1,
+          "p95": 685.5,
+          "p99": 727.9,
+          "p999": 772.9
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 2,
+          "max": 783,
+          "count": 4677,
+          "mean": 203.6,
+          "p50": 169,
+          "median": 169,
+          "p75": 242.3,
+          "p90": 518.1,
+          "p95": 685.5,
+          "p99": 727.9,
+          "p999": 772.9
+        },
+        "vusers.session_length": {
+          "min": 2.4,
+          "max": 1571.6,
+          "count": 4677,
+          "mean": 260.4,
+          "p50": 214.9,
+          "median": 214.9,
+          "p75": 340.4,
+          "p90": 645.6,
+          "p95": 699.4,
+          "p99": 871.5,
+          "p999": 1274.3
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 5000,
+        "vusers.created": 5000,
+        "http.requests": 5000,
+        "http.codes.400": 4261,
+        "http.responses": 4264,
+        "http.downloaded_bytes": 754638,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 4261,
+        "vusers.failed": 497,
+        "vusers.completed": 4264,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 308,
+        "errors.ECONNRESET": 308,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 119,
+        "errors.EPIPE": 119,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 70,
+        "errors.ETIMEDOUT": 70,
+        "http.codes.201": 3,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 3
+      },
+      "rates": {
+        "http.request_rate": 500
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183310000,
+      "firstHistogramAt": 1726183310001,
+      "lastCounterAt": 1726183319999,
+      "lastHistogramAt": 1726183319998,
+      "firstMetricAt": 1726183310000,
+      "lastMetricAt": 1726183319999,
+      "period": "1726183310000",
+      "summaries": {
+        "http.response_time": {
+          "min": 1,
+          "max": 1274,
+          "count": 4264,
+          "mean": 194.6,
+          "p50": 149.9,
+          "median": 149.9,
+          "p75": 242.3,
+          "p90": 354.3,
+          "p95": 450.4,
+          "p99": 1064.4,
+          "p999": 1274.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 1274,
+          "count": 4264,
+          "mean": 194.6,
+          "p50": 149.9,
+          "median": 149.9,
+          "p75": 242.3,
+          "p90": 354.3,
+          "p95": 450.4,
+          "p99": 1064.4,
+          "p999": 1274.3
+        },
+        "vusers.session_length": {
+          "min": 2.3,
+          "max": 1996.8,
+          "count": 4264,
+          "mean": 281.1,
+          "p50": 198.4,
+          "median": 198.4,
+          "p75": 347.3,
+          "p90": 561.2,
+          "p95": 982.6,
+          "p99": 1436.8,
+          "p999": 1978.7
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 1,
+          "max": 1274,
+          "count": 4264,
+          "mean": 194.6,
+          "p50": 149.9,
+          "median": 149.9,
+          "p75": 242.3,
+          "p90": 354.3,
+          "p95": 450.4,
+          "p99": 1064.4,
+          "p999": 1274.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 1,
+          "max": 1274,
+          "count": 4264,
+          "mean": 194.6,
+          "p50": 149.9,
+          "median": 149.9,
+          "p75": 242.3,
+          "p90": 354.3,
+          "p95": 450.4,
+          "p99": 1064.4,
+          "p999": 1274.3
+        },
+        "vusers.session_length": {
+          "min": 2.3,
+          "max": 1996.8,
+          "count": 4264,
+          "mean": 281.1,
+          "p50": 198.4,
+          "median": 198.4,
+          "p75": 347.3,
+          "p90": 561.2,
+          "p95": 982.6,
+          "p99": 1436.8,
+          "p999": 1978.7
+        }
+      }
+    },
+    {
+      "counters": {
+        "http.codes.400": 3790,
+        "http.responses": 3792,
+        "http.downloaded_bytes": 671124,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3790,
+        "vusers.failed": 1241,
+        "vusers.completed": 3792,
+        "vusers.created_by_name.0": 5000,
+        "vusers.created": 5000,
+        "http.requests": 5000,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 175,
+        "errors.ETIMEDOUT": 175,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 871,
+        "errors.ECONNRESET": 871,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 195,
+        "errors.EPIPE": 195,
+        "http.codes.201": 2,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 2
+      },
+      "rates": {
+        "http.request_rate": 500
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183320000,
+      "firstHistogramAt": 1726183320000,
+      "lastCounterAt": 1726183329999,
+      "lastHistogramAt": 1726183329999,
+      "firstMetricAt": 1726183320000,
+      "lastMetricAt": 1726183329999,
+      "period": "1726183320000",
+      "summaries": {
+        "http.response_time": {
+          "min": 69,
+          "max": 1056,
+          "count": 3792,
+          "mean": 375,
+          "p50": 320.6,
+          "median": 320.6,
+          "p75": 487.9,
+          "p90": 645.6,
+          "p95": 742.6,
+          "p99": 1002.4,
+          "p999": 1043.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 69,
+          "max": 1056,
+          "count": 3792,
+          "mean": 375,
+          "p50": 320.6,
+          "median": 320.6,
+          "p75": 487.9,
+          "p90": 645.6,
+          "p95": 742.6,
+          "p99": 1002.4,
+          "p999": 1043.3
+        },
+        "vusers.session_length": {
+          "min": 74.4,
+          "max": 2748.6,
+          "count": 3792,
+          "mean": 573.7,
+          "p50": 539.2,
+          "median": 539.2,
+          "p75": 727.9,
+          "p90": 944,
+          "p95": 1085.9,
+          "p99": 1620,
+          "p999": 1720.2
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 69,
+          "max": 1056,
+          "count": 3792,
+          "mean": 375,
+          "p50": 320.6,
+          "median": 320.6,
+          "p75": 487.9,
+          "p90": 645.6,
+          "p95": 742.6,
+          "p99": 1002.4,
+          "p999": 1043.3
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 69,
+          "max": 1056,
+          "count": 3792,
+          "mean": 375,
+          "p50": 320.6,
+          "median": 320.6,
+          "p75": 487.9,
+          "p90": 645.6,
+          "p95": 742.6,
+          "p99": 1002.4,
+          "p999": 1043.3
+        },
+        "vusers.session_length": {
+          "min": 74.4,
+          "max": 2748.6,
+          "count": 3792,
+          "mean": 573.7,
+          "p50": 539.2,
+          "median": 539.2,
+          "p75": 727.9,
+          "p90": 944,
+          "p95": 1085.9,
+          "p99": 1620,
+          "p999": 1720.2
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 5000,
+        "vusers.created": 5000,
+        "http.requests": 4999,
+        "http.codes.400": 3529,
+        "http.responses": 3531,
+        "http.downloaded_bytes": 624927,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3529,
+        "vusers.failed": 1652,
+        "vusers.completed": 3531,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 363,
+        "errors.ETIMEDOUT": 363,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 1093,
+        "errors.ECONNRESET": 1093,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 196,
+        "errors.EPIPE": 196,
+        "http.codes.201": 2,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 2
+      },
+      "rates": {
+        "http.request_rate": 500
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183330000,
+      "firstHistogramAt": 1726183330424,
+      "lastCounterAt": 1726183339999,
+      "lastHistogramAt": 1726183339999,
+      "firstMetricAt": 1726183330000,
+      "lastMetricAt": 1726183339999,
+      "period": "1726183330000",
+      "summaries": {
+        "http.response_time": {
+          "min": 51,
+          "max": 1304,
+          "count": 3531,
+          "mean": 404.2,
+          "p50": 308,
+          "median": 308,
+          "p75": 468.8,
+          "p90": 907,
+          "p95": 1002.4,
+          "p99": 1153.1,
+          "p999": 1300.1
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 51,
+          "max": 1304,
+          "count": 3531,
+          "mean": 404.2,
+          "p50": 308,
+          "median": 308,
+          "p75": 468.8,
+          "p90": 907,
+          "p95": 1002.4,
+          "p99": 1153.1,
+          "p999": 1300.1
+        },
+        "vusers.session_length": {
+          "min": 63.5,
+          "max": 4513,
+          "count": 3531,
+          "mean": 654.4,
+          "p50": 507.8,
+          "median": 507.8,
+          "p75": 963.1,
+          "p90": 1274.3,
+          "p95": 1587.9,
+          "p99": 1939.5,
+          "p999": 2566.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 51,
+          "max": 1304,
+          "count": 3531,
+          "mean": 404.2,
+          "p50": 308,
+          "median": 308,
+          "p75": 468.8,
+          "p90": 907,
+          "p95": 1002.4,
+          "p99": 1153.1,
+          "p999": 1300.1
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 51,
+          "max": 1304,
+          "count": 3531,
+          "mean": 404.2,
+          "p50": 308,
+          "median": 308,
+          "p75": 468.8,
+          "p90": 907,
+          "p95": 1002.4,
+          "p99": 1153.1,
+          "p999": 1300.1
+        },
+        "vusers.session_length": {
+          "min": 63.5,
+          "max": 4513,
+          "count": 3531,
+          "mean": 654.4,
+          "p50": 507.8,
+          "median": 507.8,
+          "p75": 963.1,
+          "p90": 1274.3,
+          "p95": 1587.9,
+          "p99": 1939.5,
+          "p999": 2566.3
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.0": 4599,
+        "vusers.created": 4599,
+        "http.requests": 4600,
+        "http.codes.400": 3445,
+        "http.responses": 3446,
+        "http.downloaded_bytes": 609912,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.400": 3445,
+        "vusers.failed": 1281,
+        "vusers.completed": 3446,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.EPIPE": 259,
+        "errors.EPIPE": 259,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ECONNRESET": 620,
+        "errors.ECONNRESET": 620,
+        "plugins.metrics-by-endpoint./reservations/seating.errors.ETIMEDOUT": 402,
+        "errors.ETIMEDOUT": 402,
+        "http.codes.201": 1,
+        "plugins.metrics-by-endpoint./reservations/seating.codes.201": 1
+      },
+      "rates": {
+        "http.request_rate": 497
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1726183340000,
+      "firstHistogramAt": 1726183340000,
+      "lastCounterAt": 1726183349587,
+      "lastHistogramAt": 1726183349587,
+      "firstMetricAt": 1726183340000,
+      "lastMetricAt": 1726183349587,
+      "period": "1726183340000",
+      "summaries": {
+        "http.response_time": {
+          "min": 102,
+          "max": 913,
+          "count": 3446,
+          "mean": 405.6,
+          "p50": 314.2,
+          "median": 314.2,
+          "p75": 518.1,
+          "p90": 788.5,
+          "p95": 820.7,
+          "p99": 871.5,
+          "p999": 889.1
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 102,
+          "max": 913,
+          "count": 3446,
+          "mean": 405.6,
+          "p50": 314.2,
+          "median": 314.2,
+          "p75": 518.1,
+          "p90": 788.5,
+          "p95": 820.7,
+          "p99": 871.5,
+          "p999": 889.1
+        },
+        "vusers.session_length": {
+          "min": 104.1,
+          "max": 1827.7,
+          "count": 3446,
+          "mean": 666.7,
+          "p50": 632.8,
+          "median": 632.8,
+          "p75": 854.2,
+          "p90": 1107.9,
+          "p95": 1380.5,
+          "p99": 1720.2,
+          "p999": 1790.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 102,
+          "max": 913,
+          "count": 3446,
+          "mean": 405.6,
+          "p50": 314.2,
+          "median": 314.2,
+          "p75": 518.1,
+          "p90": 788.5,
+          "p95": 820.7,
+          "p99": 871.5,
+          "p999": 889.1
+        },
+        "plugins.metrics-by-endpoint.response_time./reservations/seating": {
+          "min": 102,
+          "max": 913,
+          "count": 3446,
+          "mean": 405.6,
+          "p50": 314.2,
+          "median": 314.2,
+          "p75": 518.1,
+          "p90": 788.5,
+          "p95": 820.7,
+          "p99": 871.5,
+          "p999": 889.1
+        },
+        "vusers.session_length": {
+          "min": 104.1,
+          "max": 1827.7,
+          "count": 3446,
+          "mean": 666.7,
+          "p50": 632.8,
+          "median": 632.8,
+          "p75": 854.2,
+          "p90": 1107.9,
+          "p95": 1380.5,
+          "p99": 1720.2,
+          "p999": 1790.4
+        }
+      }
+    }
+  ]
+}
