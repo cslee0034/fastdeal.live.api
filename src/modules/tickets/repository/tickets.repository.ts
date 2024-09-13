@@ -44,7 +44,6 @@ export class TicketsRepository {
     return await tx.ticket.findFirst({
       where: {
         id: createSeatingDto.ticketId,
-        eventId: createSeatingDto.eventId,
       },
     });
   }
@@ -61,7 +60,6 @@ export class TicketsRepository {
     await tx.ticket.update({
       where: {
         id: createSeatingDto.ticketId,
-        eventId: createSeatingDto.eventId,
       },
       data: {
         isAvailable: false,
@@ -100,7 +98,6 @@ export class TicketsRepository {
     return await tx.ticket.update({
       where: {
         id: ticket.id,
-        eventId: ticket.eventId,
       },
       data: {
         isAvailable: false,

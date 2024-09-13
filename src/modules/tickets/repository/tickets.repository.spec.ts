@@ -213,7 +213,6 @@ describe('TicketsRepository', () => {
       expect(mockTx.ticket.update).toHaveBeenCalledWith({
         where: {
           id: mockTicketId,
-          eventId: mockEventId,
         },
         data: {
           isAvailable: false,
@@ -266,7 +265,6 @@ describe('TicketsRepository', () => {
       expect(mockTx.ticket.update).toHaveBeenCalledWith({
         where: {
           id: mockFoundTicket.id,
-          eventId: mockEventId,
         },
         data: {
           isAvailable: false,
