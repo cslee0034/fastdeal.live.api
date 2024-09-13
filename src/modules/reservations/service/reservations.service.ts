@@ -8,6 +8,7 @@ import { MurLock } from 'murlock';
 import { CreateStandingDto } from '../dto/create-standing-dto';
 import { FailedToCreateReservation } from '../error/failed-to-create-reservation';
 import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
+import { SECONDS } from '../../../common/constant/milliseconds-to-seconds';
 
 @Injectable()
 export class ReservationsService {
@@ -26,7 +27,7 @@ export class ReservationsService {
    * - 5초 동안 'createSeatingDto.ticketId' 키에 대한 락을 건다
    * - 락을 얻지 못한 경우 0.1초마다 재시도한다
    */
-  @MurLock(5000, 'createSeatingDto.ticketId')
+  @MurLock(5 * SECONDS, 'createSeatingDto.ticketId')
   async createSeating(
     userId: string,
     createSeatingDto: CreateSeatingDto,
@@ -72,7 +73,7 @@ export class ReservationsService {
    * - 5초 동안 'createSeatingDto.eventId' 키에 대한 락을 건다
    * - 락을 얻지 못한 경우 0.1초마다 재시도한다
    */
-  @MurLock(5000, 'createStandingDto.eventId')
+  @MurLock(5 * SECONDS, 'createStandingDto.eventId')
   async createStanding(userId: string, createStandingDto: CreateStandingDto) {
     /**
      * @description

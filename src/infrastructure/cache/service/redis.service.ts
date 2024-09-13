@@ -5,6 +5,7 @@ import { ICacheService } from '../interface/cache.service.interface';
 import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
 import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
 import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
+import { SECONDS } from '../../../common/constant/milliseconds-to-seconds';
 
 @Injectable()
 export class RedisService implements ICacheService {
@@ -40,7 +41,8 @@ export class RedisService implements ICacheService {
   }
 
   private async set(key: string, value: any, ttl?: number): Promise<void> {
-    const ttlInSecond = ttl ? Math.floor(ttl / 1000) : undefined;
+    // ttl은 Milliseconds 단위로 들어오기 때문에 초 단위로 변환해서 넣어준다.
+    const ttlInSecond = ttl ? Math.floor(ttl / SECONDS) : undefined;
 
     return await this.cacheManager.set(key, value, { ttl: ttlInSecond } as any);
   }
