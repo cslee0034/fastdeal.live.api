@@ -61,16 +61,22 @@ describe('TicketsRepository', () => {
     },
   ];
 
+  const mockFoundTicket = {
+    id: 'mock-uuid',
+    eventId: mockEventId,
+    price: 10000,
+    seatNumber: 1,
+    checkInCode: 'mock-uuid',
+    image: 'https://example.com/image.jpg',
+    reservationId: 'mock-uuid',
+    isAvailable: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const mockFoundTickets = mockMappedTickets.map((ticket) => {
     return {
-      id: 'mock-uuid',
-      eventId: ticket.eventId,
-      price: ticket.price,
-      seatNumber: ticket.seatNumber,
-      checkInCode: ticket.checkInCode,
-      image: ticket.image,
-      createAt: new Date(),
-      updatedAt: new Date(),
+      ...mockFoundTicket,
     };
   });
 
@@ -173,22 +179,24 @@ describe('TicketsRepository', () => {
     });
   });
 
-  describe('findTicketWithLockTx', () => {
-    it('트랜잭션 내에서 티켓을 조회하고 잠금을 걸어야 한다', async () => {
+  describe('findTicketByTicketIdTX', () => {
+    it('트랜잭션 내에서 티켓을 조회한다', async () => {
       const mockTx = {
-        $queryRaw: jest.fn().mockResolvedValue(mockFoundTickets),
+        ticket: {
+          findFirst: jest.fn().mockResolvedValue(mockFoundTicket),
+        },
       };
 
-      const result = await repository.findTicketWithLockTx(
+      const result = await repository.findTicketByTicketIdTX(
         mockTx as any,
         mockCreateSeatingDto,
       );
 
-      expect(result).toEqual(mockFoundTickets);
+      expect(result).toEqual(mockFoundTicket);
     });
   });
 
-  describe('reserveSeatingTx', () => {
+  describe('reserveSeatingTicketTX', () => {
     it('트랜잭션 내에서 티켓을 예약해야 한다', async () => {
       const mockTx = {
         ticket: {
@@ -196,11 +204,11 @@ describe('TicketsRepository', () => {
         },
       };
 
-      await repository.reserveSeatingTx(
-        mockTx as any,
-        mockCreateSeatingDto,
-        mockReservation,
-      );
+      await repository.reserveSeatingTicketTX({
+        tx: mockTx as any,
+        createSeatingDto: mockCreateSeatingDto,
+        reservation: mockReservation,
+      });
 
       expect(mockTx.ticket.update).toHaveBeenCalledWith({
         where: {
@@ -219,7 +227,7 @@ describe('TicketsRepository', () => {
     });
   });
 
-  describe('findStandingTicketTx', () => {
+  describe('findStandingTicketTX', () => {
     it('트랜잭션 내에서 스탠딩 티켓을 조회해야 한다', async () => {
       const mockTx = {
         ticket: {
@@ -227,7 +235,7 @@ describe('TicketsRepository', () => {
         },
       };
 
-      await repository.findStandingTicketTx(
+      await repository.findStandingTicketTX(
         mockTx as any,
         mockCreateStandingDto,
       );
@@ -241,7 +249,7 @@ describe('TicketsRepository', () => {
     });
   });
 
-  describe('reserveStandingTicketTx', () => {
+  describe('reserveStandingTicketTX', () => {
     it('트랜잭션 내에서 스탠딩 티켓을 예약해야 한다', async () => {
       const mockTx = {
         ticket: {
@@ -249,24 +257,11 @@ describe('TicketsRepository', () => {
         },
       };
 
-      const mockFoundTicket = {
-        id: 'mock-uuid',
-        eventId: mockEventId,
-        price: 10000,
-        seatNumber: 1,
-        checkInCode: 'mock-uuid',
-        image: 'https://example.com/image.jpg',
-        reservationId: 'mock-uuid',
-        isAvailable: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      await repository.reserveStandingTicketTx(
-        mockTx as any,
-        mockReservation,
-        mockFoundTicket,
-      );
+      await repository.reserveStandingTicketTX({
+        tx: mockTx as any,
+        reservation: mockReservation,
+        ticket: mockFoundTicket,
+      });
 
       expect(mockTx.ticket.update).toHaveBeenCalledWith({
         where: {

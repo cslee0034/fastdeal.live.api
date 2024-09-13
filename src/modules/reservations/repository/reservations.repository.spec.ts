@@ -50,7 +50,7 @@ describe('ReservationsRepository', () => {
     expect(repository).toBeDefined();
   });
 
-  describe('createSeatingTx', () => {
+  describe('createSeatingReservationTX', () => {
     it('예약 내역을 생성하고 반환해야 한다', async () => {
       const mockTx = {
         reservation: {
@@ -58,11 +58,11 @@ describe('ReservationsRepository', () => {
         },
       };
 
-      const result = await repository.createSeatingTx(
-        mockTx as any,
-        mockCreateSeatingDto,
-        mockUserId,
-      );
+      const result = await repository.createSeatingReservationTX({
+        tx: mockTx as any,
+        createSeatingDto: mockCreateSeatingDto,
+        userId: mockUserId,
+      });
 
       expect(mockTx.reservation.create).toHaveBeenCalledWith({
         data: {
@@ -82,7 +82,7 @@ describe('ReservationsRepository', () => {
     });
   });
 
-  describe('createStandingTx', () => {
+  describe('createStandingReservationTX', () => {
     it('예약 내역을 생성하고 반환해야 한다', async () => {
       const mockTx = {
         reservation: {
@@ -90,11 +90,11 @@ describe('ReservationsRepository', () => {
         },
       };
 
-      const result = await repository.createStandingTx(
-        mockTx as any,
-        mockCreateStandingDto,
-        mockUserId,
-      );
+      const result = await repository.createStandingReservationTX({
+        tx: mockTx as any,
+        createStandingDto: mockCreateStandingDto,
+        userId: mockUserId,
+      });
 
       expect(mockTx.reservation.create).toHaveBeenCalledWith({
         data: {

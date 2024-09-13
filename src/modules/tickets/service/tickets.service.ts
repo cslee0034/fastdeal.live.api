@@ -10,6 +10,7 @@ import { CreateSeatingDto } from '../../reservations/dto/create-seating.dto';
 import { Reservation, Ticket } from '@prisma/client';
 import { FailedToReserveTicketError } from '../error/failed-to-reserve-ticket';
 import { CreateStandingDto } from '../../reservations/dto/create-standing-dto';
+import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
 
 @Injectable()
 export class TicketsService {
@@ -35,59 +36,73 @@ export class TicketsService {
     return ticketCount;
   }
 
-  async findTicketWithLockTx(
+  async findTicketByTicketIdTX(
     tx: PrismaService,
     createSeatingDto: CreateSeatingDto,
-  ): Promise<void> {
+  ): Promise<ObjectWithSuccess> {
     const ticket = await this.ticketsRepository
-      .findTicketWithLockTx(tx, createSeatingDto)
+      .findTicketByTicketIdTX(tx, createSeatingDto)
       .catch(() => {
         throw new FailedToFindTicketError();
       });
 
-    if (ticket.length === 0) {
-      throw new TicketNotFoundError();
+    if (!ticket) {
+      return { success: false, message: 'ticket not found' };
     }
 
-    if (!ticket[0].isAvailable) {
-      throw new TicketNotAvailableError();
+    if (!ticket.isAvailable) {
+      return { success: false, message: 'ticket not available' };
     }
+
+    return { success: true };
   }
 
-  async reserveSeatingTx(
-    tx: PrismaService,
-    createSeatingDto: CreateSeatingDto,
-    reservation: Reservation,
-  ): Promise<void> {
+  async reserveSeatingTicketTX({
+    tx,
+    createSeatingDto,
+    reservation,
+  }: {
+    tx: PrismaService;
+    createSeatingDto: CreateSeatingDto;
+    reservation: Reservation;
+  }): Promise<void> {
     await this.ticketsRepository
-      .reserveSeatingTx(tx, createSeatingDto, reservation)
+      .reserveSeatingTicketTX({
+        tx,
+        createSeatingDto,
+        reservation,
+      })
       .catch(() => {
         throw new FailedToReserveTicketError();
       });
   }
 
-  async reserveStandingTx(
-    tx: PrismaService,
-    createStandingDto: CreateStandingDto,
-    reservation: Reservation,
-  ): Promise<TicketEntity> {
-    const ticket = await this.findStandingTicketTx(tx, createStandingDto);
+  async reserveRandomStandingTicketTX({
+    tx,
+    createStandingDto,
+    reservation,
+  }: {
+    tx: PrismaService;
+    createStandingDto: CreateStandingDto;
+    reservation: Reservation;
+  }): Promise<TicketEntity> {
+    const ticket = await this.findStandingTicketTX(tx, createStandingDto);
 
-    const bookedTicket = await this.reserveStandingTicketTx(
+    const bookedTicket = await this.reserveStandingTicketTX({
       tx,
       reservation,
       ticket,
-    );
+    });
 
     return new TicketEntity(bookedTicket);
   }
 
-  private async findStandingTicketTx(
+  private async findStandingTicketTX(
     tx: PrismaService,
     createStandingDto: CreateStandingDto,
   ): Promise<Ticket> {
     const ticket = await this.ticketsRepository
-      .findStandingTicketTx(tx, createStandingDto)
+      .findStandingTicketTX(tx, createStandingDto)
       .catch(() => {
         throw new FailedToFindTicketError();
       });
@@ -103,13 +118,21 @@ export class TicketsService {
     return ticket;
   }
 
-  private async reserveStandingTicketTx(
-    tx: PrismaService,
-    reservation: Reservation,
-    ticket: Ticket,
-  ): Promise<Ticket> {
+  private async reserveStandingTicketTX({
+    tx,
+    reservation,
+    ticket,
+  }: {
+    tx: PrismaService;
+    reservation: Reservation;
+    ticket: Ticket;
+  }): Promise<Ticket> {
     const bookedTicket = await this.ticketsRepository
-      .reserveStandingTicketTx(tx, reservation, ticket)
+      .reserveStandingTicketTX({
+        tx,
+        reservation,
+        ticket,
+      })
       .catch(() => {
         throw new FailedToReserveTicketError();
       });

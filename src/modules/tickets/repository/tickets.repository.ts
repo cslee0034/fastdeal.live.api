@@ -37,27 +37,27 @@ export class TicketsRepository {
     });
   }
 
-  async findTicketWithLockTx(
+  async findTicketByTicketIdTX(
     tx: PrismaService,
     createSeatingDto: CreateSeatingDto,
-  ): Promise<Ticket[]> {
-    return await tx.$queryRaw`
-      SELECT 
-        *
-      FROM 
-        Ticket
-      WHERE 
-        id = ${createSeatingDto.ticketId} AND
-        eventId = ${createSeatingDto.eventId}
-      FOR UPDATE
-    `;
+  ): Promise<Ticket> {
+    return await tx.ticket.findFirst({
+      where: {
+        id: createSeatingDto.ticketId,
+        eventId: createSeatingDto.eventId,
+      },
+    });
   }
 
-  async reserveSeatingTx(
-    tx: PrismaService,
-    createSeatingDto: CreateSeatingDto,
-    reservation: Reservation,
-  ): Promise<void> {
+  async reserveSeatingTicketTX({
+    tx,
+    createSeatingDto,
+    reservation,
+  }: {
+    tx: PrismaService;
+    createSeatingDto: CreateSeatingDto;
+    reservation: Reservation;
+  }): Promise<void> {
     await tx.ticket.update({
       where: {
         id: createSeatingDto.ticketId,
@@ -74,7 +74,7 @@ export class TicketsRepository {
     });
   }
 
-  async findStandingTicketTx(
+  async findStandingTicketTX(
     tx: PrismaService,
     createStandingDto: CreateStandingDto,
   ): Promise<Ticket> {
@@ -88,11 +88,15 @@ export class TicketsRepository {
     return tickets;
   }
 
-  async reserveStandingTicketTx(
-    tx: PrismaService,
-    reservation: Reservation,
-    ticket: Ticket,
-  ): Promise<Ticket> {
+  async reserveStandingTicketTX({
+    tx,
+    reservation,
+    ticket,
+  }: {
+    tx: PrismaService;
+    reservation: Reservation;
+    ticket: Ticket;
+  }): Promise<Ticket> {
     return await tx.ticket.update({
       where: {
         id: ticket.id,

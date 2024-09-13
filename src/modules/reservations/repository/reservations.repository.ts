@@ -7,11 +7,15 @@ import { CreateStandingDto } from '../dto/create-standing-dto';
 export class ReservationsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createSeatingTx(
-    tx: PrismaService,
-    createSeatingDto: CreateSeatingDto,
-    userId: string,
-  ) {
+  async createSeatingReservationTX({
+    tx,
+    createSeatingDto,
+    userId,
+  }: {
+    tx: PrismaService;
+    createSeatingDto: CreateSeatingDto;
+    userId: string;
+  }) {
     return await tx.reservation.create({
       data: {
         event: {
@@ -28,11 +32,15 @@ export class ReservationsRepository {
     });
   }
 
-  async createStandingTx(
-    tx: PrismaService,
-    createStandingDto: CreateStandingDto,
-    userId: string,
-  ) {
+  async createStandingReservationTX({
+    tx,
+    createStandingDto,
+    userId,
+  }: {
+    tx: PrismaService;
+    createStandingDto: CreateStandingDto;
+    userId: string;
+  }) {
     return await tx.reservation.create({
       data: {
         event: {

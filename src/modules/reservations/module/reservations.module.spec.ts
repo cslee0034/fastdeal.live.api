@@ -5,6 +5,7 @@ import { ReservationsService } from '../service/reservations.service';
 import { ReservationsRepository } from '../repository/reservations.repository';
 import { PrismaService } from '../../../infrastructure/orm/prisma/service/prisma.service';
 import { TicketsService } from '../../tickets/service/tickets.service';
+import { LockService } from '../../../infrastructure/lock/service/lock.service';
 
 describe('ReservationsModule', () => {
   let reservationsModule: ReservationsModule;
@@ -13,6 +14,7 @@ describe('ReservationsModule', () => {
   let reservationsRepository: ReservationsRepository;
   let ticketsService: TicketsService;
   let prismaService: PrismaService;
+  let lockService: LockService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,7 @@ describe('ReservationsModule', () => {
     );
     ticketsService = module.get<TicketsService>(TicketsService);
     prismaService = module.get<PrismaService>(PrismaService);
+    lockService = module.get<LockService>(LockService);
   });
 
   it('should be defined', () => {
@@ -53,5 +56,9 @@ describe('ReservationsModule', () => {
 
   it('should have PrismaService', () => {
     expect(prismaService).toBeDefined();
+  });
+
+  it('should have LockService', () => {
+    expect(lockService).toBeDefined();
   });
 });

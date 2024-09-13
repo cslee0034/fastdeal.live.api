@@ -4,67 +4,23 @@ import { TicketsRepository } from '../repository/tickets.repository';
 import { TicketEntity } from '../entities/ticket.entity';
 import { FailedToFindTicketError } from '../error/failed-to-find-ticket';
 import { FailedToCountTicketError } from '../error/failed-to-count-ticket';
-import { RedisService } from '../../../infrastructure/cache/service/redis.service';
 import { CreateSeatingDto } from '../../reservations/dto/create-seating.dto';
 import { Ticket } from '@prisma/client';
 import { TicketNotAvailableError } from '../error/ticket-not-available';
 import { TicketNotFoundError } from '../error/ticket-not-found';
 import { FailedToReserveTicketError } from '../error/failed-to-reserve-ticket';
+import { CreateStandingDto } from '../../reservations/dto/create-standing-dto';
 
 describe('TicketsService', () => {
   let service: TicketsService;
   let repository: TicketsRepository;
 
-  const mockTicketsRepository = {
-    findTicketsByEventId: jest
-      .fn()
-      .mockImplementation(async (eventId: string) => {
-        if (eventId === 'not-exists') {
-          return Promise.resolve([]);
-        }
-
-        return Promise.resolve(mockTickets);
-      }),
-
-    countTicketsByEventId: jest
-      .fn()
-      .mockImplementation(async (eventId: string) => {
-        if (eventId === 'not-exists') {
-          return Promise.resolve(0);
-        }
-
-        return Promise.resolve(mockTickets.length);
-      }),
-
-    findTicketWithLockTx: jest.fn(),
-
-    reserveSeatingTx: jest.fn(),
-
-    findStandingTicketTx: jest.fn(),
-
-    reserveStandingTicketTx: jest.fn(),
-  };
-
-  const mockRedisService = {};
-
   const mockUserId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
   const mockEventId = '9a7b5b9e-1b7b-4b3b-8e0e-1b0b5b9e7b5b';
   const mockTicketId = '087e1c4f-a709-4d80-b9fb-5d9bdd096eec';
   const mockReservationId = '4c2g1c4f-a709-4d80-b9fb-5d9bdd096eec';
-  const mockTickets = [
-    {
-      id: mockTicketId,
-      eventId: mockEventId,
-      reservationId: mockReservationId,
-      price: 100000,
-      seatNumber: 1,
-      checkInCode: '',
-      image: 'https://example.com/image.png',
-      isAvailable: true,
-    } as Ticket,
-  ];
 
-  const mockStandingTicket = {
+  const mockFoundTicket = {
     id: 'mock-uuid',
     eventId: mockEventId,
     price: 10000,
@@ -75,16 +31,31 @@ describe('TicketsService', () => {
     isAvailable: true,
     createdAt: new Date(),
     updatedAt: new Date(),
+  } as Ticket;
+
+  const mockFoundTickets = [mockFoundTicket];
+
+  const mockStandingTicket = {
+    id: 'mock-uuid',
+    eventId: mockEventId,
+    price: 10000,
+    seatNumber: 1,
+    checkInCode: 'mock-uuid',
+    image: 'https://example.com/image.jpg',
+    reservationId: null,
+    isAvailable: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
-  const mockCreateSeatingDto = {
+  const mockCreateSeatingDto: CreateSeatingDto = {
     eventId: mockEventId,
     ticketId: mockTicketId,
-  } as CreateSeatingDto;
+  };
 
-  const mockCreateStandingDto = {
+  const mockCreateStandingDto: CreateStandingDto = {
     eventId: mockEventId,
-  } as CreateSeatingDto;
+  };
 
   const mockReservation = {
     id: mockReservationId,
@@ -94,6 +65,33 @@ describe('TicketsService', () => {
     updatedAt: new Date(),
   };
 
+  const mockTicketsRepository = {
+    findTicketsByEventId: jest
+      .fn()
+      .mockImplementation(async (eventId: string) => {
+        if (eventId === 'not-exists') {
+          return Promise.resolve([]);
+        }
+
+        return Promise.resolve(mockFoundTickets);
+      }),
+
+    countTicketsByEventId: jest
+      .fn()
+      .mockImplementation(async (eventId: string) => {
+        if (eventId === 'not-exists') {
+          return Promise.resolve(0);
+        }
+
+        return Promise.resolve(mockFoundTickets.length);
+      }),
+
+    findTicketByTicketIdTX: jest.fn(),
+    reserveSeatingTicketTX: jest.fn(),
+    findStandingTicketTX: jest.fn(),
+    reserveStandingTicketTX: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -101,10 +99,6 @@ describe('TicketsService', () => {
         {
           provide: TicketsRepository,
           useValue: mockTicketsRepository,
-        },
-        {
-          provide: RedisService,
-          useValue: mockRedisService,
         },
       ],
     }).compile();
@@ -124,9 +118,7 @@ describe('TicketsService', () => {
       const result = await service.findTicketsByEventId(mockEventId);
 
       expect(repository.findTicketsByEventId).toHaveBeenCalledWith(mockEventId);
-      expect(result).toEqual(
-        mockTickets.map((ticket) => new TicketEntity(ticket)),
-      );
+      expect(result).toEqual(mockFoundTickets.map((t) => new TicketEntity(t)));
     });
 
     it('이벤트 ID에 해당하는 티켓이 없을 경우 빈 배열을 반환한다', async () => {
@@ -137,14 +129,21 @@ describe('TicketsService', () => {
       );
       expect(result).toEqual([]);
     });
-  });
 
-  it('티켓을 찾는 도중 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
-    mockTicketsRepository.findTicketsByEventId.mockRejectedValue(new Error());
+    it('티켓을 찾는 도중 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
+      mockTicketsRepository.findTicketsByEventId.mockRejectedValue(new Error());
 
-    await expect(service.findTicketsByEventId(mockEventId)).rejects.toThrow(
-      FailedToFindTicketError,
-    );
+      await expect(service.findTicketsByEventId(mockEventId)).rejects.toThrow(
+        FailedToFindTicketError,
+      );
+    });
+    it('티켓을 찾는 도중 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
+      mockTicketsRepository.findTicketsByEventId.mockRejectedValue(new Error());
+
+      await expect(service.findTicketsByEventId(mockEventId)).rejects.toThrow(
+        FailedToFindTicketError,
+      );
+    });
   });
 
   describe('countTicketsByEventId', () => {
@@ -154,7 +153,7 @@ describe('TicketsService', () => {
       expect(repository.countTicketsByEventId).toHaveBeenCalledWith(
         mockEventId,
       );
-      expect(result).toEqual(mockTickets.length);
+      expect(result).toEqual(mockFoundTickets.length);
     });
 
     it('이벤트 ID에 해당하는 티켓이 없을 경우 0을 반환한다', async () => {
@@ -177,155 +176,184 @@ describe('TicketsService', () => {
     });
   });
 
-  describe('findTicketWithLockTx', () => {
-    it('트랜잭션 내에서 티켓을 조회하고 잠금을 건다', async () => {
-      mockTicketsRepository.findTicketWithLockTx.mockResolvedValue(mockTickets);
+  describe('findTicketByTicketIdTX', () => {
+    it('티켓이 존재하고 사용 가능하면 성공 응답을 반환한다', async () => {
+      mockTicketsRepository.findTicketByTicketIdTX.mockResolvedValue(
+        mockFoundTicket,
+      );
 
-      await service.findTicketWithLockTx({} as any, mockCreateSeatingDto);
+      const result = await service.findTicketByTicketIdTX(
+        {} as any,
+        mockCreateSeatingDto,
+      );
 
-      expect(repository.findTicketWithLockTx).toHaveBeenCalledWith(
+      expect(repository.findTicketByTicketIdTX).toHaveBeenCalledWith(
         {},
         mockCreateSeatingDto,
       );
+      expect(result).toEqual({ success: true });
+    });
+
+    it('티켓이 존재하지 않으면 실패 응답을 반환한다', async () => {
+      mockTicketsRepository.findTicketByTicketIdTX.mockResolvedValue(null);
+
+      const result = await service.findTicketByTicketIdTX(
+        {} as any,
+        mockCreateSeatingDto,
+      );
+
+      expect(repository.findTicketByTicketIdTX).toHaveBeenCalledWith(
+        {},
+        mockCreateSeatingDto,
+      );
+      expect(result).toEqual({ success: false, message: 'ticket not found' });
+    });
+
+    it('티켓이 이미 예약되었을 경우 실패 응답을 반환한다', async () => {
+      mockTicketsRepository.findTicketByTicketIdTX.mockResolvedValue({
+        ...mockFoundTicket,
+        isAvailable: false,
+      });
+
+      const result = await service.findTicketByTicketIdTX(
+        {} as any,
+        mockCreateSeatingDto,
+      );
+
+      expect(repository.findTicketByTicketIdTX).toHaveBeenCalledWith(
+        {},
+        mockCreateSeatingDto,
+      );
+      expect(result).toEqual({
+        success: false,
+        message: 'ticket not available',
+      });
     });
 
     it('티켓을 찾는 도중 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
-      mockTicketsRepository.findTicketWithLockTx.mockRejectedValue(new Error());
+      mockTicketsRepository.findTicketByTicketIdTX.mockRejectedValue(
+        new Error(),
+      );
 
       await expect(
-        service.findTicketWithLockTx({} as any, mockCreateSeatingDto),
+        service.findTicketByTicketIdTX({} as any, mockCreateSeatingDto),
       ).rejects.toThrow(FailedToFindTicketError);
-    });
-
-    it('티켓이 없을 경우 TicketNotFoundError를 반환한다', async () => {
-      mockTicketsRepository.findTicketWithLockTx.mockResolvedValue([]);
-
-      await expect(
-        service.findTicketWithLockTx({} as any, mockCreateSeatingDto),
-      ).rejects.toThrow(TicketNotFoundError);
-    });
-
-    it('티켓이 이미 예약되었을 경우 TicketNotAvailableError를 반환한다', async () => {
-      const mockTickets = [
-        {
-          id: mockTicketId,
-          eventId: mockEventId,
-          reservationId: mockReservationId,
-          price: 100000,
-          seatNumber: 1,
-          checkInCode: '',
-          image: 'https://example.com/image.png',
-          isAvailable: false,
-        } as Ticket,
-      ];
-
-      mockTicketsRepository.findTicketWithLockTx.mockResolvedValue(mockTickets);
-
-      await expect(
-        service.findTicketWithLockTx({} as any, mockCreateSeatingDto),
-      ).rejects.toThrow(TicketNotAvailableError);
     });
   });
 
-  describe('reserveSeatingTx', () => {
+  describe('reserveSeatingTicketTX', () => {
     it('트랜잭션 내에서 티켓을 예약한다', async () => {
-      mockTicketsRepository.reserveSeatingTx.mockResolvedValue(mockTickets);
-
-      await service.reserveSeatingTx(
-        {} as any,
-        mockCreateSeatingDto,
-        mockReservation,
+      mockTicketsRepository.reserveSeatingTicketTX.mockResolvedValue(
+        mockFoundTickets[0],
       );
+      await service.reserveSeatingTicketTX({
+        tx: {} as any,
+        createSeatingDto: mockCreateSeatingDto,
+        reservation: mockReservation,
+      });
+
+      expect(repository.reserveSeatingTicketTX).toHaveBeenCalledWith({
+        tx: {},
+        createSeatingDto: mockCreateSeatingDto,
+        reservation: mockReservation,
+      });
     });
 
     it('티켓을 예약하는 도중 에러가 발생하면 FailedToReserveTicketError를 반환한다', async () => {
-      mockTicketsRepository.reserveSeatingTx.mockRejectedValue(new Error());
+      mockTicketsRepository.reserveSeatingTicketTX.mockRejectedValue(
+        new Error(),
+      );
 
       await expect(
-        service.reserveSeatingTx(
-          {} as any,
-          mockCreateSeatingDto,
-          mockReservation,
-        ),
+        service.reserveSeatingTicketTX({
+          tx: {} as any,
+          createSeatingDto: mockCreateSeatingDto,
+          reservation: mockReservation,
+        }),
       ).rejects.toThrow(FailedToReserveTicketError);
     });
   });
 
-  describe('reserveStandingTx', () => {
+  describe('reserveStandingTicketTX', () => {
     it('트랜잭션 내에서 스탠딩 티켓을 예약한다', async () => {
-      mockTicketsRepository.findStandingTicketTx.mockResolvedValue(
+      mockTicketsRepository.findStandingTicketTX.mockResolvedValue(
         mockStandingTicket,
       );
-      mockTicketsRepository.reserveStandingTicketTx.mockResolvedValue(
+      mockTicketsRepository.reserveStandingTicketTX.mockResolvedValue(
         mockStandingTicket,
       );
 
-      const result = await service.reserveStandingTx(
-        {} as any,
-        mockCreateStandingDto,
-        mockReservation,
-      );
+      const result = await service.reserveRandomStandingTicketTX({
+        tx: {} as any,
+        createStandingDto: mockCreateStandingDto,
+        reservation: mockReservation,
+      });
 
-      expect(repository.findStandingTicketTx).toHaveBeenCalledWith(
+      expect(repository.findStandingTicketTX).toHaveBeenCalledWith(
         {},
         mockCreateStandingDto,
       );
-      expect(result).toEqual(mockStandingTicket);
+      expect(repository.reserveStandingTicketTX).toHaveBeenCalledWith({
+        tx: {},
+        reservation: mockReservation,
+        ticket: mockStandingTicket,
+      });
+      expect(result).toEqual(new TicketEntity(mockStandingTicket));
     });
 
     it('스탠딩 티켓을 찾는 도중 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
-      mockTicketsRepository.findStandingTicketTx.mockRejectedValue(new Error());
+      mockTicketsRepository.findStandingTicketTX.mockRejectedValue(new Error());
 
       await expect(
-        service.reserveStandingTx(
-          {} as any,
-          mockCreateStandingDto,
-          mockReservation,
-        ),
+        service.reserveRandomStandingTicketTX({
+          tx: {} as any,
+          createStandingDto: mockCreateStandingDto,
+          reservation: mockReservation,
+        }),
       ).rejects.toThrow(FailedToFindTicketError);
     });
 
     it('스탠딩 티켓이 없을 경우 TicketNotFoundError를 반환한다', async () => {
-      mockTicketsRepository.findStandingTicketTx.mockResolvedValue(null);
+      mockTicketsRepository.findStandingTicketTX.mockResolvedValue(null);
 
       await expect(
-        service.reserveStandingTx(
-          {} as any,
-          mockCreateStandingDto,
-          mockReservation,
-        ),
+        service.reserveRandomStandingTicketTX({
+          tx: {} as any,
+          createStandingDto: mockCreateStandingDto,
+          reservation: mockReservation,
+        }),
       ).rejects.toThrow(TicketNotFoundError);
     });
 
     it('스탠딩 티켓이 이미 예약되었을 경우 TicketNotAvailableError를 반환한다', async () => {
-      mockTicketsRepository.findStandingTicketTx.mockResolvedValue({
+      mockTicketsRepository.findStandingTicketTX.mockResolvedValue({
         ...mockStandingTicket,
         isAvailable: false,
       });
 
       await expect(
-        service.reserveStandingTx(
-          {} as any,
-          mockCreateStandingDto,
-          mockReservation,
-        ),
+        service.reserveRandomStandingTicketTX({
+          tx: {} as any,
+          createStandingDto: mockCreateStandingDto,
+          reservation: mockReservation,
+        }),
       ).rejects.toThrow(TicketNotAvailableError);
     });
 
     it('스탠딩 티켓을 예약하는 도중 에러가 발생하면 FailedToReserveTicketError를 반환한다', async () => {
-      mockTicketsRepository.findStandingTicketTx.mockResolvedValue(
+      mockTicketsRepository.findStandingTicketTX.mockResolvedValue(
         mockStandingTicket,
       );
-      mockTicketsRepository.reserveStandingTicketTx.mockRejectedValue(
+      mockTicketsRepository.reserveStandingTicketTX.mockRejectedValue(
         new Error(),
       );
 
       await expect(
-        service.reserveStandingTx(
-          {} as any,
-          mockCreateStandingDto,
-          mockReservation,
-        ),
+        service.reserveRandomStandingTicketTX({
+          tx: {} as any,
+          createStandingDto: mockCreateStandingDto,
+          reservation: mockReservation,
+        }),
       ).rejects.toThrow(FailedToReserveTicketError);
     });
   });

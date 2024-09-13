@@ -6,6 +6,8 @@ import { TicketsService } from '../../tickets/service/tickets.service';
 import { ReservationEntity } from '../entities/reservation.entity';
 import { MurLock } from 'murlock';
 import { CreateStandingDto } from '../dto/create-standing-dto';
+import { FailedToCreateReservation } from '../error/failed-to-create-reservation';
+import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
 
 @Injectable()
 export class ReservationsService {
@@ -15,25 +17,81 @@ export class ReservationsService {
     private readonly reservationsRepository: ReservationsRepository,
   ) {}
 
-  async createSeating(userId: string, createSeatingDto: CreateSeatingDto) {
-    // reservation과 ticket을 동시에 생성하기 위해 transaction 사용
-    const result = await this.prisma.$transaction(async (tx: PrismaService) => {
-      // next key lock을 사용하여 동시성 문제 해결
-      await this.ticketsService.findTicketWithLockTx(tx, createSeatingDto);
+  /**
+   * @summary
+   * 좌석이 있는 장소 예약 (ticket이 각각 구분되어 있는 경우)
+   *
+   * @description
+   * @MurLock: Redis 분산 락 라이브러리
+   * - 5초 동안 'createSeatingDto.ticketId' 키에 대한 락을 건다
+   * - 락을 얻지 못한 경우 0.1초마다 재시도한다
+   */
+  @MurLock(5000, 'createSeatingDto.ticketId')
+  async createSeating(
+    userId: string,
+    createSeatingDto: CreateSeatingDto,
+  ): Promise<ObjectWithSuccess> {
+    /**
+     * @description
+     * $transaction: PrismaService의 트랜잭션 메서드
+     * - Prisma는 Transaction 데코레이터를 제공하지 않는다
+     * - reservation과 ticket을 atomic하게 생성하기 위해 $transaction을 사용한다
+     */
+    return await this.prisma.$transaction(async (tx: PrismaService) => {
+      const result = await this.ticketsService.findTicketByTicketIdTX(
+        tx,
+        createSeatingDto,
+      );
 
-      // reservation 생성
-      const reservation = await this.reservationsRepository.createSeatingTx(
+      if (!result?.success) {
+        return result;
+      }
+
+      const reservation = await this.createSeatingReservationTX({
         tx,
         createSeatingDto,
         userId,
-      );
+      });
 
-      // ticket 생성
-      await this.ticketsService.reserveSeatingTx(
+      await this.ticketsService.reserveSeatingTicketTX({
         tx,
         createSeatingDto,
         reservation,
-      );
+      });
+
+      return result;
+    });
+  }
+
+  /**
+   * @ summary
+   * 좌석이 없는 장소 예약 (ticket이 구분되어 있지 않은 경우)
+   *
+   * @description
+   * @MurLock: Redis 분산 락 라이브러리
+   * - 5초 동안 'createSeatingDto.eventId' 키에 대한 락을 건다
+   * - 락을 얻지 못한 경우 0.1초마다 재시도한다
+   */
+  @MurLock(5000, 'createStandingDto.eventId')
+  async createStanding(userId: string, createStandingDto: CreateStandingDto) {
+    /**
+     * @description
+     * $transaction: PrismaService의 트랜잭션 메서드
+     * - Prisma는 Transaction 데코레이터를 제공하지 않는다
+     * - reservation과 ticket을 atomic하게 생성하기 위해 $transaction을 사용한다
+     */
+    const result = await this.prisma.$transaction(async (tx: PrismaService) => {
+      const reservation = await this.createStandingReservationTX({
+        tx,
+        createStandingDto,
+        userId,
+      });
+
+      await this.ticketsService.reserveRandomStandingTicketTX({
+        tx,
+        createStandingDto,
+        reservation,
+      });
 
       return reservation;
     });
@@ -41,28 +99,43 @@ export class ReservationsService {
     return new ReservationEntity(result);
   }
 
-  // distributed lock을 사용하여 동시성 문제 해결
-  @MurLock(5000, 'createStandingDto.eventId')
-  async createStanding(userId: string, createStandingDto: CreateStandingDto) {
-    // reservation과 ticket을 동시에 생성하기 위해 transaction 사용
-    const result = await this.prisma.$transaction(async (tx: PrismaService) => {
-      // reservation 생성
-      const reservation = await this.reservationsRepository.createStandingTx(
+  private async createSeatingReservationTX({
+    tx,
+    createSeatingDto,
+    userId,
+  }: {
+    tx: PrismaService;
+    createSeatingDto: CreateSeatingDto;
+    userId: string;
+  }) {
+    return await this.reservationsRepository
+      .createSeatingReservationTX({
+        tx,
+        createSeatingDto,
+        userId,
+      })
+      .catch(() => {
+        throw new FailedToCreateReservation();
+      });
+  }
+
+  private async createStandingReservationTX({
+    tx,
+    createStandingDto,
+    userId,
+  }: {
+    tx: PrismaService;
+    createStandingDto: CreateStandingDto;
+    userId: string;
+  }) {
+    return await this.reservationsRepository
+      .createStandingReservationTX({
         tx,
         createStandingDto,
         userId,
-      );
-
-      // ticket 생성
-      await this.ticketsService.reserveStandingTx(
-        tx,
-        createStandingDto,
-        reservation,
-      );
-
-      return reservation;
-    });
-
-    return new ReservationEntity(result);
+      })
+      .catch(() => {
+        throw new FailedToCreateReservation();
+      });
   }
 }
