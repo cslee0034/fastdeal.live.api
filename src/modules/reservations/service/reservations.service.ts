@@ -65,7 +65,7 @@ export class ReservationsService {
   }
 
   /**
-   * @ summary
+   * @summary
    * 좌석이 없는 장소 예약 (ticket이 구분되어 있지 않은 경우)
    *
    * @description
