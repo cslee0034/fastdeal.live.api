@@ -67,7 +67,7 @@ describe('RedisService', () => {
       });
 
       expect(cacheManager.set).toHaveBeenCalledWith(mockId, mockToken, {
-        ttl: mockTtl / 1000,
+        ttl: Math.floor(mockTtl / 1000),
       });
     });
 
@@ -97,6 +97,29 @@ describe('RedisService', () => {
       await expect(service.deleteRefreshToken(mockId)).rejects.toThrow(
         FailedToDeleteRefreshTokenError,
       );
+    });
+  });
+
+  describe('set', () => {
+    it('ttl이 주어지면, ttl을 초 단위로 변환하여 캐시 저장소에 저장한다', async () => {
+      const mockKey = 'mockKey';
+      const mockValue = 'mockValue';
+      const mockTtl = 5000;
+
+      await service['set'](mockKey, mockValue, mockTtl);
+
+      expect(cacheManager.set).toHaveBeenCalledWith(mockKey, mockValue, {
+        ttl: Math.floor(mockTtl / 1000),
+      });
+    });
+
+    it('ttl이 주어지지 않으면, ttl을 설정하지 않고 캐시 저장소에 저장한다', async () => {
+      const mockKey = 'mockKey';
+      const mockValue = 'mockValue';
+
+      await service['set'](mockKey, mockValue);
+
+      expect(cacheManager.set).toHaveBeenCalledWith(mockKey, mockValue, {});
     });
   });
 

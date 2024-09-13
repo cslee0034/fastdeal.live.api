@@ -40,7 +40,9 @@ export class RedisService implements ICacheService {
   }
 
   private async set(key: string, value: any, ttl?: number): Promise<void> {
-    return await this.cacheManager.set(key, value, { ttl: ttl / 1000 } as any);
+    const ttlInSecond = ttl ? Math.floor(ttl / 1000) : undefined;
+
+    return await this.cacheManager.set(key, value, { ttl: ttlInSecond } as any);
   }
 
   private async get<T>(key: string): Promise<T | undefined> {
