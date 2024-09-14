@@ -37,6 +37,14 @@ export class TicketsRepository {
     });
   }
 
+  async findTicketByTicketId(ticketId: string): Promise<Ticket> {
+    return await this.prisma.ticket.findFirst({
+      where: {
+        id: ticketId,
+      },
+    });
+  }
+
   async findTicketByTicketIdTX(
     tx: PrismaService,
     createSeatingDto: CreateSeatingDto,

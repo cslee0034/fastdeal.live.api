@@ -8,6 +8,7 @@ import { ReservationEntity } from '../entities/reservation.entity';
 import { LockService } from '../../../infrastructure/lock/service/lock.service';
 import { CreateStandingDto } from '../dto/create-standing-dto';
 import { FailedToCreateReservation } from '../error/failed-to-create-reservation';
+import { RedisService } from '../../../infrastructure/cache/service/redis.service';
 
 jest.mock('murlock', () => ({
   MurLock: jest.fn(() => () => jest.fn()),
@@ -33,6 +34,10 @@ describe('ReservationsService', () => {
     $transaction: jest.fn().mockImplementation(async (tx: any) => {
       return tx(prisma);
     }),
+  };
+
+  const mockRedisService = {
+    deleteTicketSoldOut: jest.fn(),
   };
 
   const mockUserId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
@@ -77,6 +82,10 @@ describe('ReservationsService', () => {
         {
           provide: ReservationsRepository,
           useValue: mockReservationsRepository,
+        },
+        {
+          provide: RedisService,
+          useValue: mockRedisService,
         },
       ],
     }).compile();

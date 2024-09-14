@@ -10,6 +10,7 @@ import { TicketNotAvailableError } from '../error/ticket-not-available';
 import { TicketNotFoundError } from '../error/ticket-not-found';
 import { FailedToReserveTicketError } from '../error/failed-to-reserve-ticket';
 import { CreateStandingDto } from '../../reservations/dto/create-standing-dto';
+import { RedisService } from '../../../infrastructure/cache/service/redis.service';
 
 describe('TicketsService', () => {
   let service: TicketsService;
@@ -92,6 +93,11 @@ describe('TicketsService', () => {
     reserveStandingTicketTX: jest.fn(),
   };
 
+  const mockRedisService = {
+    getTicketSoldOut: jest.fn(),
+    setTicketSoldOut: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -99,6 +105,10 @@ describe('TicketsService', () => {
         {
           provide: TicketsRepository,
           useValue: mockTicketsRepository,
+        },
+        {
+          provide: RedisService,
+          useValue: mockRedisService,
         },
       ],
     }).compile();
@@ -238,6 +248,40 @@ describe('TicketsService', () => {
       await expect(
         service.findTicketByTicketIdTX({} as any, mockCreateSeatingDto),
       ).rejects.toThrow(FailedToFindTicketError);
+    });
+
+    it('티켓이 캐시 저장소에 저장되어 있다면 ticket sold out을 반환한다', () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(true);
+
+      service
+        .findTicketByTicketIdTX({} as any, mockCreateSeatingDto)
+        .then((result) => {
+          expect(result).toEqual({
+            success: false,
+            message: 'ticket sold out',
+          });
+        });
+    });
+
+    it('티켓이 캐시 저장소에 저장되어 있지 않다면 ticket sold out을 저장하고 성공 응답을 반환한다', async () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(undefined);
+      mockTicketsRepository.findTicketByTicketIdTX.mockResolvedValue(
+        mockFoundTicket,
+      );
+
+      const result = await service.findTicketByTicketIdTX(
+        {} as any,
+        mockCreateSeatingDto,
+      );
+
+      expect(repository.findTicketByTicketIdTX).toHaveBeenCalledWith(
+        {},
+        mockCreateSeatingDto,
+      );
+      expect(result).toEqual({ success: true });
+      expect(mockRedisService.setTicketSoldOut).toHaveBeenCalledWith(
+        mockFoundTicket.id,
+      );
     });
   });
 

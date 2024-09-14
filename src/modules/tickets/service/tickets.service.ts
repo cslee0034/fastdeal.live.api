@@ -11,10 +11,14 @@ import { Reservation, Ticket } from '@prisma/client';
 import { FailedToReserveTicketError } from '../error/failed-to-reserve-ticket';
 import { CreateStandingDto } from '../../reservations/dto/create-standing-dto';
 import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
+import { RedisService } from '../../../infrastructure/cache/service/redis.service';
 
 @Injectable()
 export class TicketsService {
-  constructor(private readonly ticketsRepository: TicketsRepository) {}
+  constructor(
+    private readonly cacheService: RedisService,
+    private readonly ticketsRepository: TicketsRepository,
+  ) {}
 
   async findTicketsByEventId(eventId: string): Promise<TicketEntity[]> {
     const tickets = await this.ticketsRepository
@@ -40,6 +44,14 @@ export class TicketsService {
     tx: PrismaService,
     createSeatingDto: CreateSeatingDto,
   ): Promise<ObjectWithSuccess> {
+    const isTicketSoldOut = await this.cacheService.getTicketSoldOut(
+      createSeatingDto.ticketId,
+    );
+
+    if (isTicketSoldOut) {
+      return { success: false, message: 'ticket sold out' };
+    }
+
     const ticket = await this.ticketsRepository
       .findTicketByTicketIdTX(tx, createSeatingDto)
       .catch(() => {
@@ -53,6 +65,8 @@ export class TicketsService {
     if (!ticket.isAvailable) {
       return { success: false, message: 'ticket not available' };
     }
+
+    await this.cacheService.setTicketSoldOut(ticket.id);
 
     return { success: true };
   }

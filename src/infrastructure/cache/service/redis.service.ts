@@ -40,6 +40,18 @@ export class RedisService implements ICacheService {
     });
   }
 
+  public async setTicketSoldOut(ticketId: string): Promise<void> {
+    return await this.set(`sold-out-${ticketId}`, true, 5 * SECONDS);
+  }
+
+  public async getTicketSoldOut(ticketId: string): Promise<boolean> {
+    return await this.get<boolean>(`sold-out-${ticketId}`);
+  }
+
+  public async deleteTicketSoldOut(ticketId: string): Promise<void> {
+    return await this.del(`sold-out-${ticketId}`);
+  }
+
   private async set(key: string, value: any, ttl?: number): Promise<void> {
     // ttl은 Milliseconds 단위로 들어오기 때문에 초 단위로 변환해서 넣어준다.
     const ttlInSecond = ttl ? Math.floor(ttl / SECONDS) : undefined;

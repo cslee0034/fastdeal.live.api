@@ -4,6 +4,7 @@ import { RedisService } from './redis.service';
 import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
 import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
 import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
+import { SECONDS } from '../../../common/constant/milliseconds-to-seconds';
 
 describe('RedisService', () => {
   let service: RedisService;
@@ -19,6 +20,7 @@ describe('RedisService', () => {
   const mockId = 'testId';
   const mockToken = 'testToken';
   const mockTtl = 3600;
+  const mockTicketId = '54e1c4f-a709-4d80-b9fb-5d9bdd096eec';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -96,6 +98,63 @@ describe('RedisService', () => {
 
       await expect(service.deleteRefreshToken(mockId)).rejects.toThrow(
         FailedToDeleteRefreshTokenError,
+      );
+    });
+  });
+
+  describe('setTicketSoldOut', () => {
+    it('캐시 저장소에 sold-out 상태를 저장한다', async () => {
+      const ttl = 5 * SECONDS;
+      await service.setTicketSoldOut(mockTicketId);
+
+      expect(cacheManager.set).toHaveBeenCalledWith(
+        `sold-out-${mockTicketId}`,
+        true,
+        { ttl: Math.floor(ttl / 1000) },
+      );
+    });
+
+    it('캐시 저장소에 sold-out 상태를 저장하는 것에 실패하면 에러를 던진다', async () => {
+      mockCacheManager.set.mockRejectedValueOnce(new Error());
+
+      await expect(service.setTicketSoldOut(mockTicketId)).rejects.toThrow(
+        Error,
+      );
+    });
+  });
+
+  describe('getTicketSoldOut', () => {
+    it('캐시 저장소에서 sold-out 상태를 가져온다', async () => {
+      mockCacheManager.get.mockResolvedValueOnce(true);
+
+      const result = await service.getTicketSoldOut(mockTicketId);
+
+      expect(result).toBe(true);
+      expect(cacheManager.get).toHaveBeenCalledWith(`sold-out-${mockTicketId}`);
+    });
+
+    it('캐시 저장소에서 sold-out 상태를 가져오지 못하면 undefined를 반환한다', async () => {
+      mockCacheManager.get.mockResolvedValueOnce(undefined);
+
+      const result = await service.getTicketSoldOut(mockTicketId);
+
+      expect(result).toBe(undefined);
+      expect(cacheManager.get).toHaveBeenCalledWith(`sold-out-${mockTicketId}`);
+    });
+  });
+
+  describe('deleteTicketSoldOut', () => {
+    it('캐시 저장소에서 sold-out 상태를 삭제한다', async () => {
+      await service.deleteTicketSoldOut(mockTicketId);
+
+      expect(cacheManager.del).toHaveBeenCalledWith(`sold-out-${mockTicketId}`);
+    });
+
+    it('캐시 저장소에서 sold-out 상태를 삭제하는 것에 실패하면 에러를 던진다', async () => {
+      mockCacheManager.del.mockRejectedValueOnce(new Error());
+
+      await expect(service.deleteTicketSoldOut(mockTicketId)).rejects.toThrow(
+        Error,
       );
     });
   });

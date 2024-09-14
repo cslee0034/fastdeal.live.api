@@ -13,6 +13,7 @@ describe('TicketsRepository', () => {
     ticket: {
       findMany: jest.fn(),
       count: jest.fn(),
+      findFirst: jest.fn(),
     },
     $transaction: jest.fn(),
   } as any;
@@ -176,6 +177,21 @@ describe('TicketsRepository', () => {
         },
       });
       expect(result).toBe(mockFoundTickets.length);
+    });
+  });
+
+  describe('findTicketByTicketId', () => {
+    it('티켓 ID에 해당하는 티켓을 반환해야 한다', async () => {
+      mockPrismaService.ticket.findFirst.mockResolvedValue(mockFoundTicket);
+
+      const result = await repository.findTicketByTicketId(mockTicketId);
+
+      expect(mockPrismaService.ticket.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: mockTicketId,
+        },
+      });
+      expect(result).toEqual(mockFoundTicket);
     });
   });
 
