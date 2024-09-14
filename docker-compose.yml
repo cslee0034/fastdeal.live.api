@@ -1,0 +1,230 @@
+version: '3'
+services:
+  app-1:
+    image: node:lts-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - '4000:4000'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - SERVER_NAME=${SERVER_NAME}
+      - API_PROTOCOL=${API_PROTOCOL}
+      - API_HOST=${API_HOST}
+      - API_PORT=${API_PORT}
+      - CLIENT_URL=${CLIENT_URL}
+      - HTTP_TIMEOUT=${HTTP_TIMEOUT}
+      - HTTP_MAX_REDIRECTS=${HTTP_MAX_REDIRECTS}
+
+      # 데이터베이스 설정
+      - RDB_URL=mysql://cslee0034:1234@mysql:3306/fastdeal
+
+      # 캐시 설정
+      - CACHE_URL=redis://redis_cache:6379
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+
+      # 락 설정
+      - LOCK_URL=redis://redis_cache:6379
+      - LOCK_PASSWORD=${LOCK_PASSWORD}
+      - LOCK_WAIT=${LOCK_WAIT}
+      - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
+      - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
+
+      # 보안 설정
+      - ENCRYPT_SALT=${ENCRYPT_SALT}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_ACCESS_EXPIRES_IN=${JWT_ACCESS_EXPIRES_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - JWT_REFRESH_PREFIX=${JWT_REFRESH_PREFIX}
+
+      # Google OAuth 설정
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # Slack webhook 설정
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+
+    depends_on:
+      - mysql
+      - redis_cache
+      - redis_lock
+    networks:
+      - app-network
+
+  app-2:
+    image: node:lts-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - '4001:4001'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - SERVER_NAME=${SERVER_NAME}
+      - API_PROTOCOL=${API_PROTOCOL}
+      - API_HOST=${API_HOST}
+      - API_PORT=4001
+      - CLIENT_URL=${CLIENT_URL}
+      - HTTP_TIMEOUT=${HTTP_TIMEOUT}
+      - HTTP_MAX_REDIRECTS=${HTTP_MAX_REDIRECTS}
+
+      # 데이터베이스 설정
+      - RDB_URL=mysql://cslee0034:1234@mysql:3306/fastdeal
+
+      # 캐시 설정
+      - CACHE_URL=redis://redis_cache:6379
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+
+      # 락 설정
+      - LOCK_URL=redis://redis_cache:6379
+      - LOCK_PASSWORD=${LOCK_PASSWORD}
+      - LOCK_WAIT=${LOCK_WAIT}
+      - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
+      - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
+
+      # 보안 설정
+      - ENCRYPT_SALT=${ENCRYPT_SALT}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_ACCESS_EXPIRES_IN=${JWT_ACCESS_EXPIRES_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - JWT_REFRESH_PREFIX=${JWT_REFRESH_PREFIX}
+
+      # Google OAuth 설정
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # Slack webhook 설정
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+
+    depends_on:
+      - mysql
+      - redis_cache
+      - redis_lock
+    networks:
+      - app-network
+
+  app-3:
+    image: node:lts-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - '4002:4002'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - SERVER_NAME=${SERVER_NAME}
+      - API_PROTOCOL=${API_PROTOCOL}
+      - API_HOST=${API_HOST}
+      - API_PORT=4002
+      - CLIENT_URL=${CLIENT_URL}
+      - HTTP_TIMEOUT=${HTTP_TIMEOUT}
+      - HTTP_MAX_REDIRECTS=${HTTP_MAX_REDIRECTS}
+
+      # 데이터베이스 설정
+      - RDB_URL=mysql://cslee0034:1234@mysql:3306/fastdeal
+
+      # 캐시 설정
+      - CACHE_URL=redis://redis_cache:6379
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+
+      # 락 설정
+      - LOCK_URL=redis://redis_cache:6379
+      - LOCK_PASSWORD=${LOCK_PASSWORD}
+      - LOCK_WAIT=${LOCK_WAIT}
+      - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
+      - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
+
+      # 보안 설정
+      - ENCRYPT_SALT=${ENCRYPT_SALT}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_ACCESS_EXPIRES_IN=${JWT_ACCESS_EXPIRES_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - JWT_REFRESH_PREFIX=${JWT_REFRESH_PREFIX}
+
+      # Google OAuth 설정
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # Slack webhook 설정
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+
+    depends_on:
+      - mysql
+      - redis_cache
+      - redis_lock
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app-1
+      - app-2
+      - app-3
+    networks:
+      - app-network
+
+  # MySQL 서비스
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: fastdeal
+      MYSQL_USER: cslee0034
+      MYSQL_PASSWORD: 1234
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # 캐싱 Redis
+  redis_cache:
+    image: redis:latest
+    command: redis-server --requirepass 1234
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_cache_data:/data
+    environment:
+      REDIS_PASSWORD: 1234
+    networks:
+      - app-network
+
+  # 락킹 Redis
+  redis_lock:
+    image: redis:latest
+    command: redis-server --requirepass 1234
+    ports:
+      - '6380:6380'
+    volumes:
+      - redis_lock_data:/data
+    environment:
+      REDIS_PASSWORD: 1234
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_cache_data:
+  redis_lock_data:
+  redis_queue_data:
