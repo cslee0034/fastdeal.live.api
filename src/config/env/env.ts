@@ -41,18 +41,6 @@ export const env = () => ({
       prefix: process.env.JWT_REFRESH_PREFIX,
     },
   },
-  aws: {
-    region: process.env.AWS_REGION,
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sqs: {
-      email: {
-        name: process.env.AWS_SQS_EMAIL_NAME,
-        queueUrl: process.env.AWS_SQS_EMAIL_QUEUE_URL,
-        region: process.env.AWS_SQS_EMAIL_REGION,
-      },
-    },
-  },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
