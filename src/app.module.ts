@@ -19,7 +19,6 @@ import { AuthModule } from './modules/auth/module/auth.module';
 import { RedisModule } from './infrastructure/cache/module/redis.module';
 import { EncryptModule } from './infrastructure/encrypt/module/encrypt.module';
 import { UsersModule } from './modules/users/module/users.module';
-import * as AWS from 'aws-sdk';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
@@ -29,8 +28,6 @@ import { PlacesModule } from './modules/places/module/places.module';
 import { TicketsModule } from './modules/tickets/module/tickets.module';
 import { EventsModule } from './modules/events/module/events.module';
 import { ReservationsModule } from './modules/reservations/module/reservations.module';
-import { MurLockModule } from 'murlock';
-import { getLockConfig } from './config/lock/lock';
 import { LockModule } from './infrastructure/lock/module/lock.module';
 
 @Module({
@@ -63,8 +60,8 @@ import { LockModule } from './infrastructure/lock/module/lock.module';
       }),
       inject: [ConfigService],
     }),
-    LockModule,
     RedisModule,
+    LockModule,
     EncryptModule,
     LoggerModule,
     PrismaModule,
@@ -85,18 +82,8 @@ import { LockModule } from './infrastructure/lock/module/lock.module';
     },
   ],
 })
-export class AppModule implements NestModule, OnModuleInit {
-  constructor(private readonly configService: ConfigService) {}
-
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
-
-  onModuleInit() {
-    AWS.config.update({
-      region: this.configService.get<string>('aws.region'),
-      accessKeyId: this.configService.get<string>('aws.accessKeyId'),
-      secretAccessKey: this.configService.get<string>('aws.secretAccessKey'),
-    });
   }
 }
