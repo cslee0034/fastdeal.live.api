@@ -87,6 +87,7 @@ describe('TicketsService', () => {
         return Promise.resolve(mockFoundTickets.length);
       }),
 
+    findTicketByTicketId: jest.fn(),
     findTicketByTicketIdTX: jest.fn(),
     reserveSeatingTicketTX: jest.fn(),
     findStandingTicketTX: jest.fn(),
@@ -182,6 +183,95 @@ describe('TicketsService', () => {
 
       await expect(service.countTicketsByEventId(mockEventId)).rejects.toThrow(
         FailedToCountTicketError,
+      );
+    });
+  });
+
+  describe('findTicketByTicketId', () => {
+    it('캐시에 ticketSoldOut이 true로 저장되어 있다면 success:false와 메시지를 반환한다', async () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(true);
+
+      const result = await service.findTicketByTicketId(mockTicketId);
+
+      expect(mockRedisService.getTicketSoldOut).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(result).toEqual({
+        success: false,
+        message: 'ticket sold out',
+      });
+    });
+
+    it('데이터베이스에 ticket에 관한 정보가 없다면 success:false와 메시지를 반환한다', async () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(undefined);
+      mockTicketsRepository.findTicketByTicketId.mockResolvedValueOnce(null);
+
+      const result = await service.findTicketByTicketId(mockTicketId);
+
+      expect(mockRedisService.getTicketSoldOut).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(repository.findTicketByTicketId).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(result).toEqual({
+        success: false,
+        message: 'ticket not found',
+      });
+    });
+
+    it('티켓이 사용 불가능 하다면 success:false와 메시지를 반환한다', async () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(undefined);
+      mockTicketsRepository.findTicketByTicketId.mockResolvedValueOnce({
+        ...mockFoundTicket,
+        isAvailable: false,
+      });
+
+      const result = await service.findTicketByTicketId(mockTicketId);
+
+      expect(mockRedisService.getTicketSoldOut).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(repository.findTicketByTicketId).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(result).toEqual({
+        success: false,
+        message: 'ticket not available',
+      });
+    });
+
+    it('티켓이 이용 가능하다면 캐시에 ticketSoldOut을 등록하고 success:true와 ticket을 반환한다', async () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(undefined);
+      mockTicketsRepository.findTicketByTicketId.mockResolvedValueOnce(
+        mockFoundTicket,
+      );
+
+      const result = await service.findTicketByTicketId(mockTicketId);
+
+      expect(mockRedisService.getTicketSoldOut).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(repository.findTicketByTicketId).toHaveBeenCalledWith(
+        mockTicketId,
+      );
+      expect(mockRedisService.setTicketSoldOut).toHaveBeenCalledWith(
+        mockFoundTicket.id,
+      );
+      expect(result).toEqual({
+        success: true,
+        data: new TicketEntity(mockFoundTicket),
+      });
+    });
+
+    it('레포지토리에서 에러가 발생하면 FailedToFindTicketError를 반환한다', async () => {
+      mockRedisService.getTicketSoldOut.mockResolvedValueOnce(undefined);
+      mockTicketsRepository.findTicketByTicketId.mockRejectedValueOnce(
+        new Error(),
+      );
+
+      await expect(service.findTicketByTicketId(mockTicketId)).rejects.toThrow(
+        FailedToFindTicketError,
       );
     });
   });

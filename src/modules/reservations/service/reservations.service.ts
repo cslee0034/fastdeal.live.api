@@ -8,14 +8,15 @@ import { MurLock } from 'murlock';
 import { CreateStandingDto } from '../dto/create-standing-dto';
 import { FailedToCreateReservation } from '../error/failed-to-create-reservation';
 import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
-import { SECONDS } from '../../../common/constant/milliseconds-to-seconds';
-import { RedisService } from '../../../infrastructure/cache/service/redis.service';
+import { SECONDS } from '../../../common/constant/time/milliseconds-base/milliseconds-to-seconds';
+import { QueueService } from '../../../infrastructure/queue/service/queue.service';
+import { TicketEntity } from '../../tickets/entities/ticket.entity';
 
 @Injectable()
 export class ReservationsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly cacheService: RedisService,
+    private readonly queueService: QueueService,
     private readonly ticketsService: TicketsService,
     private readonly reservationsRepository: ReservationsRepository,
   ) {}
@@ -29,45 +30,25 @@ export class ReservationsService {
    * - 5초 동안 'createSeatingDto.ticketId' 키에 대한 락을 건다
    */
   @MurLock(5 * SECONDS, 'createSeatingDto.ticketId')
-  async createSeating(
+  public async createSeating(
     userId: string,
     createSeatingDto: CreateSeatingDto,
-  ): Promise<ObjectWithSuccess> {
-    /**
-     * @description
-     * $transaction: PrismaService의 트랜잭션 메서드
-     * - reservation과 ticket을 atomic하게 생성하기 위해 $transaction을 사용한다
-     */
-    return await this.prisma
-      .$transaction(async (tx: PrismaService) => {
-        const result = await this.ticketsService.findTicketByTicketIdTX(
-          tx,
-          createSeatingDto,
-        );
+  ): Promise<ObjectWithSuccess<TicketEntity>> {
+    const ticketing = await this.ticketsService.findTicketByTicketId(
+      createSeatingDto.ticketId,
+    );
 
-        if (!result?.success) {
-          return result;
-        }
+    if (!ticketing.success) {
+      return ticketing;
+    }
 
-        const reservation = await this.createSeatingReservationTX({
-          tx,
-          createSeatingDto,
-          userId,
-        });
+    // queue -> reservation.processor
+    await this.queueService.addReservationJob({
+      userId,
+      createSeatingDto,
+    });
 
-        await this.ticketsService.reserveSeatingTicketTX({
-          tx,
-          createSeatingDto,
-          reservation,
-        });
-
-        return result;
-      })
-      .catch(async (error) => {
-        await this.cacheService.deleteTicketSoldOut(createSeatingDto.ticketId);
-
-        throw error;
-      });
+    return ticketing;
   }
 
   /**
@@ -79,7 +60,10 @@ export class ReservationsService {
    * - 5초 동안 'createSeatingDto.eventId' 키에 대한 락을 건다
    */
   @MurLock(5 * SECONDS, 'createStandingDto.eventId')
-  async createStanding(userId: string, createStandingDto: CreateStandingDto) {
+  public async createStanding(
+    userId: string,
+    createStandingDto: CreateStandingDto,
+  ) {
     /**
      * @description
      * $transaction: PrismaService의 트랜잭션 메서드

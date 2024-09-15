@@ -40,6 +40,34 @@ export class TicketsService {
     return ticketCount;
   }
 
+  async findTicketByTicketId(
+    ticketId: string,
+  ): Promise<ObjectWithSuccess<TicketEntity>> {
+    const isTicketSoldOut = await this.cacheService.getTicketSoldOut(ticketId);
+
+    if (isTicketSoldOut) {
+      return { success: false, message: 'ticket sold out' };
+    }
+
+    const ticket = await this.ticketsRepository
+      .findTicketByTicketId(ticketId)
+      .catch(() => {
+        throw new FailedToFindTicketError();
+      });
+
+    if (!ticket) {
+      return { success: false, message: 'ticket not found' };
+    }
+
+    if (!ticket.isAvailable) {
+      return { success: false, message: 'ticket not available' };
+    }
+
+    await this.cacheService.setTicketSoldOut(ticket.id);
+
+    return { success: true, data: new TicketEntity(ticket) };
+  }
+
   async findTicketByTicketIdTX(
     tx: PrismaService,
     createSeatingDto: CreateSeatingDto,

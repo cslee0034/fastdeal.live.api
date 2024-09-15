@@ -4,13 +4,13 @@ import { ApiOperation } from '@nestjs/swagger';
 import { CreateSeatingDto } from '../dto/create-seating.dto';
 import { GetTokenUserId } from '../../../common/decorator/get-token-user-id.decorator';
 import { CreateStandingDto } from '../dto/create-standing-dto';
-import { Public } from '../../../common/decorator/public.decorator';
+import { ObjectWithSuccess } from '../../../common/interface/object-with-success';
+import { TicketEntity } from '../../tickets/entities/ticket.entity';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
-  @Public()
   @Post('seating')
   @ApiOperation({
     summary: '좌석이 있는 장소 예약',
@@ -19,7 +19,7 @@ export class ReservationsController {
   async createSeating(
     @GetTokenUserId() userId: string,
     @Body() createSeatingDto: CreateSeatingDto,
-  ) {
+  ): Promise<ObjectWithSuccess<TicketEntity>> {
     return await this.reservationsService.createSeating(
       userId,
       createSeatingDto,

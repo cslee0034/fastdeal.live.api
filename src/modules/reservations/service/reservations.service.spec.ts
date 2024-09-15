@@ -9,6 +9,7 @@ import { LockService } from '../../../infrastructure/lock/service/lock.service';
 import { CreateStandingDto } from '../dto/create-standing-dto';
 import { FailedToCreateReservation } from '../error/failed-to-create-reservation';
 import { RedisService } from '../../../infrastructure/cache/service/redis.service';
+import { QueueService } from '../../../infrastructure/queue/service/queue.service';
 
 jest.mock('murlock', () => ({
   MurLock: jest.fn(() => () => jest.fn()),
@@ -17,10 +18,10 @@ jest.mock('murlock', () => ({
 describe('ReservationsService', () => {
   let service: ReservationsService;
   let repository: ReservationsRepository;
-  let lockService: LockService;
   let prisma: PrismaService;
 
   const mockTicketsService = {
+    findTicketByTicketId: jest.fn(),
     findTicketByTicketIdTX: jest.fn(),
     reserveSeatingTicketTX: jest.fn(),
     reserveRandomStandingTicketTX: jest.fn(),
@@ -38,6 +39,10 @@ describe('ReservationsService', () => {
 
   const mockRedisService = {
     deleteTicketSoldOut: jest.fn(),
+  };
+
+  const mockQueueService = {
+    addReservationJob: jest.fn(),
   };
 
   const mockUserId = '6d2e1c4f-a709-4d80-b9fb-5d9bdd096eec';
@@ -87,6 +92,10 @@ describe('ReservationsService', () => {
           provide: RedisService,
           useValue: mockRedisService,
         },
+        {
+          provide: QueueService,
+          useValue: mockQueueService,
+        },
       ],
     }).compile();
 
@@ -102,15 +111,10 @@ describe('ReservationsService', () => {
   });
 
   describe('createSeating', () => {
-    it('예약 내역을 반환해야 한다', async () => {
-      mockTicketsService.findTicketByTicketIdTX.mockResolvedValue({
+    it('큐에 예약 작업을 추가해야 한다', async () => {
+      mockTicketsService.findTicketByTicketId.mockResolvedValue({
         success: true,
-      });
-      mockReservationsRepository.createSeatingReservationTX.mockResolvedValue(
-        mockReservation,
-      );
-      mockTicketsService.reserveSeatingTicketTX.mockResolvedValue({
-        success: true,
+        ticket: mockReservation,
       });
 
       const result = await service.createSeating(
@@ -118,27 +122,22 @@ describe('ReservationsService', () => {
         mockCreateSeatingDto,
       );
 
-      expect(mockTicketsService.findTicketByTicketIdTX).toHaveBeenCalledWith(
-        prisma,
-        mockCreateSeatingDto,
+      expect(mockTicketsService.findTicketByTicketId).toHaveBeenCalledWith(
+        mockCreateSeatingDto.ticketId,
       );
-      expect(
-        mockReservationsRepository.createSeatingReservationTX,
-      ).toHaveBeenCalledWith({
-        tx: prisma,
-        createSeatingDto: mockCreateSeatingDto,
+
+      expect(mockQueueService.addReservationJob).toHaveBeenCalledWith({
         userId: mockUserId,
-      });
-      expect(mockTicketsService.reserveSeatingTicketTX).toHaveBeenCalledWith({
-        tx: prisma,
         createSeatingDto: mockCreateSeatingDto,
-        reservation: mockReservation,
       });
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual({
+        success: true,
+        ticket: mockReservation,
+      });
     });
 
-    it('티켓이 없는 경우 예약에 실패해야 한다', async () => {
-      mockTicketsService.findTicketByTicketIdTX.mockResolvedValue({
+    it('티켓 조회가 실패하면 작업을 추가하지 않고 실패해야 한다', async () => {
+      mockTicketsService.findTicketByTicketId.mockResolvedValue({
         success: false,
         message: 'ticket not found',
       });
@@ -148,24 +147,13 @@ describe('ReservationsService', () => {
         mockCreateSeatingDto,
       );
 
-      expect(mockTicketsService.findTicketByTicketIdTX).toHaveBeenCalledWith(
-        prisma,
-        mockCreateSeatingDto,
+      expect(mockTicketsService.findTicketByTicketId).toHaveBeenCalledWith(
+        mockCreateSeatingDto.ticketId,
       );
+
+      expect(mockQueueService.addReservationJob).not.toHaveBeenCalled();
+
       expect(result).toEqual({ success: false, message: 'ticket not found' });
-    });
-
-    it('createSeatingReservationTX에서 에러가 발생하면 예약에 실패해야 한다', async () => {
-      mockTicketsService.findTicketByTicketIdTX.mockResolvedValue({
-        success: true,
-      });
-      mockReservationsRepository.createSeatingReservationTX.mockRejectedValue(
-        new Error(),
-      );
-
-      await expect(
-        service.createSeating(mockUserId, mockCreateSeatingDto),
-      ).rejects.toThrow(FailedToCreateReservation);
     });
   });
 
@@ -208,6 +196,52 @@ describe('ReservationsService', () => {
       await expect(
         service.createStanding(mockUserId, mockCreateStandingDto),
       ).rejects.toThrow(FailedToCreateReservation);
+    });
+  });
+
+  describe('createSeatingReservationTX', () => {
+    it('좌석이 있는 예약에 성공해야 한다', async () => {
+      mockReservationsRepository.createSeatingReservationTX.mockResolvedValue(
+        mockReservation,
+      );
+
+      const result = await service.createSeatingReservationTX({
+        tx: prisma,
+        createSeatingDto: mockCreateSeatingDto,
+        userId: mockUserId,
+      });
+
+      expect(result).toEqual(mockReservation);
+
+      expect(
+        mockReservationsRepository.createSeatingReservationTX,
+      ).toHaveBeenCalledWith({
+        tx: mockPrismaService,
+        createSeatingDto: mockCreateSeatingDto,
+        userId: mockUserId,
+      });
+    });
+
+    it('repository에서 예외가 발생하면 에러를 반환한다', async () => {
+      mockReservationsRepository.createSeatingReservationTX.mockRejectedValue(
+        new Error('database error'),
+      );
+
+      await expect(
+        service.createSeatingReservationTX({
+          tx: prisma,
+          createSeatingDto: mockCreateSeatingDto,
+          userId: mockUserId,
+        }),
+      ).rejects.toThrow(FailedToCreateReservation);
+
+      expect(
+        mockReservationsRepository.createSeatingReservationTX,
+      ).toHaveBeenCalledWith({
+        tx: mockPrismaService,
+        createSeatingDto: mockCreateSeatingDto,
+        userId: mockUserId,
+      });
     });
   });
 });
