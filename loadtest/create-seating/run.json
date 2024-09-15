@@ -6,8 +6,12 @@
       { "duration": 60, "arrivalRate": 200 },
       { "duration": 60, "arrivalRate": 300 },
       { "duration": 60, "arrivalRate": 400 },
-      { "duration": 60, "arrivalRate": 500 }
+      { "duration": 60, "arrivalRate": 500 },
+      { "duration": 60, "arrivalRate": 0 }
     ],
+    "http": {
+      "timeout": 50000
+    },
     "payload": {
       "path": "./ticket.csv",
       "fields": ["ticketId"]
@@ -20,7 +24,7 @@
           "post": {
             "url": "/reservations/seating",
             "json": {
-              "eventId": "89823c0d-08e2-49f5-9ecc-32e4b0a29bda",
+              "eventId": "dcd737d5-f740-4671-9482-de67c754f9de",
               "ticketId": "{{ ticketId }}"
             }
           }
