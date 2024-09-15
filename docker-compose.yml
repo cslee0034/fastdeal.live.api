@@ -27,11 +27,16 @@ services:
       - CACHE_PASSWORD=${CACHE_PASSWORD}
 
       # 락 설정
-      - LOCK_URL=redis://redis_cache:6379
+      - LOCK_URL=redis://redis_lock:6379
       - LOCK_PASSWORD=${LOCK_PASSWORD}
       - LOCK_WAIT=${LOCK_WAIT}
       - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
       - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
+
+      # 큐 설정
+      - QUEUE_HOST=redis_queue
+      - QUEUE_PORT=6379
+      - QUEUE_PASSWORD=${QUEUE_PASSWORD}
 
       # 보안 설정
       - ENCRYPT_SALT=${ENCRYPT_SALT}
@@ -82,11 +87,16 @@ services:
       - CACHE_PASSWORD=${CACHE_PASSWORD}
 
       # 락 설정
-      - LOCK_URL=redis://redis_cache:6379
+      - LOCK_URL=redis://redis_lock:6379
       - LOCK_PASSWORD=${LOCK_PASSWORD}
       - LOCK_WAIT=${LOCK_WAIT}
       - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
       - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
+
+      # 큐 설정
+      - QUEUE_HOST=redis_queue
+      - QUEUE_PORT=6379
+      - QUEUE_PASSWORD=${QUEUE_PASSWORD}
 
       # 보안 설정
       - ENCRYPT_SALT=${ENCRYPT_SALT}
@@ -143,6 +153,71 @@ services:
       - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
       - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
 
+      # 큐 설정
+      - QUEUE_HOST=redis_queue
+      - QUEUE_PORT=6379
+      - QUEUE_PASSWORD=${QUEUE_PASSWORD}
+
+      # 보안 설정
+      - ENCRYPT_SALT=${ENCRYPT_SALT}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_ACCESS_EXPIRES_IN=${JWT_ACCESS_EXPIRES_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - JWT_REFRESH_PREFIX=${JWT_REFRESH_PREFIX}
+
+      # Google OAuth 설정
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+      # Slack webhook 설정
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+
+    depends_on:
+      - mysql
+      - redis_cache
+      - redis_lock
+    networks:
+      - app-network
+
+  app-4:
+    image: node:lts-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - '4003:4003'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - SERVER_NAME=${SERVER_NAME}
+      - API_PROTOCOL=${API_PROTOCOL}
+      - API_HOST=${API_HOST}
+      - API_PORT=4003
+      - CLIENT_URL=${CLIENT_URL}
+      - HTTP_TIMEOUT=${HTTP_TIMEOUT}
+      - HTTP_MAX_REDIRECTS=${HTTP_MAX_REDIRECTS}
+
+      # 데이터베이스 설정
+      - RDB_URL=mysql://cslee0034:1234@mysql:3306/fastdeal
+
+      # 캐시 설정
+      - CACHE_URL=redis://redis_cache:6379
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+
+      # 락 설정
+      - LOCK_URL=redis://redis_cache:6379
+      - LOCK_PASSWORD=${LOCK_PASSWORD}
+      - LOCK_WAIT=${LOCK_WAIT}
+      - LOCK_MAX_ATTEMPTS=${LOCK_MAX_ATTEMPTS}
+      - LOCK_IGNORE_UNLOCK_FAIL=${LOCK_IGNORE_UNLOCK_FAIL}
+
+      # 큐 설정
+      - QUEUE_HOST=redis_queue
+      - QUEUE_PORT=6379
+      - QUEUE_PASSWORD=${QUEUE_PASSWORD}
+
       # 보안 설정
       - ENCRYPT_SALT=${ENCRYPT_SALT}
       - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
@@ -175,6 +250,7 @@ services:
       - app-1
       - app-2
       - app-3
+      - app-4
     networks:
       - app-network
 
@@ -214,6 +290,19 @@ services:
       - '6380:6380'
     volumes:
       - redis_lock_data:/data
+    environment:
+      REDIS_PASSWORD: 1234
+    networks:
+      - app-network
+
+  # 큐 Redis
+  redis_queue:
+    image: redis:latest
+    command: redis-server --requirepass 1234
+    ports:
+      - '6381:6381'
+    volumes:
+      - redis_queue_data:/data
     environment:
       REDIS_PASSWORD: 1234
     networks:
