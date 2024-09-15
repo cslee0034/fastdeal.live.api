@@ -4,7 +4,8 @@ import { RedisService } from './redis.service';
 import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
 import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
 import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
-import { SECONDS } from '../../../common/constant/milliseconds-to-seconds';
+import { SECONDS } from '../../../common/constant/time/milliseconds-base/milliseconds-to-seconds';
+import { HOURS } from '../../../common/constant/time/milliseconds-base/milliseconds-to-hours';
 
 describe('RedisService', () => {
   let service: RedisService;
@@ -104,7 +105,7 @@ describe('RedisService', () => {
 
   describe('setTicketSoldOut', () => {
     it('캐시 저장소에 sold-out 상태를 저장한다', async () => {
-      const ttl = 5 * SECONDS;
+      const ttl = 24 * HOURS;
       await service.setTicketSoldOut(mockTicketId);
 
       expect(cacheManager.set).toHaveBeenCalledWith(

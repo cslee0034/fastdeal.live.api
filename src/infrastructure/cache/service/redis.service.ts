@@ -5,7 +5,8 @@ import { ICacheService } from '../interface/cache.service.interface';
 import { FailedToDeleteRefreshTokenError } from '../error/failed-to-delete-refresh-token';
 import { FailedToGetRefreshTokenError } from '../error/failed-to-get-refresh-token';
 import { FailedToSetRefreshTokenError } from '../error/failed-to-set-refresh-token';
-import { SECONDS } from '../../../common/constant/milliseconds-to-seconds';
+import { SECONDS } from '../../../common/constant/time/milliseconds-base/milliseconds-to-seconds';
+import { HOURS } from '../../../common/constant/time/milliseconds-base/milliseconds-to-hours';
 
 @Injectable()
 export class RedisService implements ICacheService {
@@ -41,13 +42,27 @@ export class RedisService implements ICacheService {
   }
 
   public async setTicketSoldOut(ticketId: string): Promise<void> {
-    return await this.set(`sold-out-${ticketId}`, true, 5 * SECONDS);
+    return await this.set(`sold-out-${ticketId}`, true, 24 * HOURS);
   }
 
   public async getTicketSoldOut(ticketId: string): Promise<boolean> {
     return await this.get<boolean>(`sold-out-${ticketId}`);
   }
 
+  /**
+   * @description
+   * 티켓 판매 상태가 초기화 되는 경우:
+   * 1. queue에 작업을 추가하는데 실패한 경우
+   *  - 3번까지 재시도 한 뒤 다른 유저에게 기회를 준다
+   * 2. 캐싱된지 24시간이 지난 경우
+   *  - 장시간 처리되지 않은 예약은 시스템 에러로 간주하고 24시간 내에 대응해야 한다
+   *
+   * 티켓 판매 상태가 초기화 되지 않는 경우:
+   * 1. process가 작업을 처리하는데 실패한 경우
+   *  - failover 로직으로 관리한다
+   * 2. process가 작업을 처리하는데 성공한 경우
+   *  - 별도로 초기화 하지 않아도 된다
+   */
   public async deleteTicketSoldOut(ticketId: string): Promise<void> {
     return await this.del(`sold-out-${ticketId}`);
   }
