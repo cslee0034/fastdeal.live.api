@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  OnModuleInit,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { env } from './config/env/env';
 import { validationSchema } from './config/env/validator';
@@ -29,6 +24,8 @@ import { TicketsModule } from './modules/tickets/module/tickets.module';
 import { EventsModule } from './modules/events/module/events.module';
 import { ReservationsModule } from './modules/reservations/module/reservations.module';
 import { LockModule } from './infrastructure/lock/module/lock.module';
+import { QueueModule } from './infrastructure/queue/module/queue.module';
+import { SlackWebHookModule } from './infrastructure/webhook/slack.module';
 
 @Module({
   imports: [
@@ -53,15 +50,10 @@ import { LockModule } from './infrastructure/lock/module/lock.module';
         getJwtConfig(configService),
       inject: [ConfigService],
     }),
-    SlackModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        url: configService.get<string>('slack.webhookUrl'),
-      }),
-      inject: [ConfigService],
-    }),
+    SlackWebHookModule,
     RedisModule,
     LockModule,
+    QueueModule,
     EncryptModule,
     LoggerModule,
     PrismaModule,
