@@ -55,3 +55,6 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# 리포트 html 파일
+/loadtest/create-seating/*/*.html
