@@ -27,6 +27,11 @@ export const env = () => ({
     maxAttempts: process.env.LOCK_MAX_ATTEMPTS,
     ignoreUnlockFail: process.env.LOCK_IGNORE_UNLOCK_FAIL,
   },
+  queue: {
+    host: process.env.QUEUE_HOST,
+    port: process.env.QUEUE_PORT,
+    password: process.env.QUEUE_PASSWORD,
+  },
   encrypt: {
     salt: process.env.ENCRYPT_SALT,
   },
