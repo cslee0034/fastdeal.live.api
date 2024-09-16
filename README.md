@@ -122,8 +122,8 @@ Nest.js에서 공식적으로 지원하고, 특정 클라우드 서비스에 종
 
 # 테스트 커버리지
 
-86.63%의 테스트 커버리지 달성.
+TDD 기법 도입: https://hardworking-everyday.tistory.com/289
 
-TDD 기법 도입 : https://hardworking-everyday.tistory.com/289
+86.63%의 테스트 커버리지 달성.
 
 ![test-coverage](https://github.com/user-attachments/assets/90934019-6081-46c5-8b47-790d7029f854)
