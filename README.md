@@ -36,7 +36,8 @@
 
 # 아키텍처
 
-![architecture](https://github.com/user-attachments/assets/c2ae5a33-7f63-4d59-8343-428a27757c25)
+![architecture](https://github.com/user-attachments/assets/adac2686-4b19-4dfa-a4ec-5b32564bfa88)
+
 
 1. docker-compose와 pm2를 이용한 서버 및 인스턴스 클러스터링
 2. Nginx를 통한 로드벨런싱 (round robin)
